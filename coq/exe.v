@@ -1,17 +1,10 @@
 
-Definition pierce := forall (p q: Prop), ((p -> q) -> p) -> p.
-Definition lem := forall (p: Prop), p \/ ~ p.
-Theorem peirce_equiv_lem : pierce <-> lem.
-Proof.  
-  unfold pierce, lem.
-  firstorder.  
+Require Import Lists.Streams.
+Require Import ZArith.
+Import Streams.
+Import ZArith.
 
-  apply H with (q := ~(p\/~p)).
-  tauto.
-  destruct (H p).
-  assumption.
-  tauto.
-  
-
+  CoFixpoint rand (seed n1 n2 : Z) : Stream Z :=
+    let seed' := Zmod seed n2 in Cons seed' (rand (seed' * n1) n1 n2).
   
   
