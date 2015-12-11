@@ -393,10 +393,16 @@
 }
 \endgroup
 
+\newpage
 \subsubsection*{Алгебраїчні типи даних}
 
-Далі йде внутрішня мова алгебраїчних типів даних яка складається з суми (кодобутку) та добутку (косуми, кортежу),
-за допомогою яких конструюються суми-протоколи та добутки-повідмоення, а також {\bf nil} типу-терміналу,
+Після операції композиції, як способу конструювання нових математичних об’єктів
+за допомогою морфізмів далі йде операція конструювання добутка двох доменів,
+разом з добутком морфізмів зі спільним доменом, необхідних для морфізмів виду $f: A \rightarrow B \times C$.
+
+\paragraph{}
+Це є внутрішня мова алгебраїчних типів даних яка складається з суми (кодобутку) та добутку (косуми, кортежу),
+за допомогою яких конструюються суми-протоколи та добутки-повідмоення, а також $\bot$ типу-терміналу,
 яким зручно термінувати рекурсивні типи даних, такі як {\bf cons}. Ми будемо розглядати
 тільки категорії які маються добутки та суми. Як видно дубок є дуальний до суми з точністю до направлення стрілок,
 таким чином елімінатори $\pi$ та $\sigma$ є оберненими, тобто $\pi \circ \sigma = \sigma \circ \pi = id$.
@@ -436,7 +442,6 @@
 \BinaryInfC{$\Gamma\vdash a\ |\ b : A \otimes B$}
 \end{prooftree}
 
-
 \begin{prooftree}
 \AxiomC{$\Gamma\ x: A \otimes B$ }
 \UnaryInfC{$\Gamma \vdash \sigma_1: A \rightarrow A \otimes B$;
@@ -446,6 +451,24 @@
 }
 \endgroup
 
+\begin{prooftree}
+\AxiomC{$\Gamma \vdash\ f:A \rightarrow B$ }
+\AxiomC{$\Gamma \vdash\ g:A \rightarrow C$ }
+\AxiomC{$\Gamma \vdash\ B \times C$ }
+\TrinaryInfC{$\Gamma \vdash\ \langle f,g \rangle : A \rightarrow B \times C$ }
+\end{prooftree}
+
+\begin{center}
+%$(f \circ g) \circ h = f \circ (g \circ h)$\\
+%$f \circ id = f$\\
+%$id \circ f = f$\\
+$\pi_1 \circ \langle f, g \rangle = f$\\
+$\pi_2 \circ \langle f, g \rangle = g$\\
+$\langle f, g \rangle \circ h = \langle f \circ h, g \circ h \rangle$\\
+$\langle \pi_1, \pi_2 \rangle = id$\\
+\end{center}
+
+\newpage
    \subsubsection{Лямбда числення}
    Лямбда-числення як основна абстракція обчислювальної віртуальної машини.
    Будучи внутрішньою мовою декартово-замкненої категорії лямбда числення окрім змінних
@@ -489,23 +512,12 @@
 \hspace{0.1cm}
 \parbox[t][][r]{0.60\textwidth}{
 
-\begin{prooftree}
-\AxiomC{$\Gamma \vdash\ f:A \rightarrow B$ }
-\AxiomC{$\Gamma \vdash\ g:A \rightarrow C$ }
-\AxiomC{$\Gamma \vdash\ B \times C$ }
-\TrinaryInfC{$\Gamma \vdash\ \langle f,g \rangle : A \rightarrow B \times C$ }
-\end{prooftree}
 
 \begin{center}
-$(f \circ g) \circ h = f \circ (g \circ h)$\\
-$f \circ id = f$\\
-$id \circ f = f$\\
-$\pi_1 \circ \langle f, g \rangle = f$\\
-$\pi_2 \circ \langle f, g \rangle = g$\\
-$\langle f, g \rangle \circ h = \langle f \circ h, g \circ h \rangle$\\
-$\langle \pi_1, \pi_2 \rangle = id_{A \times B}$\\
 $apply \circ \langle (curry\ f) \circ \pi_1 , \pi_2 \rangle = f$\\
-$(curry\ f) \circ g = (curry\ f) \circ \langle g \circ \pi_1,\pi_2\rangle$\\
+$curry\ apply \circ \langle g \circ \pi_1, \pi_2 \rangle) = g$\\
+$apply \circ \langle curry\ f, g \rangle = f \circ \langle id , g\rangle$\\
+$(curry\ f) \circ g = curry\ (f \circ \langle g \circ \pi_1,\pi_2\rangle)$\\
 $curry\ apply = id$\\
 \end{center}
 
@@ -536,16 +548,16 @@ $curry\ apply = id$\\
 
 
 \begin{prooftree}
-\AxiomC{$\Gamma\ \vdash \Sigma, X, E$ }
-\AxiomC{$\Gamma\ \vdash action : \Sigma \times X \rightarrow E\ X$ }
+\AxiomC{$\Gamma\ \vdash E, \Sigma, X$ }
+\AxiomC{$\Gamma\ \vdash action : \Sigma \times X \rightarrow \Sigma \times X$ }
 \BinaryInfC{$\Gamma \vdash {spawn}\ action : \pi_\Sigma $}
 \end{prooftree}
 
 \begin{prooftree}
-\AxiomC{$\Gamma\ \vdash pid : \pi$ }
+\AxiomC{$\Gamma\ \vdash pid : \pi_\Sigma$ }
 \AxiomC{$\Gamma\ \vdash msg : \Sigma$ }
-\BinaryInfC{$\Gamma \vdash join\ msg\ pid : \Sigma \times \pi_\Sigma \rightarrow E\ \Sigma$;
-            $\Gamma \vdash send\ msg\ pid : \Sigma \times \pi_\Sigma \rightarrow E\ \Sigma$}
+\BinaryInfC{$\Gamma \vdash join\ msg\ pid : \Sigma \times \pi_\Sigma \rightarrow \Sigma$;
+            $\Gamma \vdash send\ msg\ pid : \Sigma \times \pi_\Sigma \rightarrow \Sigma$}
 \end{prooftree}
 
   \subsubsection*{Алгебра процесів}
