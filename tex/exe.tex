@@ -307,10 +307,23 @@
 \newpage
 \subsection{Додаткові та дотичні теорії}
 \vspace{0.5cm}
-   У таксономії теоритичних сутностей умовно визначатимемо
-   графічні топологічно- структурні, аналітичні, статистичні та логічні типи теорій, які
-   ми використовуватимемо для опису комплесної теорії верифікованих середовищ
-   послідовних обчислень розподілених узгоджених паралельних систем.\\
+
+   \subsubsection{Темпоральна логіка}
+   Темпоральна логіка як індуктивна теорія верифікації розподілених алгоритмів
+   застосовується до доведення коррекності усіх нормалізованих підсистем. На основі
+   теорії  Леслі Лампорта\cite{tla}, за яку він отримав премію Тюрінга.
+   Елементи темпоральної логіки нам знадобляться для розробки теорій
+   розподілених у просторі та часі алгоритмів.\\
+
+   \subsubsection{Мережі Петрі}
+   Мережі Петрі в даній роботі використовуються як прототип графічного
+   лінгвістичного засобу структури категорій та системи типів. Оскільки
+   такі графічні засоби як UML та різноманітні окремі технологічні
+   стандарти як то BPMN більше допомагають ніж мішають, була розроблена
+   також і графічна мова на базі графічної мови мереж Петрі, оскільки їх
+   семантика ділить один простір з тематикою даної роботи. Ми візьмемо
+   лінгвістичне забезпечення Мереж Петрі як прототип для нашої власної
+   мови візуалізації структур обчислень.
 
    \subsubsection{Теорія масового обслуговування}
    Теорія массового обслуговування застосовується для побудови
@@ -323,56 +336,89 @@
    протокол взаємодії у системі таких процесів. Тому тут теорія масового обслуговування
    застосовується для визначення пропускної здатності системи.
 
-   \subsubsection{Мережі Петрі}
-   Мережі Петрі в даній роботі використовуються як прототип графічного
-   лінгвістичного засобу структури категорій та системи типів. Оскільки
-   такі графічні засоби як UML та різноманітні окремі технологічні
-   стандарти як то BPMN більше допомагають ніж мішають, була розроблена
-   також і графічна мова на базі графічної мови мереж Петрі, оскільки їх
-   семантика ділить один простір з тематикою даної роботи. Ми візьмемо
-   лінгвістичне забезпечення Мереж Петрі як прототип для нашої власної
-   мови візуалізації структур обчислень.
-
-   \subsubsection{Теорія категорій}
-   Теорія категорій як робоча структурна теорія системи типів мови Exe та
-   категоріальна семантика числення процесів. Можна було би використовувати абстракну алгебру загалом,
-   та теорія напівгруп, а саме напівгруп активностей, проте ми будемо використовувати
-   категоріальну семантику, що стало можливо завдяки роботам Лавіра та іншим.\\
-
-   \subsubsection{Темпоральна логіка}
-   Темпоральна логіка як індуктивна теорія верифікації розподілених алгоритмів
-   застосовується до доведення коррекності усіх нормалізованих підсистем. На основі
-   теорії  Леслі Лампорта\cite{tla}, за яку він отримав премію Тюрінга.
-   Елементи темпоральної логіки нам знадобляться для розробки теорій
-   розподілених у просторі та часі алгоритмів.\\
-
 \newpage
 \subsection{Основні теорії}
 \vspace{0.3cm}
 
-   \subsubsection{$\lambda$ числення}
-   Лямбда-числення як основна абстракція обчислювальної віртуальної машини.
-   Будучи внутрішньою мовою декартово-замкненої категорії лямбда числення окрім змінних
-   та констант у вигляді термів пропонує операції абстракції та аплікації, що визначає
-   достатньо лаконічну та потужну структуру обчислень з функціями вищих порядків,
-   та метатипизаціями, такими як System F, яка була запропонована
-   вперше Робіном Мілнером в мові ML, та зараз присутня в більш складних,
-   таких як System F$\omega$ системах Haskell та Scala. Наша результуюча система
-   типів буде тегована система типів мови Erlang.
+   \subsubsection{Теорія категорій}
+   Теорія категорій широко застосовується для аналіза розробки програмного забезпечення.
+   Рзкажемо поступово про суть аксіоматичного поступового категоріального підходу.
+   Категорії (програми) визначаються переліком своїх доменів (типів) та своїх
+   морфізмів (функцій), а також бінарною операцією композиції,
+   що задовольняє закону асоціативності, та з тотожнім морфізмом (тотжньою функцією --- одиницею) який існує
+   для кожного домену (типу) категорії. Аксіоми формації морфізмів, та доменів не
+   приводяться та авто-постулуються в нижніх аксіомах.
 
-\paragraph{}
-Для розробки нашої теорії ми застосуємо інтуітіоністську теорію типів Мартіна Льофа.
-Ця система типів буде застосовуватися для довення робочих теорем. База мови складає
-лябмда числення як внутрішня мова декартово-замкненої категорії. Лямбда числення в своїй
-основі скаладається з конструктора типу яка визначає функції та елімінатора -- аплікації
-функції до аргументу.
+   \paragraph{}
+   Інтро аксіоми -- асоціативність композиції та права і ліва композиції одниці показують,
+   що категорії є типизованими моноїдами, що складаються з морфізмів та операції композиції.
+   Є різні мови, у тому числі і графічні, представлення категорної семантики, однак у цій роботі
+   ми будемо використовувати теоретико-логічні формулювання.
+
+\begingroup
+\parbox[t][][l]{0.60\textwidth}{
+
+\begin{prooftree}
+\AxiomC{$\Gamma\ \vdash f: A \rightarrow B$ }
+\AxiomC{$\Gamma\ \vdash g: B \rightarrow C$ }
+\BinaryInfC{$\Gamma \vdash g \circ f : A \rightarrow C $}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$\Gamma \vdash f : B \rightarrow A$ }
+\AxiomC{$\Gamma \vdash g : C \rightarrow B$ }
+\AxiomC{$\Gamma \vdash h : D \rightarrow C$ }
+\TrinaryInfC{$\Gamma \vdash (f \circ g) \circ h = f \circ (g \circ h) : D \rightarrow A $}
+\end{prooftree}
+
+}
+\hspace{0.1cm}
+\parbox[t][][r]{0.40\textwidth}{
+
+\begin{prooftree}
+\AxiomC{$$ }
+\UnaryInfC{$\Gamma \vdash id_A : A \rightarrow A $}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$\Gamma\ \vdash f: A \rightarrow B$ }
+\UnaryInfC{$\Gamma \vdash f \circ id_A = f : A \rightarrow B$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$\Gamma\ \vdash f: A \rightarrow B$ }
+\UnaryInfC{$\Gamma \vdash id_B \circ f = f : A \rightarrow B $}
+\end{prooftree}
+
+}
+\endgroup
+
+\subsubsection*{Алгебраїчні типи даних}
+
+Далі йде внутрішня мова алгебраїчних типів даних яка складається з суми (кодобутку) та добутку (косуми, кортежу),
+за допомогою яких конструюються суми-протоколи та добутки-повідмоення, а також {\bf nil} типу-терміналу,
+яким зручно термінувати рекурсивні типи даних, такі як {\bf cons}. Ми будемо розглядати
+тільки категорії які маються добутки та суми. Як видно дубок є дуальний до суми з точністю до направлення стрілок,
+таким чином елімінатори $\pi$ та $\sigma$ є оберненими, тобто $\pi \circ \sigma = \sigma \circ \pi = id$.
 
 \begingroup
 \parbox[t][][l]{0.40\textwidth}{
 
 \begin{prooftree}
-\AxiomC{$\Gamma\ x:A \vdash\ B$ }
-\UnaryInfC{$\Gamma \vdash fun\ x : A \rightarrow B$}
+\AxiomC{$\Gamma\ x: A \times B$ }
+\UnaryInfC{$\Gamma \vdash \pi_1\ : A \times B \rightarrow A$;
+           $\Gamma \vdash \pi_2\ : A \times B \rightarrow B$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$\Gamma \vdash\  a:A$ }
+\AxiomC{$\Gamma \vdash\  b:B$ }
+\BinaryInfC{$\Gamma \vdash\ {a,b} : A \times B$ }
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{}
+\UnaryInfC{$\Gamma \vdash\ \bot$ }
 \end{prooftree}
 
 }
@@ -380,32 +426,8 @@
 \parbox[t][][r]{0.60\textwidth}{
 
 \begin{prooftree}
-\AxiomC{$\Gamma\ f:A \rightarrow B$ }
-\AxiomC{$\Gamma\ a:A$ }
-\BinaryInfC{$\Gamma \vdash f \ a : B$}
-\end{prooftree}
-
-}
-\endgroup
-
-  \subsubsection*{Алегбраїчні типи даних}
-
-Далі йде внутрішня мова алгебраїчних типів даних яка складається з суми та добутку,
-за допомогою яких контруюються суми-протоколи та кортежі-пакети, а також {\bf nil} типу-атому,
-яким зручно термінувати рекурсивні типи даних, такі як {\bf cons}.
-
-\begin{prooftree}
 \AxiomC{}
-\UnaryInfC{$\Gamma \vdash\ \bot$ }
-\end{prooftree}
-
-\begingroup
-\parbox[t][][l]{0.40\textwidth}{
-
-\begin{prooftree}
-\AxiomC{$\Gamma \vdash\  a:A$ }
-\AxiomC{$\Gamma \vdash\  b:B$ }
-\BinaryInfC{$\Gamma \vdash\  (a,b) : A \times B$ }
+\UnaryInfC{$\Gamma \vdash\ \top$ }
 \end{prooftree}
 
 \begin{prooftree}
@@ -414,26 +436,87 @@
 \BinaryInfC{$\Gamma\vdash a\ |\ b : A \otimes B$}
 \end{prooftree}
 
+
+\begin{prooftree}
+\AxiomC{$\Gamma\ x: A \otimes B$ }
+\UnaryInfC{$\Gamma \vdash \sigma_1: A \rightarrow A \otimes B$;
+           $\Gamma \vdash \sigma_2: B \rightarrow A \otimes B$}
+\end{prooftree}
+
+}
+\endgroup
+
+   \subsubsection{Лямбда числення}
+   Лямбда-числення як основна абстракція обчислювальної віртуальної машини.
+   Будучи внутрішньою мовою декартово-замкненої категорії лямбда числення окрім змінних
+   та констант у вигляді термів пропонує операції абстракції та аплікації, що визначає
+   достатньо лаконічну та потужну структуру обчислень з функціями вищих порядків,
+   та метатипизаціями, такими як System F, яка була запропонована
+   вперше Робіном Мілнером в мові ML, та зараз присутня в більш складних,
+   таких як System F$\omega$, системах Haskell та Scala.
+
+   \paragraph{}
+   Щоб пояснити функції з категоріальнї точки зору потрібно пояснити категоріальні
+   експоненти $f : A^B$,  які є аналогами фукціональних просторів $f: A \rightarrow B$.
+   Так як ми вже визначили добутки та термінали, то ми можемо визначити і експоненти,
+   опускаючи усі категоріальні подробиці ми визначимо конструювання функції (операція абстракції),
+   яка параметризується змінною $x$ у середовищі $\Gamma$; та її елімінатора -- операції аплікації
+   функції до аргументу. Так визначаєьтся декартово-замкнена категорія.
+   Визначається також рекурсивний механізм виклику функції
+   з довільною кількістю аргументів. Також додамо тут аксіому множення морфізмів, яка
+   випливає з визначення добутка, яка необхідна для забезпечення аплікативного програмування.
+
+\begingroup
+\parbox[t][][l]{0.40\textwidth}{
+
+\begin{prooftree}
+\AxiomC{$\Gamma  x:A \vdash M : B$}
+\UnaryInfC{$\Gamma \vdash \lambda\ x\ .\ M : A \rightarrow B$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$\Gamma\ f:A \rightarrow B$ }
+\AxiomC{$\Gamma\ a:A$ }
+\BinaryInfC{$\Gamma \vdash apply\ f\ a\ : (A \rightarrow B) \times A \rightarrow B$}
+\end{prooftree}
+
+\begin{prooftree}
+\AxiomC{$\Gamma \vdash f: A \times B \rightarrow C$ }
+\UnaryInfC{$\Gamma \vdash curry\ f : A \rightarrow (B \rightarrow C)$}
+\end{prooftree}
+
 }
 \hspace{0.1cm}
 \parbox[t][][r]{0.60\textwidth}{
 
-
 \begin{prooftree}
-\AxiomC{$\Gamma\ x: A \times B$ }
-\UnaryInfC{$\Gamma \vdash fst\ x : A$;
-           $\Gamma \vdash snd\ x : B$}
+\AxiomC{$\Gamma \vdash\ f:A \rightarrow B$ }
+\AxiomC{$\Gamma \vdash\ g:A \rightarrow C$ }
+\AxiomC{$\Gamma \vdash\ B \times C$ }
+\TrinaryInfC{$\Gamma \vdash\ \langle f,g \rangle : A \rightarrow B \times C$ }
 \end{prooftree}
 
-\begin{prooftree}
-\AxiomC{$\Gamma\ x: A \otimes B$ }
-\UnaryInfC{$\Gamma \vdash inl\ x : A$;
-           $\Gamma \vdash inr\ x : B$}
-\end{prooftree}
+\begin{center}
+$(f \circ g) \circ h = f \circ (g \circ h)$\\
+$f \circ id = f$\\
+$id \circ f = f$\\
+$\pi_1 \circ \langle f, g \rangle = f$\\
+$\pi_2 \circ \langle f, g \rangle = g$\\
+$\langle f, g \rangle \circ h = \langle f \circ h, g \circ h \rangle$\\
+$\langle \pi_1, \pi_2 \rangle = id_{A \times B}$\\
+$apply \circ \langle (curry\ f) \circ \pi_1 , \pi_2 \rangle = f$\\
+$(curry\ f) \circ g = (curry\ f) \circ \langle g \circ \pi_1,\pi_2\rangle$\\
+$curry\ apply = id$\\
+\end{center}
 
+\begin{center}
+Домени : $\bot\ |\ \rightarrow\ |\ \times$\\
+Морфізми : $id\ |\ f \circ g\ |\ \langle f, g \rangle\ |\ apply\ |\ \lambda\ |\ curry$
+\end{center}
 
 }
 \endgroup
+
 
 \newpage
    \subsubsection{$\pi$ числення}
@@ -451,26 +534,18 @@
 Також ми анонсуємо процес як фундаменльний тип даних, подібний до функції але який здатний
 тритати певний стан у вигляді типа коротежа та бути здатним реагувати на повідомлення суми.
 
+
 \begin{prooftree}
-\AxiomC{$\Gamma\ \vdash e : Error$ }
-\AxiomC{$\Gamma\ \vdash h : History$ }
-\BinaryInfC{$\Gamma \vdash module : a : \Sigma \times P \rightarrow P $}
-\AxiomC{$\Gamma\ \vdash env : Document$ }
-\AxiomC{ $\Gamma\ \vdash s : Event | Task | Flow$ }
-\TrinaryInfC{$\Gamma \vdash p : Process$}
+\AxiomC{$\Gamma\ \vdash \Sigma, X, E$ }
+\AxiomC{$\Gamma\ \vdash action : \Sigma \times X \rightarrow E\ X$ }
+\BinaryInfC{$\Gamma \vdash {spawn}\ action : \pi_\Sigma $}
 \end{prooftree}
 
 \begin{prooftree}
-\AxiomC{$\Gamma\ \vdash \Sigma, X$ }
-\AxiomC{$\Gamma\ \vdash p : Process$ }
-\BinaryInfC{$\Gamma \vdash {spawn}_{\Sigma}\ p : \pi $}
-\end{prooftree}
-
-\begin{prooftree}
-\AxiomC{$\Gamma\ \vdash spawn : \pi$ }
-\AxiomC{$\Gamma\ \vdash m : \Sigma$ }
-\BinaryInfC{$\Gamma \vdash {join}_{\Sigma}\ (m, spawn) \rightarrow \Sigma$;
-            $\Gamma \vdash {async}_{\Sigma}\ (m, spawn) \rightarrow \Sigma$}
+\AxiomC{$\Gamma\ \vdash pid : \pi$ }
+\AxiomC{$\Gamma\ \vdash msg : \Sigma$ }
+\BinaryInfC{$\Gamma \vdash join\ msg\ pid : \Sigma \times \pi_\Sigma \rightarrow E\ \Sigma$;
+            $\Gamma \vdash send\ msg\ pid : \Sigma \times \pi_\Sigma \rightarrow E\ \Sigma$}
 \end{prooftree}
 
   \subsubsection*{Алгебра процесів}
@@ -482,8 +557,8 @@
 
 \begin{center}
 \begin{tabular}{lcl}
-$\oplus$   &:& $P \parallel P$\\
-$\otimes$  &:& $P \mid P$\\
+$\oplus$   &:& $\pi \parallel \pi$\\
+$\otimes$  &:& $\pi \mid \pi$\\
 \end{tabular}
 \end{center}
 
@@ -491,9 +566,9 @@ $\otimes$  &:& $P \mid P$\\
 
 \begin{center}
 \begin{tabular}{lll}
-         $action$ &:& ${proc}_{Proc}\ (Proc\ |\ \Sigma) \times process \rightarrow process$ \\
-         $event$  &:& ${proc}_{App}\ (App\ |\ \Sigma) \times cx \rightarrow cx$ \\
-         $operation$    &:& ${proc}_{Store}\ (Store\ |\ \Sigma) \times container \rightarrow container$ \\
+         $action$ &:& ${proc}_{Proc}\  (BPE\ |\ \Sigma) \times process \rightarrow process$ \\
+          $event$ &:& ${proc}_{App}\   (N2O\ |\ \Sigma) \times cx \rightarrow cx$ \\
+      $operation$ &:& ${proc}_{Store}\ (KVS\ |\ \Sigma) \times container \rightarrow container$ \\
 \end{tabular}
 \end{center}
 
@@ -1125,6 +1200,8 @@ Haskell (Warp), OCaml (OCsigen), Erlang (Cowboy/N2O), Clojure (http-kit), JavaSc
 \bibitem{renesse2} R.Renesse, C.Ho, N.Schiper \textit{Byzantine Chain Replication}
 \bibitem{renesse3} R.Renesse, N.Schiper \textit{Chain Replication for Supporting High Throughput and Availability}
 \bibitem{erl}      J.Armstrong. \textit{Making reliable distributed systems in the presence of sodware errors.} 2003.
+\bibitem{curien1} PL. Curien \textit{Category theory: a programming language-oriented introduction} 2008
+
 
 \end{thebibliography}
 
