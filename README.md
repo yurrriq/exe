@@ -9,7 +9,7 @@ a well known Synrc Erlang Applications.
 
 The aim is to define mathematically clean applications,
 provide persistence of competational effects in KVS storage,
-proove some properties and invariants of the core.
+prove some properties and invariants of the core.
 
 Credits
 -------
