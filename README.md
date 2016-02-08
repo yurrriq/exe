@@ -4,7 +4,7 @@ This research project dedicated to formalization and implementation of Exe funct
 language with dependent-types that compiles to untyped Erlang AST that can be compiler
 with regular Erlang `erlc` compiler and run under BEAM or LING virtual machines.
 
-<center><img src="http://5ht.co/img/exe.svg" width="600"></center>
+<center><img src="http://5ht.co/exe.svg" width="600"></center>
 
 This labguage relies on pure Calculus of Construction with 1 axiom and four deduction rules,
 inductive `data` and coinductive `record` dependent definitions, and also impredicative
