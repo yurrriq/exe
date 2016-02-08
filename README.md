@@ -1,15 +1,26 @@
 # Verified Executive Environment
 
-This research project dedicated to formalizing and modeling
-application level services using dependent types theory and theorem proovers.
-This will cover KVS persistence, N2O protocol commutator and BPE business process engine
-a well known Synrc Erlang Applications.
+This research project dedicated to formalization and implementation of Exe functional
+language with dependent-types that compiles to untyped Erlang AST that can be compiler
+with regular Erlang `erlc` compiler and run under BEAM or LING virtual machines.
 
-<center><img src="http://5ht.co/img/exe-res.png" width="400"></center>
+<center><img src="http://5ht.co/img/exe.svg" width="600"></center>
 
-The aim is to define mathematically clean applications,
-provide persistence of competational effects in KVS storage,
-prove some properties and invariants of the core.
+This labguage relies on pure Calculus of Construction with 1 axiom and four deduction rules,
+inductive `data` and coinductive `record` dependent definitions, and also impredicative
+indexed universums. Pure CoC and impredicative universums are included into the core of
+the language -- Om, with reduced Exe syntax, that is able typecheck and normilize terms.
+
+Fearures
+--------
+
+* inductive `data` and coinductive `record` dependent constrcutions (Exe)
+* case (pattern-matching Exe)
+* receive, send, spawn (process-calculus core Exe)
+* Pi, lambda, variables (core Om language)
+* typechecking and normalization (Om)
+* compact base library with dependent types (Exe)
+* Erlang AST generation
 
 Credits
 -------
