@@ -20,6 +20,7 @@ Fearures
 * Pi, lambda, variables (core Om language)
 * typechecking and normalization (Om)
 * compact base library with dependent types (Exe)
+* theorems for base library (Lean)
 * Erlang AST generation
 
 Credits
