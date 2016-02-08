@@ -14,7 +14,7 @@ the language -- Om, with reduced Exe syntax, that is able typecheck and normiliz
 Fearures
 --------
 
-* inductive `data` and coinductive `record` dependent constrcutions (Exe)
+* inductive `data` and coinductive `record` dependent constructions (Exe)
 * case (pattern-matching Exe)
 * receive, send, spawn (process-calculus core Exe)
 * Pi, lambda, variables (core Om language)
