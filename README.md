@@ -27,3 +27,4 @@ Credits
 -------
 
 * Maxim Sokhatsky
+* Pavel Lutko
