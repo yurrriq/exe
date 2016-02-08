@@ -23,6 +23,8 @@ Fearures
 * receive, send, spawn (process-calculus core Exe)
 * Pi, lambda, variables (core Om language)
 * typechecking and normalization (Om)
+* no recursion in lambdas
+* recursive type definitions only
 * compact base library with dependent types (Exe)
 * theorems for base library (Lean)
 * Erlang AST generation
