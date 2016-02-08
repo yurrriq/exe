@@ -13,7 +13,7 @@ with regular Erlang `erlc` compiler and run under BEAM or LING virtual machines.
 This labguage relies on pure Calculus of Construction with 1 axiom and four deduction rules,
 inductive `data` and coinductive `record` dependent definitions, and also impredicative
 indexed universums. Pure CoC and impredicative universums are included into the core of
-the language -- Om, with reduced Exe syntax, that is able typecheck and normilize terms.
+the language with reduced Exe syntax -- Om, that is able typecheck and normalize terms.
 
 Fearures
 --------
