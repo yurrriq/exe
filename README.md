@@ -1,4 +1,8 @@
-# Verified Executive Environment
+Exe Prover
+==========
+
+Depentent Records and Inductive Constructions
+---------------------------------------------
 
 This research project dedicated to formalization and implementation of Exe functional
 language with dependent-types that compiles to untyped Erlang AST that can be compiler
