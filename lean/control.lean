@@ -15,6 +15,10 @@
       record monad (F: Type → Type) (A B: Type) extends pure F A, functor F A B :=
              (join: F (F A) → F B)
 
-       check monad
+      inductive weekday : Type := | sunday : weekday
+
+        set_option pp.universes true
+       eval ((Type → Type):Type)
+       check (weekday : Type₁)
 
          end control

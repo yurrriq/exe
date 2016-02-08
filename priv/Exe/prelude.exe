@@ -1,0 +1,70 @@
+           record equ (e: *): * := (rel: e → e → Prop)
+           record setoid (e: *) extend equ
+                      := (refl:  rel e e)
+                         (trans: rel e1 e2 → rel e2 e3 → rel e1 e3)
+                         (sym:   rel e1 e2 → rel e2 e1)
+
+             enum unit: * :=
+                  (make: () → unit)
+
+             enum bool: * :=
+                  (true: () → bool)
+                  (false: () → bool)
+
+             enum IO: * :=
+                  (out: list num → () → IO)
+                  (in:  () → list num → IO)
+
+             enum option: (A:*) → * :=
+                  (none: () → option A)
+                  (some: A → option A)
+
+             enum product: (A:*) → (B:*) → * :=
+                  (make: (a:A) → (b:B) → prod A B)
+
+             enum sum: (A:*) → (B:*) → * :=
+                  (make: (a:A) → (b:B) → sum A B)
+
+             enum nat: * :=
+                  (zero: () → nat)
+                  (succ: nat → nat)
+
+             enum list: (A:*) → * :=
+                  (nil: () → list A)
+                  (cons: A → list A → list A)
+
+             enum vector: (A:*) → nat → * :=
+                  (nil: () → vector A)
+                  (cons: (n: nat) → A → vector A n → vector A (succ n))
+
+           record lists: (A B: *) :=
+                  (len: list A → integer)
+                  ((++): list A → list A → list A)
+                  (map: (A → B) → (list A → list B))
+                  (filter: (A → bool) → (list A → list A))
+
+           record infgraph: * :=
+                  (ob: *)
+                  (hom: ob → ob → infgraph)
+
+             enum eq: (A:*) → A → A → * :=
+                  (refl: (x:A) → eq A x x)
+
+             enum exists: (A:*) → (A → *) → * :=
+                  (exists-intro: (P: A → *) → (x:A) → P x → exists A P)
+
+           record pure (P: * → *) (A: *) :=
+                  (return: P A)
+
+           record functor (F: * → *) (A B: *) :=
+                  (fmap: (A → B) → F A → F B)
+
+           record applicative (F: * → *) (A B: *)
+           extend pure F A,
+                  functor F A B :=
+                  (ap: F (A → B) → F A → F B)
+
+           record monad (F: * → *) (A B: *)
+           extend pure F A,
+                  functor F A B :=
+                  (join: F (F A) → F B)

@@ -10,6 +10,8 @@
 
   definition unpure (x: Type) := Type → x → eff x
 
-       print unpure
+       definition a (x: Type) := prod.mk x x
+
+       print a
 
          end effects

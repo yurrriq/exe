@@ -1,0 +1,4 @@
+
+             enum nat: * :=
+                  (zero: () → nat)
+                  (succ: nat → nat)

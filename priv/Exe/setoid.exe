@@ -1,0 +1,13 @@
+    record Ob: * :=
+           (elem: *)
+           (eq: Equ elem)
+           (point: elem)
+
+    record Hom (X,Y: Ob): * :=
+           (elem: X.elem → Y.elem)
+           (eq: ∀ (x1, x2: X.elem) → X.eq x1 x2 → Y.eq (elem x1) (elem x2))
+           (point: Y.eq (elem X.point) Y.point)
+
+    record PointedSetoid :=
+           (ob: Ob)
+           (hom: λ (X,Y: ob) → Hom (X,Y))

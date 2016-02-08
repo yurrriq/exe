@@ -1,0 +1,4 @@
+
+             enum bool: * :=
+                  (true: () → bool)
+                  (false: () → bool)

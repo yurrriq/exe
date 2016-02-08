@@ -1,0 +1,4 @@
+
+             enum option: (A:*) → * :=
+                  (none: () → option A)
+                  (some: A → option A)
