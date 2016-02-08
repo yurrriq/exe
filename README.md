@@ -1,5 +1,5 @@
-Exe Checker
-===========
+Exe Language
+============
 
 Depentent Records and Inductive Constructions
 ---------------------------------------------
