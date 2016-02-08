@@ -1,5 +1,5 @@
-Exe Prover
-==========
+Exe Checker
+===========
 
 Depentent Records and Inductive Constructions
 ---------------------------------------------
