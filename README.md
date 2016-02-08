@@ -19,6 +19,7 @@ Fearures
 --------
 
 * inductive `data` and coinductive `record` dependent constructions (Exe)
+* Berrarducci encoding for (co)-inductive constructions (Exe)
 * case (pattern-matching Exe)
 * receive, send, spawn (process-calculus core Exe)
 * Pi, lambda, variables (core Om language)
