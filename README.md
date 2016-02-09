@@ -10,12 +10,11 @@ with regular Erlang `erlc` compiler and run under BEAM or LING virtual machines.
 
 <center><img src="http://5ht.co/exe.svg" width="600"></center>
 
-This labguage relies on pure Calculus of Construction with 1 axiom and four deduction rules,
+This language relies on pure Calculus of Construction with 1 axiom and four deduction rules,
 inductive `data` and coinductive `record` dependent definitions, and also impredicative
-indexed universums. Pure CoC and impredicative universums are included into the core of
-the language with reduced Exe syntax -- Om, that is able typecheck and normalize terms.
+indexed universes. Pure CoC and impredicative universes are included into the core language with reduced syntax -- [Om](https://github.com/5HT/om) -- that is able to typecheck and normalize terms.
 
-Fearures
+Features
 --------
 
 * inductive `data` and coinductive `record` dependent constructions (Exe)
