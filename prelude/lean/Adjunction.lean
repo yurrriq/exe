@@ -30,5 +30,13 @@ record RightAdj {C D : CatType} (Left : D ⟶ C) : Type :=
 abbreviation Lim (C D : CatType) := RightAdj (Cat.Delta C D)
 abbreviation Colim (C D : CatType) := LeftAdj (Cat.Delta C D)
 
-abbreviation HaveLim (D : CatType) : Type := ∀ (C : CatType), Lim C D
-abbreviation HaveColim (D : CatType) : Type := ∀ (C : CatType), Colim C D
+abbreviation HaveLimType (D : CatType) : Type := Π (C : CatType), Lim C D
+abbreviation HaveColimType (D : CatType) : Type := Π (C : CatType), Colim C D
+
+record CompleteCatType : Type :=
+    (C : CatType)
+    (Lim : HaveLimType C)
+
+record CocompleteCatType : Type :=
+    (C : CatType)
+    (Lim : HaveColimType C)
