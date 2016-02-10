@@ -19,12 +19,12 @@ record Adjunction {C D : CatType} (L : D⟶C) (R : C⟶D) : Type :=
 
 infix `⊣`:10 := Adjunction
 
-record LeftAdj {C D : CatType} (R : C⟶D) : Type :=
-    (L : D ⟶ C)
+record LeftAdj {C D : CatType} (Right : C⟶D) : Type :=
+    (Left : D ⟶ C)
     (adj : L ⊣ R)
 
-record RightAdj {C D : CatType} (L : D ⟶ C) : Type :=
-    (R : C⟶D)
+record RightAdj {C D : CatType} (Left : D ⟶ C) : Type :=
+    (Right : C⟶D)
     (adj : L ⊣ R)
 
 abbreviation Limit (C D : CatType) := RightAdj (Cat.Delta C D)
