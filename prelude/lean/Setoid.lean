@@ -82,6 +82,12 @@ abbreviation Setoid.MkHom2 (A B C : SetoidType)
     : A ⥤ B ⥤ C :=
     @Setoid.MkHom A (B ⥤ C) (λ (a : A), @Setoid.MkHom B C (@onElEl a) (@onElEqu a)) @onEquEl
 
+definition Setoid.Mul.onElEl {A B C : SetoidType} (f : B ⥤ C) (g : A ⥤ B) : A ⥤ C :=
+    Setoid.MkHom
+        ( λ (a : A), f (g a))
+        ( λ (a1 a2 : A), λ(a12 : a1 ≡_≡ a2), f (g a12) )
+
+infix `∙` : 100 := Setoid.Mul.onElEl
 
 -- TODO: Hom (pro)functor;
 -- TODO: Sigma: (B→Type) → (E→B), UnSigma: (E→B) → (B→Type)

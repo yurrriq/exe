@@ -21,11 +21,14 @@ infix `⊣`:10 := Adjunction
 
 record LeftAdj {C D : CatType} (Right : C⟶D) : Type :=
     (Left : D ⟶ C)
-    (adj : L ⊣ R)
+    (adj : Left ⊣ Right)
 
 record RightAdj {C D : CatType} (Left : D ⟶ C) : Type :=
     (Right : C⟶D)
-    (adj : L ⊣ R)
+    (adj : Left ⊣ Right)
 
-abbreviation Limit (C D : CatType) := RightAdj (Cat.Delta C D)
-abbreviation CoLimit (C D : CatType) := LeftAdj (Cat.Delta C D)
+abbreviation Lim (C D : CatType) := RightAdj (Cat.Delta C D)
+abbreviation Colim (C D : CatType) := LeftAdj (Cat.Delta C D)
+
+abbreviation HaveLim (D : CatType) : Type := ∀ (C : CatType), Lim C D
+abbreviation HaveColim (D : CatType) : Type := ∀ (C : CatType), Colim C D

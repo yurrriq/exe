@@ -55,9 +55,7 @@ namespace Setoid
     definition Mul : Cat.MulType HomSet :=
         λ(A B C : SetoidType), MkHom2
             (B⥤C) (A⥤B) (A⥤C)
-            /- onElEl -/ ( λ(f : B⥤C), λ(g : A⥤B), MkHom
-                    /- onEl -/ ( λ(a : A), f (g a))
-                    /- onEqu -/ ( λ(a1 a2 : A), λ(a12 : a1 ≡_≡ a2), f (g a12)))
+            /- onElEl -/ ( Setoid.Mul.onElEl )
             /- onElEqu -/ ( λ(f : B⥤C), λ(g1 g2 : A⥤B), λ(g12 : g1 ≡(A⥤B)≡ g2),
                     λ(a : A), f (g12 a))
             /- onEquEl -/ ( λ(f1 f2 : B⥤C), λ(f12 : f1 ≡(B⥤C)≡ f2), λ(g : A⥤B),

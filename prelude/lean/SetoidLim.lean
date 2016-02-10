@@ -3,6 +3,7 @@
 import Setoid
 import Mor
 import Functor
+import Adjunction
 
 /-
  - Definition of LIMIT in SetoidCat
@@ -32,7 +33,8 @@ namespace Setoid
             @SetoidType.Sym (F X) (a X) (b X) (ab X))
 
     definition LimMap.onElEl {C : CatType} {F G : C⟶SetoidCat}
-            : (F ⟹ G) → LimSet F → LimSet G :=
+            : (F ⟹ G) → LimSet F → LimSet G
+    :=
         λ (nat : F ⟹ G), λ(a : LimType F), Setoid.MkLim
             /- atOb -/ ( λ(X : C), (nat /$$ X) $ (a X))
             /- atHom -/ ( λ(X Y : C), λ(m : X ⇒C⇒ Y),
@@ -40,28 +42,34 @@ namespace Setoid
 
     definition LimMap.onElEqu {C : CatType} {F G : C⟶SetoidCat}
             : ∀(nat : F ⟹ G), ∀{a b : LimSet F}, (a ≡(LimSet F)≡ b) →
-                ((LimMap.onElEl nat a) ≡(LimSet G)≡ (LimMap.onElEl nat b)) :=
+                ((LimMap.onElEl nat a) ≡(LimSet G)≡ (LimMap.onElEl nat b))
+    :=
         λ (nat : F ⟹ G), λ (a b : LimSet F), λ (eq : a ≡(LimSet F)≡ b),
             λ (X : C), (nat /$$ X) $/ (eq X)
 
     definition LimMap.onEquEl {C : CatType} {F G : C⟶SetoidCat}
             : ∀{nat nat' : F ⟹ G}, ∀(eq : nat ≡(F ⟹ G)≡ nat'), ∀(a : LimSet F),
-                ((LimMap.onElEl nat a) ≡(LimSet G)≡ (LimMap.onElEl nat' a)) :=
+                ((LimMap.onElEl nat a) ≡(LimSet G)≡ (LimMap.onElEl nat' a))
+    :=
         λ (nat nat' : F ⟹ G), λ (eq : nat ≡(F ⟹ G)≡ nat'), λ (a : LimSet F),
             λ (X : C), (eq X) /$ (a X)
 
     definition LimMap {C : CatType} {F G : C⟶SetoidCat}
-        : (F ⟹ G) ⥤ (LimSet F ⥤ LimSet G) :=
+        : (F ⟹ G) ⥤ (LimSet F ⥤ LimSet G)
+    :=
         Setoid.MkHom2 (F ⟹ G) (LimSet F) (LimSet G)
             LimMap.onElEl (@LimMap.onElEqu C F G) (@LimMap.onEquEl C F G)
 
     definition LimOnId {C : CatType}
-        : Functor.OnIdProp (C⟶SetoidCat) SetoidCat (@LimSet C) (@LimMap C) :=
+        : Functor.OnIdProp (C⟶SetoidCat) SetoidCat (@LimSet C) (@LimMap C)
+    :=
         λ(F : C⟶SetoidCat), λ(lim : LimSet F), λ(X : C),
             @SetoidType.Refl (F X) (lim X)
 
     definition LimOnMul {C : CatType}
         : Functor.OnMulProp (C⟶SetoidCat) SetoidCat (@LimSet C) (@LimMap C)
+--            ∀{F G H : C⟶SetoidCat}, ∀(f : F ⟹ G), ∀(g : G ⟹ H),
+--                ((LimMap g) ⊙D⊙ (LimMap f)) ≡(LimSet F ⥤ LimSet F)≡ (LimMap (g ⊙C⊙ f))
     := sorry
 
 end Setoid
