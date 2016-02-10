@@ -62,8 +62,6 @@ namespace Setoid
 
     definition LimOnMul {C : CatType}
         : Functor.OnMulProp (C⟶SetoidCat) SetoidCat (@LimSet C) (@LimMap C)
---            ∀{F G H : C⟶SetoidCat}, ∀(f : F ⟹ G), ∀(g : G ⟹ H),
---                ((LimMap g) ⊙D⊙ (LimMap f)) ≡(LimSet F ⥤ LimSet F)≡ (LimMap (g ⊙C⊙ f))
     := λ(F G H : C⟶SetoidCat), λ(f : F ⟹ G), λ(g : G ⟹ H), λ(lim : LimSet F), λ(X : C), ⊜
 
 end Setoid
@@ -81,7 +79,22 @@ definition SetoidCatHasLim (C : CatType) : Lim C SetoidCat :=
     RightAdj.mk
         (@Setoid.Lim C)
         (Adjunction.mk
-            sorry
-            sorry
+        /- unit : 𝟙 ⟹ (Lim ⊗ Delta) -/
+            (Functor.MkHom
+            /- onOb -/    ( λ(T : SetoidCat), Setoid.MkHom
+                /- onEl -/ ( λ(t : T), Setoid.MkLim
+                    ( λ(X : C), t)
+                    ( λ(X Y : C), λ(m : X ⇒C⇒ Y), ⊜))
+                /- onEqu -/ ( λ(t1 t2 : T), λ(eq : t1 ≡(T)≡ t2), λ(X : C), eq))
+            /- onHom -/    ( λ(T T' : SetoidCat), λ(f : T ⥤ T'), λ(t : T), ⊜))
+        /- counit : (Delta ⊗ Lim) ⟹ 𝟙-/
+            (Functor.MkHom
+            /- onOb -/ ( λ(F : C⟶SetoidCat), Functor.MkHom
+                /- onOb -/ ( λ(X : C), Setoid.MkHom -- : LimSet F ⥤ (F X)
+                    /- onEl -/ ( λ(lim : Setoid.LimSet F), (lim X))
+                    /- onEqu -/ ( λ(lim lim': Setoid.LimSet F), λ(eq : lim ≡(Setoid.LimSet F)≡ lim'), eq X))
+                /- onHom -/ ( λ(X Y: C), λ(m : X ⇒C⇒ Y), sorry
+                    /- (UnitRInv (lim Y)) * (atHom lim m) -/ ))
+            /- onHom -/ sorry)
             sorry
             sorry)
