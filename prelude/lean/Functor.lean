@@ -188,17 +188,46 @@ end Delta
             (@Delta.onId C D)
             (@Delta.onMul C D)
 
-    abbreviation IsCone {C D : CatType} (X : D) (F : C ⟶ D)
-        (arrow : Π(Y : C), (X ⇒D⇒ F Y)) : Prop :=
-        ∀{A B : C}, ∀(m : A ⇒C⇒ B), (arrow B) ≡(X ⇒D⇒ F B)≡ ((F m) ⊙D⊙ (arrow A))
-
-    definition FromCone {C D : CatType} {X : D} {F : C ⟶ D} (arrow : Π(Y : C), (X ⇒D⇒ F Y))
-        (cone : IsCone X F arrow) : (Delta C D X) ⟹ F :=
-        Functor.MkHom
-        /- onOb -/ arrow
-        /- onHom -/ ( λ(A B: C), λ(m : A ⇒C⇒ B), (CatType.UnitR D (arrow B))⊡(X ⇒D⇒ F B)⊡(cone m))
-
 end Cat
+
+namespace Functor
+
+    abbreviation ConeType {C D : CatType} (X : D) (F : C ⟶ D) : Type
+    := Π(Y : C), (X ⇒D⇒ F Y)
+
+    abbreviation CoconeType {C D : CatType} (F : C ⟶ D) (X : D) : Type
+    := Π(Y : C), (F Y ⇒D⇒ X)
+
+    abbreviation IsConeProp {C D : CatType} (X : D) (F : C ⟶ D)
+        (arrow : ConeType X F) : Prop
+    := ∀{A B : C}, ∀(m : A ⇒C⇒ B),
+            (arrow B) ≡(X ⇒D⇒ F B)≡ ((F m) ⊙D⊙ (arrow A))
+
+    abbreviation IsCoconeProp {C D : CatType} (F : C ⟶ D) (X : D)
+        (arrow : CoconeType F X) : Prop
+    := ∀{A B : C}, ∀(m : A ⇒C⇒ B),
+            ((arrow B) ⊙D⊙ (F m)) ≡(F A ⇒D⇒ X)≡ (arrow A)
+
+    definition FromCone {C D : CatType} {X : D} {F : C ⟶ D}
+        (arrow : ConeType X F)
+        (cone : IsConeProp X F arrow)
+        : (Cat.Delta C D X) ⟹ F
+    := MkHom
+        /- onOb -/ arrow
+        /- onHom -/ ( λ(A B: C), λ(m : A ⇒C⇒ B),
+            (CatType.UnitR D (arrow B))⊡(X ⇒D⇒ F B)⊡(cone m))
+
+    definition FromCocone {C D : CatType} {F : C ⟶ D} {X : D}
+        (arrow : CoconeType F X)
+        (cocone : IsCoconeProp F X arrow)
+        : F ⟹ (Cat.Delta C D X)
+    := MkHom
+        /- onOb -/ arrow
+        /- onHom -/ ( λ(A B: C), λ(m : A ⇒C⇒ B),
+            (cocone m)⊡(F A ⇒D⇒ X)⊡(CatType.UnitLInv D (arrow A))
+            )
+
+end Functor
 
 -- the identity functor (1 in Cat)
 definition Cat.Id {C : CatType} : C ⟶ C := Functor.MkOb
