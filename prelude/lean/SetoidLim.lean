@@ -98,7 +98,7 @@ namespace Setoid
                 (Functor.MkHom
                 /- onOb -/ ( λ F, Cat.FromCone (Lim.projection F) (@Lim.projection.cone C F))
                 /- onHom -/ ( λ F1 F2, λ(f : F1 ⟹ F2), λ(X : C), λ(lim : LimSet F1), ⊜))
-                sorry
-                sorry)
+                ( λ(T : SetoidCat), λ(X : C), λ(t : T), ⊜ )
+                ( λ(F : C⟶SetoidCat), λ(lim : LimSet F), λ(X : C), ⊜) )
 
 end Setoid
