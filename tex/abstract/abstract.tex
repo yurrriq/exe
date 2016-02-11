@@ -1,0 +1,295 @@
+\documentclass{abstract}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage[lBrack,rBrack,llparenthesis,rrparenthesis]{stmaryrd} % for comparison with 4 similar parenthesis symbols
+\usepackage{caption}
+\usepackage{pgf}
+\usepackage{tikz-cd}
+\usepackage{mathtools}
+\usepackage[utf8]{inputenc}
+\usepackage{listingsutf8}
+
+\begin{document}
+\begin{theses}{english}
+
+\title{(Co-)Inductive Dependent Types Normal Form Representation in Pure Type System, the Calculus of Constructions}
+\author[1]{Pavlo Maslyanko}{mpp@ntu-kpi.kiev.ua}
+\author[2]{Maxim Sokhatsky}{maxim@groupoid.co}
+\author[3]{Pavlo Liutko}{liutko@groupoid.co}
+\organization[1]{Faculty of Applied Mathematics at NTUU ``KPI'', Kyiv, Ukraine}
+\organization[2]{Synrc Research Center, s.r.o, Praha, Czech Republic}
+\organization[3]{Groupoid Infinity, Inc.}
+\maketitle
+
+\begin{abstract}
+While modern ITT provers expose core axioms of inductive constructions at checker-level,
+we promote pure type system setting for inductive constructions, and we show the
+technique of Berrarducci-based encoding with an example of Setoid base object along with its theorems.
+By preserving cathegorical semantics we unveil the universal method of modeling the
+inductive construction as initial object in fibrational F,G-dialgebras (or F-algebra
+for non-dependent case) with an example of compilation to Erlang untyped lambda calculus.
+\end{abstract}
+
+\paragraph{Lambda Assembler}
+
+Intermediate language resemble both the Henk\cite{Henk} theory of PTS CoC language
+and can be tooled with its Morte\cite{morte} implementation:
+
+\begin{lstlisting}[mathescape=true]
+    E := * | $\Box$ | ( E ) | E E 
+               | $\lambda$ ( L : E ) $\rightarrow$ E 
+               | $\forall$ ( L : E ) $\rightarrow$ E
+\end{lstlisting}
+
+\paragraph{Exe Language}
+
+We extend the core PTS language with inductive {\bf data} and coinductive {\bf record} definitions.
+This constructions is used to model any type in any universe. Top level language supports
+only (co-)inductive definitions that compiles directly to CoC lambda assembler.
+
+\vspace{0.5cm}
+\begin{lstlisting}[mathescape=true]
+     I := #identifier
+     O := $\varnothing$ | ( O ) |
+          $\Box$ | $\forall$ ( I : O ) $\rightarrow$ O |
+          * | $\lambda$ ( I : O ) $\rightarrow$ O |
+          I | O $\rightarrow$ O | O O
+     L := $\varnothing$ | L I
+     A := $\varnothing$ | A ( L : O ) | A O
+     F := $\varnothing$ | F ( I : O ) | ()
+     P := I O , P | I O
+     E := $\varnothing$ | E data I : A := F
+            | E record I : A [ extend P ] := F
+\end{lstlisting}
+
+   \paragraph{Algebras}
+
+   F-Algebras gives us a categorical understanding recursive types.
+   Let $F : C \rightarrow C$ be an endofunctor on category $C$.
+   An F-algebra is a pair $(C, \phi)$, where C is an object and $\phi\ : F\ C \rightarrow C$
+   an arrow in the category C. The object C is the carrier and the functor
+   F is the signature of the algebra. Reversing arrows gives us F-Coalgebra.
+
+\begin{center}
+\begin{tabular}{lcl}
+\begin{tikzcd}
+  F\ C \arrow{d}[left]{F\ f} \arrow{r}{\varphi} & C \arrow{d}{f} \\
+  F\ D \arrow{r}{\psi} & D \end{tikzcd} & & \begin{tikzcd}
+  C \arrow{d}[left]{f} \arrow{r}{\varphi} & F\ C \arrow{d}{F\ f} \\
+  D \arrow{r}{\psi} & F\ D \end{tikzcd} \\
+  \ & \  &\  \\
+  $f \circ \varphi = \psi \circ F\ f$ & & $\psi \circ f =  F\ f \circ \varphi$ \\
+\end{tabular}
+\end{center}
+
+  \paragraph{Initial Algebras}
+
+  A F-algebra $(\mu F, in)$ is the initial F-algebra if for any F-algebra $(C, \varphi)$
+  there exists a unique arrow $\llparenthesis \varphi \rrparenthesis : \mu F \rightarrow C$ where $f = \llparenthesis \varphi \rrparenthesis$
+  and is called catamorphism. Similar a F-coalgebra $(\nu F, out)$ is the terminal
+  F-coalgebra if for any F-coalgebra $(C, \varphi)$ there exists unique arrow
+  $\llbracket \varphi \rrbracket : C \rightarrow \nu F$ where $f = 
+  \llbracket \varphi \rrbracket$
+
+\begin{center}
+\begin{tabular}{lcl}
+\begin{tikzcd}
+  F\ \mu F \arrow{d}[left]{F\ \llparenthesis \varphi \rrparenthesis} \arrow{r}{in} & \mu F \arrow{d}{\llparenthesis \varphi \rrparenthesis} \\
+  F C \arrow{r}{\varphi} & C \end{tikzcd} & & \begin{tikzcd}
+  C \arrow{d}[left]{ \llbracket \varphi \rrbracket} \arrow{r}{\phi} & F\ C\arrow{d}{F\ \llbracket \varphi \rrbracket} \\
+  \nu F \arrow{r}{out} & F \nu F\end{tikzcd} \\
+  \ & \  &\  \\
+  $f \circ in = \varphi \circ F\ f \equiv f = \llparenthesis \varphi \rrparenthesis$& &
+  $out \circ f = F\ f \circ \varphi \equiv f = \llbracket \varphi \rrbracket$ \\
+\end{tabular}
+\end{center}
+
+  \paragraph{Inductive Types}
+  There is two types of recursion: one is least fixed point (as $F_A\ X = 1 + A\times X$ or $F_A\ X = A + X\times X$),
+  in other words the recursion with a base (terminated with a bounded value), lists are trees are
+  examples of such recursive structures (so we call induction recursive sums); and the second
+  is greatest fixed point or recursion withour base (as $F_A\ X = A\times X $) --- such kind of
+  recursion on infinite lists (codata, streams, coinductive types) we can call recursive products.
+
+\begin{center}
+  Natural Numbers: $\mu\ X \rightarrow 1 + X$ \\
+  List A: $\mu\ X \rightarrow 1 + A \times X$ \\
+  Lambda calculus: $\mu\ X \rightarrow 1 + X \times X + X$ \\
+  Stream: $\nu\ X \rightarrow A \times X$ \\
+  Potentialy Infinite List A: $\nu\ X \rightarrow 1 + A \times X$ \\
+  Finite Tree: $\mu\ X \rightarrow \mu\ Y \rightarrow 1 + X \times Y = \mu\ X = List\ X$ \\
+\end{center}
+
+  \paragraph{Lists}
+  The data type of lists over a given set A can be represented as the initial algebra
+  $(\mu L_A, in)$ of the functor $L_A(X) = 1 + (A \times X)$. Denote $\mu L_A = List(A)$.
+  The constructor functions $nil: 1 \rightarrow List(A)$ and
+  $cons: A \times List(A) \rightarrow List(A)$ are defined by
+  $nil = in \circ inl$ and $cons = in \circ inr$, so $in = [nil,cons]$.
+  Given any two functions $c: 1 \rightarrow C$ and $h: A \times C \rightarrow C$,
+  the catamorphism $f = \llparenthesis [c,h] \rrparenthesis : List(A) \rightarrow C$
+  is the unique solution of the equation system:
+
+$$
+\begin{cases}
+  f \circ nil  = c \\
+  f \circ cons = h \circ (id \times f)
+\end{cases}
+$$
+
+  where $f = foldr(c,h)$. Having this the initial algebra is presented with functor
+  $\mu (1 + A \times X)$ and morphisms sum $[1 \rightarrow List(A), A \times List(A) \rightarrow List(A)]$
+  as catamorphism. Using this encdoding the base library of List will have following form:
+
+$$
+\begin{cases}
+ foldr = \llparenthesis [ f \circ nil , h] \rrparenthesis, f \circ cons = h \circ (id \times f)\\
+ len = \llparenthesis [ zero, \lambda\ a\ n \rightarrow succ\ n ] \rrparenthesis \\
+ (++) = \lambda\ xs\ ys \rightarrow \llparenthesis [ \lambda (x) \rightarrow ys, cons ] \rrparenthesis (xs) \\
+ map = \lambda\ f \rightarrow \llparenthesis [ nil, cons \circ (f \times id)] \rrparenthesis
+\end{cases}
+$$
+
+  \paragraph{Lists in Exe language}
+  
+  We encode List as usually we do in $\Pi,\Sigma$-provers.
+
+\begin{lstlisting}[mathescape=true]
+             data list: (A: *) $\rightarrow$ * :=
+                  (nil: list A)
+                  (cons: A $\rightarrow$ list A $\rightarrow$ list A)
+\end{lstlisting}
+
+$$
+\begin{cases}
+list = \lambda\ ctor \rightarrow \lambda\ cons \rightarrow \lambda\ nil \rightarrow ctor\\
+cons = \lambda\ x\ \rightarrow \lambda\ xs \rightarrow \lambda\ list \rightarrow \lambda\ cons \rightarrow\ \lambda\ nil \rightarrow cons\ x\ (xs\ list\ cons\ nil)\\
+nil = \lambda\ list \rightarrow \lambda\ cons \rightarrow \lambda\ nil \rightarrow nil\\
+\end{cases}
+$$
+
+\begin{lstlisting}[mathescape=true]
+           record lists: (A B: *) :=
+                  (len: list A $\rightarrow$ integer)
+                  ((++): list A $\rightarrow$ list A $\rightarrow$ list A)
+                  (map: (A $\rightarrow$ B) $\rightarrow$ (list A $\rightarrow$ list B))
+                  (filter: (A $\rightarrow$ bool) $\rightarrow$ (list A $\rightarrow$ list A))
+\end{lstlisting}
+$$
+\begin{cases}
+len = foldr\ (\lambda\ x\ n \rightarrow succ\ n)\ 0\\
+(++) = \lambda\ ys \rightarrow foldr\ cons\ ys\\
+map = \lambda\ f \rightarrow foldr\ (\lambda x\ xs \rightarrow cons\ (f\ x)\ xs)\ nil\\
+filter = \lambda\ p \rightarrow foldr\ (\lambda x\ xs \rightarrow if\ p\ x\ then\ cons\ x\ xs\ else\ xs)\ nil\\
+foldl = \lambda\ f\ v\ xs = foldr\ (\lambda\ xg\rightarrow\ (\lambda \rightarrow g\ (f\ a\ x)))\ id\ xs\ v\\
+\end{cases}
+$$
+
+\paragraph{Exe Prelude}
+
+We have coinductive Setoid as a base onbject to reason about.
+
+\begin{lstlisting}[mathescape=true]
+    record Ob: * :=
+           (elem: *)
+           (eq: Equ elem)
+           (point: elem)
+
+    record Hom (X Y: Ob): * :=
+           (elem: X.elem $\rightarrow$ Y.elem)
+           (eq: $\forall$ (x1, x2: X.elem) $\rightarrow$ 
+                X.eq x1 x2 $\rightarrow$ Y.eq (elem x1) (elem x2))
+           (point: Y.eq (elem X.point) Y.point)
+
+      data True: Prop :=
+           (intro: () $\rightarrow$ true)
+
+      data False: Prop := ()
+
+      data Eq: (A:*) $\rightarrow$ A $\rightarrow$ A $\rightarrow$ Prop :=
+           (refl: (x:A) $\rightarrow$ Eq A x x)
+
+    record Setoid: * :=
+           (ob: *)
+           (hom: $\forall$ (X Y: ob) $\rightarrow$ Hom X Y)
+\end{lstlisting}
+
+You can model Monad control construction by using records.
+
+\begin{lstlisting}[mathescape=true]
+    record pure: (P: * $\rightarrow$ *) $\rightarrow$ (A: *) $\rightarrow$ * :=
+           (return: P A)
+
+    record functor: (F: * $\rightarrow$ *) $\rightarrow$ (A, B: *) $\rightarrow$ * :=
+           (fmap: (A $\rightarrow$ B) $\rightarrow$ F A $\rightarrow$ F B)
+
+    record applicative: (F: * $\rightarrow$ *) $\rightarrow$ (A, B: *) $\rightarrow$ *
+    extend pure F A, functor F A B :=
+           (ap: F (A $\rightarrow$ B) $\rightarrow$ F A $\rightarrow$ F B)
+
+    record monad: (F: * $\rightarrow$ *) $\rightarrow$ (A, B: *) $\rightarrow$ *
+    extend pure F A, functor F A B :=
+           (join: F (F A) $\rightarrow$ F B)
+\end{lstlisting}
+
+
+\newpage
+\paragraph{Lambda Assembler}
+
+One List/Type constructor and two List constructors Cons and Nil.
+
+\begin{lstlisting}[mathescape=true]
+  $\lambda$ (a: *)
+$\rightarrow$ $\forall$ (List: *)
+$\rightarrow$ $\forall$ (Cons:
+    $\forall$ (head: a)
+  $\rightarrow$ $\forall$ (tail: List)
+  $\rightarrow$ List)
+$\rightarrow$ $\forall$ (Nil: List)
+$\rightarrow$ List
+
+  $\lambda$ (a: *)
+$\rightarrow$ $\lambda$ (head: a)
+$\rightarrow$ $\lambda$ (tail:
+    $\forall$ (List: *)
+  $\rightarrow$ $\forall$ (Cons:
+      $\forall$ (head: a)
+    $\rightarrow$ $\forall$ (tail: List)
+    $\rightarrow$ List)
+  $\rightarrow$ $\forall$ (Nil: List)
+  $\rightarrow$ List)
+$\rightarrow$ $\lambda$ (List: *)
+$\rightarrow$ $\lambda$ (Cons:
+    $\forall$ (head: a)
+  $\rightarrow$ $\forall$ (tail: List)
+  $\rightarrow$ List)
+$\rightarrow$ $\lambda$ (Nil: List)
+$\rightarrow$ Cons head (tail List Cons Nil)
+
+  $\lambda$ (a: *)
+$\rightarrow$ $\lambda$ (List: *)
+$\rightarrow$ $\lambda$ (Cons:
+    $\forall$ (head: a)
+  $\rightarrow$ $\forall$ (tail: List)
+    $\rightarrow$ List)
+$\rightarrow$ $\lambda$ (Nil: List)
+$\rightarrow$ Nil
+
+\end{lstlisting}
+
+\paragraph{Erlang}
+
+Result Language.
+
+\begin{lstlisting}[mathescape=true]
+
+ ap(Fun,Args) -> lists:foldl(fun(X,Acc) -> Acc(X) end,Fun,Args).
+
+ list () -> fun (List) -> fun (Cons) -> fun (Nil) -> List end end end.
+ nil  () -> fun (Cons) -> fun (Nil) -> Nil end end.
+ cons () -> fun (A) -> fun (List) -> fun (Cons) -> fun (Nil) -> 
+            ap(Cons,[A,ap(List,[Cons,Nil])]) end end end end.
+\end{lstlisting}
+
+\end{theses}
+\end{document}

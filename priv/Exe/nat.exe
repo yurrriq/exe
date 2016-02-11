@@ -1,4 +1,4 @@
 
-             enum nat: * :=
+             data nat: * :=
                   (zero: () → nat)
                   (succ: nat → nat)

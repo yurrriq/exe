@@ -643,6 +643,30 @@ $$
 
 \newpage
 
+  \section{Exe Language}
+
+\begin{lstlisting}[mathescape=true]
+ I := #identifier
+
+     O := $\varnothing$ | ( O ) |
+          $\Box$ | $\forall$ ( I : O ) $\rightarrow$ O |
+          * | $\lambda$ ( I : O ) $\rightarrow$ O |
+          I | O $\rightarrow$ O | O O
+
+     L := $\varnothing$ | L I
+    
+     A := $\varnothing$ | A ( L : O ) | A O
+
+     F := $\varnothing$ | F ( I : O ) | ()
+     
+     P := I O , P | I O
+
+     E := $\varnothing$ | E data I : A := F
+            | E record I : A [ extend P ] := F
+\end{lstlisting}
+
+\newpage
+
   \section{Intermediate Language}
 \vspace{1cm}
 
@@ -651,15 +675,10 @@ $$
    Om resemble both the Henk theory of pure type system and $\lambda C$ calculus of constructions
    and Morte Core Specification
 
-\begin{lstlisting}
-    EXPR :=                     EXPR             EXPR 
-          | "\"   "(" LABEL ":" EXPR ")" "arrow" EXPR 
-          | "\/"  "(" LABEL ":" EXPR ")" "arrow" EXPR 
-          |                     EXPR     "arrow" EXPR 
-          |           LABEL                           
-          | "*"                                       
-          | "[]"                                      
-          |       "("           EXPR ")"              
+\begin{lstlisting}[mathescape=true]
+    E := * | $\Box$ | ( E ) | E E 
+               | $\lambda$ ( L : E ) $\rightarrow$ E 
+               | $\forall$ ( L : E ) $\rightarrow$ E
 \end{lstlisting}
 
 During forward pass we stack applications (except typevars), then
@@ -678,18 +697,79 @@ where typevar(x) is an introduction of variable "x" to the Gamma context.
                   $lambda: arrow\ (app\ (typevar\ x)\ ,\ A)\ B$ \\
 \end{center}
 
-
    \subsection{Abstract Syntax Tree}
 
-\begin{center}
-\begin{tabular}{lcl}
-      $E$ & :=& $K$ \\
-          & | & $x$ \\
-          & | & $E E$ \\
-          & | & $\lambda (x: E) \rightarrow E$ \\
-          & | & $\Pi (x: E) \rightarrow E$ \\
-\end{tabular}
-\end{center}
+\begin{lstlisting}[mathescape=true]
+  data om: * := 
+       (star: () $\rightarrow$ om)
+       (box: () $\rightarrow$ om)
+       (var: name $\rightarrow$ om)
+       (app: om $\rightarrow$ om $\rightarrow$ om)
+       (lambda: name $\rightarrow$ om $\rightarrow$ om $\rightarrow$ om)                      
+       (pi: name $\rightarrow$ om $\rightarrow$ om $\rightarrow$ om)
+\end{lstlisting}
+
+\newpage
+
+   \section{Sample Translation}
+
+   \subsection{List Exe}
+\begin{lstlisting}[mathescape=true]
+        inductive list: (A: *) $\rightarrow$ * :=
+                  (nil: list A)
+                  (cons: A $\rightarrow$ list A $\rightarrow$ list A)
+\end{lstlisting}
+
+
+   \subsection{List Om}
+\begin{lstlisting}[mathescape=true]
+  $\lambda$ (a: *)
+$\rightarrow$ $\forall$ (List: *)
+$\rightarrow$ $\forall$ (Cons:
+    $\forall$ (head: a)
+  $\rightarrow$ $\forall$ (tail: List)
+  $\rightarrow$ List)
+$\rightarrow$ $\forall$ (Nil: List)
+$\rightarrow$ List
+
+  $\lambda$ (a: *)
+$\rightarrow$ $\lambda$ (head: a)
+$\rightarrow$ $\lambda$ (tail:
+    $\forall$ (List: *)
+  $\rightarrow$ $\forall$ (Cons:
+      $\forall$ (head: a)
+    $\rightarrow$ $\forall$ (tail: List)
+    $\rightarrow$ List)
+  $\rightarrow$ $\forall$ (Nil: List)
+  $\rightarrow$ List)
+$\rightarrow$ $\lambda$ (List: *)
+$\rightarrow$ $\lambda$ (Cons:
+    $\forall$ (head: a)
+  $\rightarrow$ $\forall$ (tail: List)
+  $\rightarrow$ List)
+$\rightarrow$ $\lambda$ (Nil: List)
+$\rightarrow$ Cons head (tail List Cons Nil)
+
+  $\lambda$ (a: *)
+$\rightarrow$ $\lambda$ (List: *)
+$\rightarrow$ $\lambda$ (Cons:
+    $\forall$ (head: a)
+  $\rightarrow$ $\forall$ (tail: List)
+    $\rightarrow$ List)
+$\rightarrow$ $\lambda$ (Nil: List)
+$\rightarrow$ Nil
+
+\end{lstlisting}
+
+\begin{lstlisting}[mathescape=true]
+
+ ap(Fun,Args) -> lists:foldl(fun(X,Acc) -> Acc(X) end,Fun,Args).
+
+ list () -> fun (List) -> fun (Cons) -> fun (Nil) -> List end end end.
+ nil  () -> fun (Cons) -> fun (Nil) -> Nil end end.
+ cons () -> fun (A) -> fun (List) -> fun (Cons) -> fun (Nil) -> 
+            ap(Cons,[A,ap(List,[Cons,Nil])]) end end end end.
+\end{lstlisting}
 
 \newpage
 
@@ -698,24 +778,24 @@ where typevar(x) is an introduction of variable "x" to the Gamma context.
 \paragraph{}
 
 \begin{lstlisting}[mathescape=true]
-             enum unit: * :=
+             data unit: * :=
                   (make: () $\rightarrow$ unit)
 
-             enum bool: * :=
+             data bool: * :=
                   (true: () $\rightarrow$ bool)
                   (false: () $\rightarrow$ bool)
 
-             enum option: (A:*) $\rightarrow$ * :=
+             data option: (A:*) $\rightarrow$ * :=
                   (none: () $\rightarrow$ option A)
                   (some: A $\rightarrow$ option A)
 
-             enum product: (A:*) $\rightarrow$ (B:*) $\rightarrow$ * :=
+             data product: (A:*) $\rightarrow$ (B:*) $\rightarrow$ * :=
                   (make: (a:A) $\rightarrow$ (b:B) $\rightarrow$ prod A B)
 
-             enum sum: (A:*) $\rightarrow$ (B:*) $\rightarrow$ * :=
+             data sum: (A:*) $\rightarrow$ (B:*) $\rightarrow$ * :=
                   (make: (a:A) $\rightarrow$ (b:B) -> sum A B)
 
-             enum list: (A:*) $\rightarrow$ * :=
+             data list: (A:*) $\rightarrow$ * :=
                   (nil: () $\rightarrow$ list A)
                   (cons: A $\rightarrow$ list A $\rightarrow$ list A)
 
@@ -725,10 +805,10 @@ where typevar(x) is an introduction of variable "x" to the Gamma context.
                   (map: (A $\rightarrow$ B) $\rightarrow$ (list A $\rightarrow$ list B))
                   (filter: (A $\rightarrow$ bool) $\rightarrow$ (list A $\rightarrow$ list A))
 
-             enum eq: (A:*) $\rightarrow$ A $\rightarrow$ A $\rightarrow$ * :=
+             data eq: (A:*) $\rightarrow$ A $\rightarrow$ A $\rightarrow$ * :=
                   (refl: (x:A) $\rightarrow$ eq A x x)
 
-             enum exists: (A:*) $\rightarrow$ (A $\rightarrow$ *) $\rightarrow$ * :=
+             data exists: (A:*) $\rightarrow$ (A $\rightarrow$ *) $\rightarrow$ * :=
                   (exists-intro: (P: A $\rightarrow$ *) $\rightarrow$ (x:A) $\rightarrow$ P x $\rightarrow$ exists A P)
 
            record pure (P: * $\rightarrow$ *) (A: *) :=

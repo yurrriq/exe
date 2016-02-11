@@ -1,0 +1,9 @@
+
+   -- we can use data or record to define case/receive constructions
+   
+        --   record case: * := (cond: bool) (false: om) (true: om)
+               data case: * := (intro: bool → om → om → case)
+
+               data receive: * :=
+                    (intro: bool → om → om → receive)
+
