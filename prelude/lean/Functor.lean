@@ -188,6 +188,16 @@ end Delta
             (@Delta.onId C D)
             (@Delta.onMul C D)
 
+    abbreviation IsCone {C D : CatType} (X : D) (F : C ⟶ D)
+        (arrow : Π(Y : C), (X ⇒D⇒ F Y)) : Prop :=
+        ∀{A B : C}, ∀(m : A ⇒C⇒ B), (arrow B) ≡(X ⇒D⇒ F B)≡ ((F m) ⊙D⊙ (arrow A))
+
+    definition FromCone {C D : CatType} {X : D} {F : C ⟶ D} (arrow : Π(Y : C), (X ⇒D⇒ F Y))
+        (cone : IsCone X F arrow) : (Delta C D X) ⟹ F :=
+        Functor.MkHom
+        /- onOb -/ arrow
+        /- onHom -/ ( λ(A B: C), λ(m : A ⇒C⇒ B), (CatType.UnitR D (arrow B))⊡(X ⇒D⇒ F B)⊡(cone m))
+
 end Cat
 
 -- the identity functor (1 in Cat)

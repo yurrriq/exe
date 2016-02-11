@@ -64,37 +64,41 @@ namespace Setoid
         : Functor.OnMulProp (C⟶SetoidCat) SetoidCat (@LimSet C) (@LimMap C)
     := λ(F G H : C⟶SetoidCat), λ(f : F ⟹ G), λ(g : G ⟹ H), λ(lim : LimSet F), λ(X : C), ⊜
 
+    definition Lim.diagonal (C : CatType) (T : SetoidCat)
+        : T ⥤ LimSet (Cat.Delta C SetoidCat T)
+    := Setoid.MkHom
+        /- onEl -/ ( λ(t : T), Setoid.MkLim
+            /- atOb -/ ( λ(X : C), t)
+            /- atHom -/ ( λ(X Y : C), λ(m : X ⇒C⇒ Y), ⊜))
+        /- onEqu -/ ( λ(t1 t2 : T), λ(eq : t1 ≡(T)≡ t2), λ(X : C), eq)
+
+    definition Lim.projection {C : CatType} (F : C⟶SetoidCat) (X : C)
+        : LimSet F ⥤ (F X)
+    := Setoid.MkHom
+        /- onEl -/ ( λ(lim : Setoid.LimSet F), (lim X))
+        /- onEqu -/ ( λ(lim lim': Setoid.LimSet F),
+            λ(eq : lim ≡(Setoid.LimSet F)≡ lim'), eq X)
+
+    definition Lim.projection.cone {C : CatType} (F : C⟶SetoidCat)
+        : Cat.IsCone (LimSet F) F (Lim.projection F)
+    := λ(A B : C), λ(m : A ⇒C⇒ B), λ(lim : LimSet F), lim m
+
+    -- limit in SetoidCat
+    definition Lim {C : CatType}
+        : (C⟶SetoidCat)⟶SetoidCat
+    := Functor.MkOb (@LimSet C) (@LimMap C) (@LimOnId C) (@LimOnMul C)
+
+    definition HasLim : HaveAllLim SetoidCat  :=
+        λ(C : CatType), RightAdj.mk
+            (@Setoid.Lim C)
+            (Adjunction.mk
+                (Functor.MkHom
+                /- onOb -/ ( Setoid.Lim.diagonal C )
+                /- onHom -/ ( λ(T T' : SetoidCat), λ(f : T ⥤ T'), λ(t : T), ⊜))
+                (Functor.MkHom
+                /- onOb -/ ( λ F, Cat.FromCone (Lim.projection F) (@Lim.projection.cone C F))
+                /- onHom -/ sorry)
+                sorry
+                sorry)
+
 end Setoid
-
--- limit in SetoidCat
-definition Setoid.Lim {C : CatType}
-    : (C⟶SetoidCat)⟶SetoidCat :=
-    Functor.MkOb
-        (@Setoid.LimSet C)
-        (@Setoid.LimMap C)
-        (@Setoid.LimOnId C)
-        (@Setoid.LimOnMul C)
-
-definition SetoidCatHasLim (C : CatType) : Lim C SetoidCat :=
-    RightAdj.mk
-        (@Setoid.Lim C)
-        (Adjunction.mk
-        /- unit : 𝟙 ⟹ (Lim ⊗ Delta) -/
-            (Functor.MkHom
-            /- onOb -/    ( λ(T : SetoidCat), Setoid.MkHom
-                /- onEl -/ ( λ(t : T), Setoid.MkLim
-                    ( λ(X : C), t)
-                    ( λ(X Y : C), λ(m : X ⇒C⇒ Y), ⊜))
-                /- onEqu -/ ( λ(t1 t2 : T), λ(eq : t1 ≡(T)≡ t2), λ(X : C), eq))
-            /- onHom -/    ( λ(T T' : SetoidCat), λ(f : T ⥤ T'), λ(t : T), ⊜))
-        /- counit : (Delta ⊗ Lim) ⟹ 𝟙-/
-            (Functor.MkHom
-            /- onOb -/ ( λ(F : C⟶SetoidCat), Functor.MkHom
-                /- onOb -/ ( λ(X : C), Setoid.MkHom -- : LimSet F ⥤ (F X)
-                    /- onEl -/ ( λ(lim : Setoid.LimSet F), (lim X))
-                    /- onEqu -/ ( λ(lim lim': Setoid.LimSet F), λ(eq : lim ≡(Setoid.LimSet F)≡ lim'), eq X))
-                /- onHom -/ ( λ(X Y: C), λ(m : X ⇒C⇒ Y), sorry
-                    /- (UnitRInv (lim Y)) * (atHom lim m) -/ ))
-            /- onHom -/ sorry)
-            sorry
-            sorry)
