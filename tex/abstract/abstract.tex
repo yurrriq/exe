@@ -26,9 +26,28 @@ While modern ITT provers expose core axioms of inductive constructions at checke
 we promote pure type system setting for inductive constructions, and we show the
 technique of Berrarducci-based encoding with an example of Setoid base object along with its theorems.
 By preserving cathegorical semantics we unveil the universal method of modeling the
-inductive construction as initial object in fibrational F,G-dialgebras (or F-algebra
+inductive construction as initial object in categories of fibrational F,G-dialgebras (or F-algebra
 for non-dependent case) with an example of compilation to Erlang untyped lambda calculus.
 \end{abstract}
+
+\paragraph{Motivation}
+
+In modern ITT theorem provers (Lean, Coq, Agda, Idris) you may find inside typechecker core more that
+single axiom of *0 : *1, such as fixpoint axiom, axioms for inductive definitions or recursors.
+We are trying to avoid this practice and encode execution stream within the pure calculus.
+The universes extension axiom is more general, states that *[n] : *[n+1]. This only axiom and four
+rules of lambda with dependent types are taken as core language. Thus no recursion,
+no effects (they will be modelled with inductive free monad type), only recursive type definitions are allowed.
+Having small core typechecker we can reason on it more easily, disabling recursion gives
+us full term normalization. Small provable compiler core unveils the door for joyful metacircularity.
+
+By simplifying and reducing the target language we simplify one to one compilation to untyped
+lambda languages such as JavaScript, Erlang and others. Moreover the physical representation
+of FPGA elements allows here too structure preserving transformations. We use this technique to prototype
+ Martin-Löf type system in Erlang along with its language Exe and its prelude.
+The system is supposed in future to be capable with modeling of HoTT by providing infinity-groupoids in the base library.
+
+This article will show your some details of Exe prelude and give you full guide on path of inductive List compilation.
 
 \paragraph{Lambda Assembler}
 
@@ -214,41 +233,23 @@ We have coinductive Setoid as a base onbject to reason about.
            (hom: $\forall$ (X Y: ob) $\rightarrow$ Hom X Y)
 \end{lstlisting}
 
-You can model Monad control construction by using records.
-
-\begin{lstlisting}[mathescape=true]
-    record pure: (P: * $\rightarrow$ *) $\rightarrow$ (A: *) $\rightarrow$ * :=
-           (return: P A)
-
-    record functor: (F: * $\rightarrow$ *) $\rightarrow$ (A, B: *) $\rightarrow$ * :=
-           (fmap: (A $\rightarrow$ B) $\rightarrow$ F A $\rightarrow$ F B)
-
-    record applicative: (F: * $\rightarrow$ *) $\rightarrow$ (A, B: *) $\rightarrow$ *
-    extend pure F A, functor F A B :=
-           (ap: F (A $\rightarrow$ B) $\rightarrow$ F A $\rightarrow$ F B)
-
-    record monad: (F: * $\rightarrow$ *) $\rightarrow$ (A, B: *) $\rightarrow$ *
-    extend pure F A, functor F A B :=
-           (join: F (F A) $\rightarrow$ F B)
-\end{lstlisting}
-
-
 \newpage
 \paragraph{Lambda Assembler}
 
 One List/Type constructor and two List constructors Cons and Nil.
 
-\begin{lstlisting}[mathescape=true]
-  $\lambda$ (a: *)
+%\begin{lstlisting}[mathescape=true]
+
+\paragraph{List}: $\lambda$ (a: *)
 $\rightarrow$ $\forall$ (List: *)
 $\rightarrow$ $\forall$ (Cons:
     $\forall$ (head: a)
   $\rightarrow$ $\forall$ (tail: List)
   $\rightarrow$ List)
 $\rightarrow$ $\forall$ (Nil: List)
-$\rightarrow$ List
+$\rightarrow$ List\\
 
-  $\lambda$ (a: *)
+\paragraph{Cons}: $\lambda$ (a: *)
 $\rightarrow$ $\lambda$ (head: a)
 $\rightarrow$ $\lambda$ (tail:
     $\forall$ (List: *)
@@ -264,9 +265,9 @@ $\rightarrow$ $\lambda$ (Cons:
   $\rightarrow$ $\forall$ (tail: List)
   $\rightarrow$ List)
 $\rightarrow$ $\lambda$ (Nil: List)
-$\rightarrow$ Cons head (tail List Cons Nil)
+$\rightarrow$ Cons head (tail List Cons Nil)\\
 
-  $\lambda$ (a: *)
+\paragraph{Nil}: $\lambda$ (a: *)
 $\rightarrow$ $\lambda$ (List: *)
 $\rightarrow$ $\lambda$ (Cons:
     $\forall$ (head: a)
@@ -275,7 +276,7 @@ $\rightarrow$ $\lambda$ (Cons:
 $\rightarrow$ $\lambda$ (Nil: List)
 $\rightarrow$ Nil
 
-\end{lstlisting}
+%\end{lstlisting}
 
 \paragraph{Erlang}
 
