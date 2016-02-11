@@ -67,8 +67,8 @@ definition Setoid.HomSet (A B : SetoidType) : SetoidType :=
     /- Sym -/ ( λ f g, λ fg, λ a, SetoidType.Sym B (fg a))
 
 definition app_set_hom_equ {A B : SetoidType} {f g : Setoid.HomType A B}
-    (eq : ∀(a : A), (f a) ≡_≡ (g a)) (a : A) : (f a) ≡_≡ (g a) :=
-    eq a
+    (eq : ∀(a : A), (f a) ≡_≡ (g a)) (a : A) : (f a) ≡_≡ (g a)
+:= eq a
 
 infixl `/$`:100 := app_set_hom_equ
 
@@ -80,7 +80,9 @@ abbreviation Setoid.MkHom2 (A B C : SetoidType)
     (onElEqu : ∀(a : A), ∀{b1 b2 : B}, ∀(e : b1 ≡_≡ b2), (onElEl a b1 ≡_≡ onElEl a b2))
     (onEquEl : ∀{a1 a2 : A}, ∀(e : a1 ≡_≡ a2), ∀(b : B), (onElEl a1 b ≡_≡ onElEl a2 b))
     : A ⥤ B ⥤ C :=
-    @Setoid.MkHom A (B ⥤ C) (λ (a : A), @Setoid.MkHom B C (@onElEl a) (@onElEqu a)) @onEquEl
+    @Setoid.MkHom A (B ⥤ C)
+        ( λ (a : A), @Setoid.MkHom B C (@onElEl a) (@onElEqu a))
+        @onEquEl
 
 definition Setoid.Mul.onElEl {A B C : SetoidType} (f : B ⥤ C) (g : A ⥤ B) : A ⥤ C :=
     Setoid.MkHom
@@ -89,10 +91,10 @@ definition Setoid.Mul.onElEl {A B C : SetoidType} (f : B ⥤ C) (g : A ⥤ B) : 
 
 infix `∙` : 100 := Setoid.Mul.onElEl
 
+definition Setoid.SingletonProp (S : SetoidType) : Prop := ∀(a b : S), a ≡_≡ b
+
 -- TODO: Hom (pro)functor;
 -- TODO: Sigma: (B→Type) → (E→B), UnSigma: (E→B) → (B→Type)
--- TODO: limits, categories with limits, initial as limit, comma categories, cats of algebras
--- TODO: adjunctions: by equations with units, by isomorphism of profunctors
+-- TODO: initial as limit, comma categories, cats of algebras
+-- TODO: adjunctions: by isomorphism of profunctors
 -- TODO: TT-like recursor, induction
-
--- print coercions
