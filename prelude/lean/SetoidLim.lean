@@ -34,10 +34,10 @@ namespace Setoid
 
     definition LimMap.onElEl {C : CatType} {F G : C⟶SetoidCat}
             : (F ⟹ G) → LimSet F → LimSet G
-    := λ (nat : F ⟹ G), λ(a : LimType F), Setoid.MkLim
-            /- atOb -/ ( λ(X : C), (nat /$$ X) $ (a X))
+    := λ (nat : F ⟹ G), λ(lim : LimType F), Setoid.MkLim
+            /- atOb -/ ( λ(X : C), (nat /$$ X) $ (lim X))
             /- atHom -/ ( λ(X Y : C), λ(m : X ⇒C⇒ Y),
-                    ((nat /$$ Y) $/ (a m)) ⊡(G Y)⊡ ((nat /$$/ m) /$ (a X)))
+                    ((nat /$$ Y) $/ (lim m)) ⊡(G Y)⊡ ((nat /$$/ m) /$ (lim X)))
 
     definition LimMap.onElEqu {C : CatType} {F G : C⟶SetoidCat}
             : ∀(nat : F ⟹ G), ∀{a b : LimSet F}, (a ≡(LimSet F)≡ b) →
@@ -97,7 +97,7 @@ namespace Setoid
                 /- onHom -/ ( λ(T T' : SetoidCat), λ(f : T ⥤ T'), λ(t : T), ⊜))
                 (Functor.MkHom
                 /- onOb -/ ( λ F, Cat.FromCone (Lim.projection F) (@Lim.projection.cone C F))
-                /- onHom -/ sorry)
+                /- onHom -/ ( λ F1 F2, λ(f : F1 ⟹ F2), λ(X : C), λ(lim : LimSet F1), ⊜))
                 sorry
                 sorry)
 
