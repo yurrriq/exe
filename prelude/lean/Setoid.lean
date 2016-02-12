@@ -93,6 +93,10 @@ infix `∙` : 100 := Setoid.Mul.onElEl
 
 definition Setoid.SingletonProp (S : SetoidType) : Prop := ∀(a b : S), a ≡_≡ b
 
+
+
+
+
 -- TODO: Hom (pro)functor;
 -- TODO: Sigma: (B→Type) → (E→B), UnSigma: (E→B) → (B→Type)
 -- TODO: initial as limit, comma categories, cats of algebras
