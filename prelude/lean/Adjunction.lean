@@ -63,10 +63,7 @@ namespace IsoOnLR
         (C D : CatType) (L : D⟶C) (R : C⟶D)
         (adj : Adj L R) (X : D) (Y : C)
         : (L X ⇒C⇒ Y) ⥤ (X ⇒D⇒ R Y)
-    := let
-            ε := Adj.counit adj,
-            η := Adj.unit adj
-        in
+    := let ε := Adj.counit adj, η := Adj.unit adj in
         Setoid.MkHom
             ( λ (f : L X ⇒C⇒ Y), (R $$/ f) ⊙D⊙ (η /$$ X))
             ( λ (f1 f2 : L X ⇒C⇒ Y), λ (eq : f1 ≡(L X ⇒C⇒ Y)≡ f2),
@@ -76,10 +73,7 @@ namespace IsoOnLR
         (C D : CatType) (L : D⟶C) (R : C⟶D)
         (adj : Adj L R) (X : D) (Y : C)
         : (X ⇒D⇒ R Y) ⥤ (L X ⇒C⇒ Y)
-    := let
-            ε := Adj.counit adj,
-            η := Adj.unit adj
-        in
+    := let ε := Adj.counit adj, η := Adj.unit adj in
         Setoid.MkHom
             ( λ (g : X ⇒D⇒ R Y), (ε /$$ Y) ⊙C⊙ (L $$/ g))
             ( λ (g1 g2 : X ⇒D⇒ R Y), λ (eq : g1 ≡(X ⇒D⇒ R Y)≡ g2),
@@ -102,7 +96,6 @@ namespace IsoOnLR
         : let ε := Adj.counit adj, η := Adj.unit adj in
         ((R $$/ ((ε /$$ Y) ⊙C⊙ (L $$/ g))) ⊙D⊙ (η /$$ X)) ≡(X ⇒C⇒ R Y)≡ g
     := sorry
-
 end IsoOnLR
 
     definition IsoOnLR
@@ -115,5 +108,4 @@ end IsoOnLR
             (@IsoOnLR.RtoL C D L R adj X Y)
             (@IsoOnLR.LeqL C D L R adj X Y)
             (@IsoOnLR.ReqR C D L R adj X Y)
-
 end Adjunction
