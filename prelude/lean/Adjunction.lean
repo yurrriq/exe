@@ -92,7 +92,7 @@ namespace IsoOnLR
 
     definition ReqR
         (C D : CatType) (L : D⟶C) (R : C⟶D)
-        (adj : Adj L R) (X : D) (Y : C) (g : X ⇒C⇒ R Y)
+        (adj : Adj L R) (X : D) (Y : C) (g : X ⇒D⇒ R Y)
         : let ε := Adj.counit adj, η := Adj.unit adj in
         ((R $$/ ((ε /$$ Y) ⊙C⊙ (L $$/ g))) ⊙D⊙ (η /$$ X)) ≡(X ⇒D⇒ R Y)≡ g
     := sorry
