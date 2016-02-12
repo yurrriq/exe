@@ -159,7 +159,6 @@ namespace Setoid
 end Setoid
 
 namespace Cat
-
     definition FromSet (S : SetoidType) : CatType :=
         let Hom (x y : S) : SetoidType := Setoid.FromType (x ≡S≡ y) in
         Cat.MkOb
@@ -174,5 +173,17 @@ namespace Cat
             /- UnitL -/ ( λ x y, λ f, true.intro)
             /- UnitR -/ ( λ x y, λ f, true.intro)
             /- Assoc -/ ( λ x y z t, λ f g h, true.intro)
-
 end Cat
+
+namespace CatType
+    record IsoHom (C : CatType) (A B : C) : Type :=
+        (AtoB : A ⇒C⇒ B)
+        (BtoA : B ⇒C⇒ A)
+        (atA : (BtoA ⊙C⊙ AtoB) ≡(A ⇒C⇒ A)≡ ①)
+        (atB : (AtoB ⊙C⊙ BtoA) ≡(B ⇒C⇒ B)≡ ①)
+    abbreviation MkIso {C : CatType} {A B : C} := @IsoHom.mk C A B
+end CatType
+
+notation a `⇐` C `⇒` b := CatType.IsoHom C a b
+
+infix `⇔`:10 := CatType.IsoHom SetoidCat

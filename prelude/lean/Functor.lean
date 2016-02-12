@@ -18,10 +18,10 @@ namespace Functor
         definition OnIdInvProp : Prop :=
             ∀{X : C}, ① ≡(onOb X ⇒D⇒ onOb X)≡ (onHom ①)
         definition OnMulProp : Prop :=
-            ∀{X Y Z : C}, ∀(f : X ⇒C⇒ Y), ∀(g : Y ⇒C⇒ Z),
+            ∀{X Y Z : C}, ∀(g : Y ⇒C⇒ Z), ∀(f : X ⇒C⇒ Y),
                 (onHom (g ⊙C⊙ f)) ≡(onOb X ⇒D⇒ onOb Z)≡ ((onHom g) ⊙D⊙ (onHom f))
         definition OnMulInvProp : Prop :=
-            ∀{X Y Z : C}, ∀(f : X ⇒C⇒ Y), ∀(g : Y ⇒C⇒ Z),
+            ∀{X Y Z : C}, ∀(g : Y ⇒C⇒ Z), ∀(f : X ⇒C⇒ Y),
                 ((onHom g) ⊙D⊙ (onHom f)) ≡(onOb X ⇒D⇒ onOb Z)≡ (onHom (g ⊙C⊙ f))
     end withOnHom
 end Functor
@@ -59,11 +59,11 @@ definition cat_hom.onSquare {C D : CatType} (F : FunctorType C D)
         {mx1 : X11 ⇒C⇒ X21} {mx2 : X12 ⇒C⇒ X22}
     (sq : Mor.SquareProp C m1x m2x mx1 mx2)
     : Mor.SquareProp D (F m1x) (F m2x) (F mx1) (F mx2) :=
-    (FunctorType.onMulInv F m1x mx2)
+    (FunctorType.onMulInv F mx2 m1x)
         ⊡((F X11) ⇒D⇒ (F X22))⊡
             (F $$// sq)
         ⊡((F X11) ⇒D⇒ (F X22))⊡
-    (FunctorType.onMul F mx1 m2x)
+    (FunctorType.onMul F m2x mx1)
 attribute cat_hom.onSquare [coercion]
 infixl `$$///`:100 := cat_hom.onSquare
 
@@ -154,7 +154,7 @@ namespace Delta
             /- onOb -/ ( λ(c : C), d)
             /- onHom -/ ( λ(c1 c2 : C), Setoid.Const (c1 ⇒C⇒ c2) (d ⇒D⇒ d) ① )
             /- onId -/ ( λ(c : C), ⊜)
-            /- onMul -/ ( λ(c1 c2 c3 : C), λ(f : c1 ⇒C⇒ c2), λ(g : c2 ⇒C⇒ c3),
+            /- onMul -/ ( λ(c1 c2 c3 : C), λ(g : c2 ⇒C⇒ c3), λ(f : c1 ⇒C⇒ c2),
                 CatType.UnitCInv D)
 
     definition onHom.onEl {d1 d2 : D} (f : d1 ⇒D⇒ d2)
@@ -176,7 +176,7 @@ namespace Delta
         λ (d : D), λ (c : C), ⊜
 
     definition onMul : Functor.OnMulProp D (C ⟶ D) (@onOb C D) (@onHom C D) :=
-        λ(d1 d2 d3 : D), λ(f : d1 ⇒D⇒ d2), λ(g : d2 ⇒D⇒ d3), λ (c : C), ⊜
+        λ(d1 d2 d3 : D), λ(g : d2 ⇒D⇒ d3), λ(f : d1 ⇒D⇒ d2), λ (c : C), ⊜
 
   end withCD
 end Delta
@@ -234,7 +234,7 @@ definition Cat.Id {C : CatType} : C ⟶ C := Functor.MkOb
     /- onOb -/ ( λ(X : C), X)
     /- onHom -/ ( λ(X Y : C), Setoid.Id)
     /- onId -/ ( λ(X : C), ⊜)
-    /- onMul -/ ( λ(X Y Z : C), λ(f : X ⇒C⇒ Y), λ(g : Y ⇒C⇒ Z), ⊜)
+    /- onMul -/ ( λ(X Y Z : C), λ(g : Y ⇒C⇒ Z), λ(f : X ⇒C⇒ Y), ⊜)
 
 notation `𝟙` := Cat.Id
 
@@ -250,10 +250,10 @@ definition Cat.MulFF {C D E : CatType} (F : D ⟶ E) (G : C ⟶ D)
             (F (@FunctorType.onId C D G X))
                 ⊡((F (G X)) ⇒E⇒ (F (G X)))⊡
             (@FunctorType.onId D E F (G X)))
-        /- onMul -/ ( λ(X Y Z : C), λ(f : X ⇒C⇒ Y), λ(g : Y ⇒C⇒ Z),
-            (F (@FunctorType.onMul C D G X Y Z f g))
+        /- onMul -/ ( λ(X Y Z : C), λ(g : Y ⇒C⇒ Z), λ(f : X ⇒C⇒ Y),
+            (F (@FunctorType.onMul C D G X Y Z g f))
                 ⊡((F (G X)) ⇒E⇒ (F (G Z)))⊡
-            (@FunctorType.onMul D E F (G X) (G Y) (G Z) (G f) (G g)))
+            (@FunctorType.onMul D E F (G X) (G Y) (G Z) (G g) (G f)))
 
 notation F `⊗` G := Cat.MulFF F G
 

@@ -17,7 +17,7 @@ namespace Mor
     variable (C : CatType)
 
     -- commutative squares
-    definition SquareProp {X11 X12 X21 X22 : C}
+    abbreviation SquareProp {X11 X12 X21 X22 : C}
         (m1x : X11 ⇒C⇒ X12) (m2x : X21 ⇒C⇒ X22)
         (mx1 : X11 ⇒C⇒ X21) (mx2 : X12 ⇒C⇒ X22)
             : Prop :=
@@ -34,20 +34,13 @@ namespace Mor
             {ma2 : X12 ⇒C⇒ X22} {mb2 : X22 ⇒C⇒ X32}
             (sq12 : SquareProp C m1x m2x ma1 ma2)
             (sq23 : SquareProp C m2x m3x mb1 mb2)
-        --check CatType.Assoc C mb2 ma2 m1x
-        --check hom_and_eq C mb2 sq12
-        --check CatType.Assoc C mb2 m2x ma1
-        --check eq_and_hom C sq23 ma1
-        --check CatType.Assoc C m3x mb1 ma1
-        definition SquareMul1 : SquareProp C m1x m3x (mb1 ⊙C⊙ ma1) (mb2 ⊙C⊙ ma2) :=
-            ((((CatType.Assoc C mb2 ma2 m1x)
-                ⊡(X11 ⇒C⇒ X32)⊡
-            (hom_and_eq C mb2 sq12))
-                ⊡(X11 ⇒C⇒ X32)⊡
-            (CatType.AssocInv C mb2 m2x ma1))
-                ⊡(X11 ⇒C⇒ X32)⊡
-            (eq_and_hom C sq23 ma1))
-                ⊡(X11 ⇒C⇒ X32)⊡
+        definition SquareMul1
+            : SquareProp C m1x m3x (mb1 ⊙C⊙ ma1) (mb2 ⊙C⊙ ma2)
+        :=
+            (CatType.Assoc C mb2 ma2 m1x) ⊡_⊡
+            (hom_and_eq C mb2 sq12) ⊡_⊡
+            (CatType.AssocInv C mb2 m2x ma1) ⊡_⊡
+            (eq_and_hom C sq23 ma1) ⊡_⊡
             (CatType.Assoc C m3x mb1 ma1)
     end forMul1
 

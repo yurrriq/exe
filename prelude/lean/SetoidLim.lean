@@ -65,7 +65,7 @@ namespace Lim
 
     definition OnMul {C : CatType}
         : Functor.OnMulProp (C⟶SetoidCat) SetoidCat (@LimSet C) (@onHom C)
-    := λ(F G H : C⟶SetoidCat), λ(f : F ⟹ G), λ(g : G ⟹ H), λ(lim : LimSet F), λ(X : C), ⊜
+    := λ(F G H : C⟶SetoidCat), λ(g : G ⟹ H), λ(f : F ⟹ G), λ(lim : LimSet F), λ(X : C), ⊜
 
     definition diagonal (C : CatType) (T : SetoidCat)
         : T ⥤ LimSet (Cat.Delta C SetoidCat T)
