@@ -38,12 +38,12 @@ We are trying to avoid this practice and encode execution stream within the pure
 The universes extension axiom is more general, states that *[n] : *[n+1]. This only axiom and four
 rules of lambda with dependent types are taken as core language. Thus no recursion,
 no effects (they will be modelled with inductive free monad type), only recursive type definitions are allowed.
-Having small core typechecker we can reason on it more easily, disabling recursion gives
-us full term normalization. Small provable compiler core unveils the door for joyful metacircularity.
+Having small core typechecker we can reason on it more easily; disabling recursion gives
+us full term normalization; small provable compiler core unveils the door to the joyful metacircularity.
 
 By simplifying and reducing the target language we simplify one to one compilation to untyped
 lambda languages such as JavaScript, Erlang and others. Moreover the physical representation
-of FPGA elements allows here too structure preserving transformations. We use this technique to prototype
+of FPGA elements allows here structure preserving transformations too. We use this technique to prototype
  Martin-Löf type system in Erlang along with its language Exe and its prelude.
 The system is supposed in future to be capable with modeling of HoTT by providing infinity-groupoids in the base library.
 
