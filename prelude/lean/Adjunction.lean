@@ -94,7 +94,7 @@ namespace IsoOnLR
         (C D : CatType) (L : D⟶C) (R : C⟶D)
         (adj : Adj L R) (X : D) (Y : C) (g : X ⇒C⇒ R Y)
         : let ε := Adj.counit adj, η := Adj.unit adj in
-        ((R $$/ ((ε /$$ Y) ⊙C⊙ (L $$/ g))) ⊙D⊙ (η /$$ X)) ≡(X ⇒C⇒ R Y)≡ g
+        ((R $$/ ((ε /$$ Y) ⊙C⊙ (L $$/ g))) ⊙D⊙ (η /$$ X)) ≡(X ⇒D⇒ R Y)≡ g
     := sorry
 end IsoOnLR
 
