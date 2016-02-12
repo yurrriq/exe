@@ -98,3 +98,5 @@ definition Setoid.SingletonProp (S : SetoidType) : Prop := ∀(a b : S), a ≡_�
 -- TODO: initial as limit, comma categories, cats of algebras
 -- TODO: adjunctions: by isomorphism of profunctors
 -- TODO: TT-like recursor, induction
+
+-- TODO: Id(Refl) coincide with SetoidType.Equ
