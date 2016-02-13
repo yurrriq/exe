@@ -75,25 +75,39 @@ infixl `/$`:100 := app_set_hom_equ
 -- the dedicated arrow for morphisms of setoids
 infixr `⥤`:10 := Setoid.HomSet
 
-abbreviation Setoid.MkHom2 (A B C : SetoidType)
-    (onElEl : ∀(a : A), ∀(b : B), [C])
-    (onElEqu : ∀(a : A), ∀{b1 b2 : B}, ∀(e : b1 ≡_≡ b2), (onElEl a b1 ≡_≡ onElEl a b2))
-    (onEquEl : ∀{a1 a2 : A}, ∀(e : a1 ≡_≡ a2), ∀(b : B), (onElEl a1 b ≡_≡ onElEl a2 b))
-    : A ⥤ B ⥤ C :=
-    @Setoid.MkHom A (B ⥤ C)
-        ( λ (a : A), @Setoid.MkHom B C (@onElEl a) (@onElEqu a))
-        @onEquEl
+namespace Setoid
 
-definition Setoid.Mul.onElEl {A B C : SetoidType} (f : B ⥤ C) (g : A ⥤ B) : A ⥤ C :=
-    Setoid.MkHom
-        ( λ (a : A), f $ (g $ a))
-        ( λ (a1 a2 : A), λ(a12 : a1 ≡_≡ a2), f $/ (g $/ a12) )
-definition Setoid.HomEquProp {A B : SetoidType} (f g : A ⥤ B) : Prop := f ≡(A ⥤ B)≡ g
+    abbreviation MkHom2 (A B C : SetoidType)
+        (onElEl : ∀(a : A), ∀(b : B), [C])
+        (onElEqu : ∀(a : A), ∀{b1 b2 : B}, ∀(e : b1 ≡_≡ b2), (onElEl a b1 ≡_≡ onElEl a b2))
+        (onEquEl : ∀{a1 a2 : A}, ∀(e : a1 ≡_≡ a2), ∀(b : B), (onElEl a1 b ≡_≡ onElEl a2 b))
+        : A ⥤ B ⥤ C :=
+        @MkHom A (B ⥤ C)
+            ( λ (a : A), @MkHom B C (@onElEl a) (@onElEqu a))
+            @onEquEl
+
+    definition Mul.onElEl {A B C : SetoidType} (f : B ⥤ C) (g : A ⥤ B) : A ⥤ C :=
+        MkHom
+            ( λ (a : A), f $ (g $ a))
+            ( λ (a1 a2 : A), λ(a12 : a1 ≡_≡ a2), f $/ (g $/ a12) )
+    definition HomEquProp {A B : SetoidType} (f g : A ⥤ B) : Prop := f ≡(A ⥤ B)≡ g
+
+    definition SubSingletonProp (S : SetoidType) : Prop := ∀(a b : S), a ≡_≡ b
+
+    record SingletonType (S : SetoidType) : Type :=
+        (center : S)
+        (connect : ∀(s : S), center ≡S≡ s)
+
+    lemma SingletonIsSub {S : SetoidType} (ok : SingletonType S) : SubSingletonProp S :=
+        let okk := SingletonType.connect ok in
+        λ a b, (SetoidType.Sym _ (okk a)) ⊡_⊡ ((okk b))
+
+    abbreviation MkSingleton {S : SetoidType} := @SingletonType.mk S
+end Setoid
 
 infixl `∙`: 100 := Setoid.Mul.onElEl
 infix `⥰`: 10 := Setoid.HomEquProp
 
-definition Setoid.SingletonProp (S : SetoidType) : Prop := ∀(a b : S), a ≡_≡ b
 
 -- TODO: Hom (pro)functor;
 -- TODO: Sigma: (B→Type) → (E→B), UnSigma: (E→B) → (B→Type)

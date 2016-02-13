@@ -96,7 +96,7 @@ namespace Functor
 end Functor
 
 -- the dedicated arrow for morphisms of functors (nat.tr.)
-infixr `⟹`:100 := Functor.HomSet
+infixr `⟹`:10 := Functor.HomSet
 
 namespace Functor
   section withCD
@@ -259,22 +259,53 @@ definition Cat.MulFF {C D E : CatType} (F : D ⟶ E) (G : C ⟶ D)
                 ⊡((F (G X)) ⇒E⇒ (F (G Z)))⊡
             (@FunctorType.onMul D E F (G X) (G Y) (G Z) (G g) (G f)))
 
-notation F `⊗` G := Cat.MulFF F G
+notation F `⊗` G : 100 := Cat.MulFF F G
 
 definition Cat.MulFN {C D E : CatType} (F : D ⟶ E) {G1 G2 : C ⟶ D} (g : G1 ⟹ G2)
     : (F ⊗ G1) ⟹ (F ⊗ G2) := Functor.MkHom
         /- onOb -/ ( λ(X : C), (F $$/ (g /$$ X)))
         /- onHom -/ ( λ(X Y : C), λ(m : X ⇒C⇒ Y), (F $$/// (g /$$/ m)) )
 
-notation F `⊗/` g := Cat.MulFN F g
+notation F `⊗/` g : 100 := Cat.MulFN F g
 
 definition Cat.MulNF {C D E : CatType} {F1 F2 : D ⟶ E} (f : F1 ⟹ F2) (G : C ⟶ D)
     : (F1 ⊗ G) ⟹ (F2 ⊗ G) := Functor.MkHom
         /- onOb -/ ( λ(X : C), (f /$$ (G $$ X)))
         /- onHom -/ ( λ(X Y : C), λ(m : X ⇒C⇒ Y), (f /$$/ (G $$/ m)) )
 
-notation f `/⊗` G := Cat.MulNF f G
+notation f `/⊗` G : 100 := Cat.MulNF f G
 
--- check (𝟙 ⊗ 𝟙 : SetoidCat⟶SetoidCat)
+definition Cat.Assoc {C1 C2 C3 C4 : CatType}
+    (F34 : C3 ⟶ C4) (F23 : C2 ⟶ C3) (F12 : C1 ⟶ C2)
+    : ((F34 ⊗ F23) ⊗ F12) ⟹ (F34 ⊗ (F23 ⊗ F12))
+    := Functor.MkHom
+        /- onOb -/ (λ X, ①)
+        /- onHom -/ (λ X Y, λ m, Mor.SquareId1 C4 (F34 $$/ (F23 $$/ (F12 $$/ m))))
+definition Cat.AssocInv {C1 C2 C3 C4 : CatType}
+    (F34 : C3 ⟶ C4) (F23 : C2 ⟶ C3) (F12 : C1 ⟶ C2)
+    : (F34 ⊗ (F23 ⊗ F12)) ⟹ ((F34 ⊗ F23) ⊗ F12)
+    := Functor.MkHom
+        /- onOb -/ (λ X, ①)
+        /- onHom -/ (λ X Y, λ m, Mor.SquareId1 C4 (F34 $$/ (F23 $$/ (F12 $$/ m))))
+
+definition Cat.UnitL {C1 C2 : CatType} (F : C1 ⟶ C2) : (𝟙 ⊗ F) ⟹ F
+    := Functor.MkHom ( λ X, ①) (λ X Y, λ m, Mor.SquareId1 C2 (F $$/ m))
+definition Cat.UnitLInv {C1 C2 : CatType} (F : C1 ⟶ C2) : F ⟹ (𝟙 ⊗ F)
+    := Functor.MkHom ( λ X, ①) (λ X Y, λ m, Mor.SquareId1 C2 (F $$/ m))
+definition Cat.UnitR {C1 C2 : CatType} (F : C1 ⟶ C2) : (F ⊗ 𝟙) ⟹ F
+    := Functor.MkHom ( λ X, ①) (λ X Y, λ m, Mor.SquareId1 C2 (F $$/ m))
+definition Cat.UnitRInv {C1 C2 : CatType} (F : C1 ⟶ C2) : F ⟹ (F ⊗ 𝟙)
+    := Functor.MkHom ( λ X, ①) (λ X Y, λ m, Mor.SquareId1 C2 (F $$/ m))
+
+abbreviation Cat.FullEqu {C D : CatType} {F G : C ⟶ D} : EquType [F ⟹ G]
+    := SetoidType.Equ (F ⟹ G)
+
+infix `≣` : 10 := Cat.FullEqu
+
+abbreviation Cat.Wiskering {C D : CatType} {F G H : C ⟶ D}
+    (b : G ⟹ H) (a : F ⟹ G) : (F ⟹ H)
+    := b ⊙(C ⟶ D)⊙ a
+
+infixl `○` : 100 := Cat.Wiskering
 
 -- TODO: Cat.Mul, Cat,UnitorLR, Cat.Associator, Cat.TriangleLCREqu, Cat.PentagonEqu

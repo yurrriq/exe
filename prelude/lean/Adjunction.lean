@@ -36,7 +36,7 @@ definition Colim (C D : CatType) := LeftAdj (Cat.Delta C D)
 definition HaveAllColim (D : CatType) : Type := Π (C : CatType), Colim C D
 record CocompleteCatType : Type := (C : CatType) (Colim : HaveAllColim C)
 
-namespace Adjunction
+namespace Adj
 namespace IsoOnLR
 
     definition LtoR
@@ -63,7 +63,7 @@ namespace IsoOnLR
             refine (CatType.AssocInv C (ε /$$ Y) (L $$/ (R $$/ f)) (L $$/ (η /$$ X))) ⊡(L X ⇒C⇒ Y)⊡ _,
             refine (CatType.MulEH C (ε /$$/ f) (L $$/ (η /$$ X))) ⊡(L X ⇒C⇒ Y)⊡ _,
             refine (CatType.Assoc C f (ε /$$ (L $$ X)) (L $$/ (η /$$ X))) ⊡(L X ⇒C⇒ Y)⊡ _,
-            refine (CatType.MulHE C f (AdjType.triangleL adj X)) ⊡(L X ⇒C⇒ Y)⊡ _,
+            refine (CatType.MulHE C f (proof AdjType.triangleL adj X qed)) ⊡(L X ⇒C⇒ Y)⊡ _,
             refine (CatType.UnitR C f)
         end
 
@@ -94,4 +94,4 @@ end IsoOnLR
             (@IsoOnLR.LeqL C D L R adj X Y)
             (@IsoOnLR.ReqR C D L R adj X Y)
 
-end Adjunction
+end Adj
