@@ -4,6 +4,15 @@ import Setoid
 import Cat
 import Mor
 
+set_option pp.universes true
+set_option pp.metavar_args false
+universe variable o1
+universe variable h1
+universe variable o2
+universe variable h2
+universe variable o3
+universe variable h3
+
 /-
  - The category of functors
  -/
@@ -33,6 +42,7 @@ record FunctorType (C D : CatType) : Type :=
     (onId : Functor.OnIdProp C D onOb @onHom)
     (onMul : Functor.OnMulProp C D onOb @onHom)
 abbreviation Functor.MkOb {C D : CatType} := @FunctorType.mk C D
+print FunctorType
 
 abbreviation FunctorType.onIdInv {C D : CatType} (F : FunctorType C D)
     : Functor.OnIdInvProp C D (@FunctorType.onOb _ _ F) (@FunctorType.onHom _ _ F) :=
@@ -93,6 +103,7 @@ namespace Functor
             /- Refl-/ (λ f, λ X, ⊜)
             /- Trans -/ (λ f g h, λ fg gh, λ X, (fg X) ⊡(F X ⇒D⇒ G X)⊡ (gh X))
             /- Sym -/ (λ f g, λ fg, λ X, SetoidType.Sym (F X ⇒D⇒ G X) (fg X))
+    print HomSet
 end Functor
 
 -- the dedicated arrow for morphisms of functors (nat.tr.)
@@ -142,6 +153,7 @@ definition FunctorCat (C D : CatType) : CatType :=
         (FunctorType C D) (@Functor.HomSet C D)
         (@Functor.Id C D) (@Functor.Mul C D)
         (@Functor.UnitL C D) (@Functor.UnitR C D) (@Functor.Assoc C D)
+print FunctorCat
 
 -- the dedicated arrow for morphisms of categories (functors)
 infixr `⟶`:100 := FunctorCat
@@ -243,21 +255,20 @@ definition Cat.Id {C : CatType} : C ⟶ C := Functor.MkOb
 notation `𝟙` := Cat.Id
 
 -- multiplication of functors
-definition Cat.MulFF {C D E : CatType} (F : D ⟶ E) (G : C ⟶ D)
+definition Cat.MulFF {C : CatType.{o1 h1}} {D : CatType.{o2 h2}} {E : CatType.{o3 h3}}
+    (F : D ⟶ E) (G : C ⟶ D)
     : C ⟶ E := Functor.MkOb
         /- onOb -/ ( λ(X : C), (F (G X)))
         /- onHom -/ ( λ(X Y : C),
-            (@FunctorType.onHom D E F (G X) (G Y))
-                ⊙SetoidCat⊙
+            (@FunctorType.onHom D E F (G X) (G Y)) ∙
             (@FunctorType.onHom C D G X Y))
         /- onId -/ ( λ(X : C),
-            (F (@FunctorType.onId C D G X))
-                ⊡((F (G X)) ⇒E⇒ (F (G X)))⊡
+            (F (@FunctorType.onId C D G X)) ⊡((F (G X)) ⇒E⇒ (F (G X)))⊡
             (@FunctorType.onId D E F (G X)))
         /- onMul -/ ( λ(X Y Z : C), λ(g : Y ⇒C⇒ Z), λ(f : X ⇒C⇒ Y),
-            (F (@FunctorType.onMul C D G X Y Z g f))
-                ⊡((F (G X)) ⇒E⇒ (F (G Z)))⊡
+            (F (@FunctorType.onMul C D G X Y Z g f)) ⊡((F (G X)) ⇒E⇒ (F (G Z)))⊡
             (@FunctorType.onMul D E F (G X) (G Y) (G Z) (G g) (G f)))
+print Cat.MulFF
 
 notation F `⊗` G : 100 := Cat.MulFF F G
 

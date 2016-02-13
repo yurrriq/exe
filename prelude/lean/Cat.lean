@@ -9,7 +9,8 @@ universe variable u
 namespace Cat
 
     -- carrier of a category: type of morphisms
-    abbreviation HomType (Ob : Type) : Type := ∀(A B : Ob), SetoidType
+    abbreviation HomType (Ob : Type) : Type := Π(A B : Ob), SetoidType
+    print HomType
 
     -- structure of a category
     section withHom
@@ -79,6 +80,7 @@ record CatType : Type :=
     (UnitL : Cat.UnitLProp @Id @Mul)
     (UnitR : Cat.UnitRProp @Id @Mul)
     (Assoc : Cat.AssocProp @Mul)
+print CatType
 abbreviation Cat.MkOb := CatType.mk
 
 -- carrier of category

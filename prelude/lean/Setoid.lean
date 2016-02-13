@@ -34,6 +34,7 @@ record SetoidType : Type :=
     (Refl : Equ.ReflProp Equ)
     (Trans : Equ.TransProp Equ)
     (Sym : Equ.SymProp Equ)
+print SetoidType
 abbreviation Setoid.MkOb := SetoidType.mk
 
 -- carrier of setoid

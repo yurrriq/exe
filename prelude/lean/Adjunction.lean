@@ -5,19 +5,25 @@ import Cat
 import Mor
 import Functor
 
-namespace Adj
+set_option pp.universes true
+set_option pp.metavar_args false
+universe variable o1
+universe variable h1
+universe variable o2
+universe variable h2
+universe variable o3
+universe variable h3
 
+namespace Adj
     abbreviation TriangleLProp {C D : CatType} (L : D⟶C) (R : C⟶D)
         (η : 𝟙 ⟹ (R ⊗ L)) (ε : (L ⊗ R) ⟹ 𝟙) : Prop
-    := ∀ (X : D), ((ε /$$ (L $$ X)) ⊙C⊙ (L $$/ (η /$$ X))) ≡((L X) ⇒C⇒ (L X))≡ ①
-
+        := ∀ (X : D), ((ε /$$ (L $$ X)) ⊙C⊙ (L $$/ (η /$$ X))) ≡((L X) ⇒C⇒ (L X))≡ ①
     abbreviation TriangleRProp {C D : CatType} (L : D⟶C) (R : C⟶D)
         (η : 𝟙 ⟹ (R ⊗ L)) (ε : (L ⊗ R) ⟹ 𝟙) : Prop
-    := ∀ (Y : C), ((R $$/ (ε /$$ Y)) ⊙D⊙ (η /$$ (R $$ Y))) ≡((R Y) ⇒D⇒ (R Y))≡ ①
-
+        := ∀ (Y : C), ((R $$/ (ε /$$ Y)) ⊙D⊙ (η /$$ (R $$ Y))) ≡((R Y) ⇒D⇒ (R Y))≡ ①
 end Adj
 
-record AdjType {C D : CatType} (L : D⟶C) (R : C⟶D) : Type :=
+record AdjType {C : CatType.{o1 h1}} {D : CatType.{o2 h2}} (L : D⟶C) (R : C⟶D) : Type :=
     (unit : 𝟙 ⟹ (R ⊗ L) )
     (counit : (L ⊗ R) ⟹ 𝟙 )
     (triangleL : Adj.TriangleLProp L R unit counit)
@@ -35,6 +41,10 @@ record CompleteCatType : Type := (C : CatType) (Lim : HaveAllLim C)
 definition Colim (C D : CatType) := LeftAdj (Cat.Delta C D)
 definition HaveAllColim (D : CatType) : Type := Π (C : CatType), Colim C D
 record CocompleteCatType : Type := (C : CatType) (Colim : HaveAllColim C)
+
+print AdjType
+print RightAdj
+print HaveAllLim
 
 namespace Adj
 namespace IsoOnLR
