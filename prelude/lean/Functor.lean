@@ -73,12 +73,16 @@ namespace Functor
         (onOb : Π(X : C), F X ⇒D⇒ G X)
         (onHom : ∀{X Y : C}, ∀(m : X ⇒C⇒ Y), Mor.SquareProp D (F m) (G m) (onOb X) (onOb Y))
     abbreviation MkHom {C D : CatType} {F G : FunctorType C D} := @HomType.mk C D F G
+    abbreviation HomType.onHomInv {C D : CatType} {F G : FunctorType C D}
+        (nat : HomType F G) {X Y : C} (m : X ⇒C⇒ Y)
+        := SetoidType.Sym (F X ⇒D⇒ G Y) (HomType.onHom nat m)
 end Functor
 
 -- action
 attribute Functor.HomType.onOb [coercion]
 infixl `/$$`:100 := Functor.HomType.onOb
 infixl `/$$/`:100 := Functor.HomType.onHom
+infixl `/$/$/`:100 := Functor.HomType.onHomInv
 
 namespace Functor
     -- setoid of natural transformations
