@@ -39,9 +39,9 @@ abbreviation Setoid.MkOb := SetoidType.mk
 -- carrier of setoid
 attribute SetoidType.El [coercion]
 notation `[` S `]` := SetoidType.El S        -- elements of `S`
-notation a `≡` S `≡` b := SetoidType.Equ S a b      -- `a=b` in `S`
+notation a `≡` S `≡` b :10 := SetoidType.Equ S a b      -- `a=b` in `S`
 notation `⊜` := SetoidType.Refl _
-notation ab `⊡` S `⊡` bc := SetoidType.Trans S ab bc
+notation ab `⊡` S `⊡` bc :100 := SetoidType.Trans S ab bc
 
 -- morphisms in the category `Setoid`
 namespace Setoid
@@ -86,11 +86,11 @@ abbreviation Setoid.MkHom2 (A B C : SetoidType)
 
 definition Setoid.Mul.onElEl {A B C : SetoidType} (f : B ⥤ C) (g : A ⥤ B) : A ⥤ C :=
     Setoid.MkHom
-        ( λ (a : A), f (g a))
-        ( λ (a1 a2 : A), λ(a12 : a1 ≡_≡ a2), f (g a12) )
-definition Setoid.HomEquProp {A B : SetoidType} (f g : A ⥤ B) : Prop := f ≡_≡ g
+        ( λ (a : A), f $ (g $ a))
+        ( λ (a1 a2 : A), λ(a12 : a1 ≡_≡ a2), f $/ (g $/ a12) )
+definition Setoid.HomEquProp {A B : SetoidType} (f g : A ⥤ B) : Prop := f ≡(A ⥤ B)≡ g
 
-infix `∙`: 100 := Setoid.Mul.onElEl
+infixl `∙`: 100 := Setoid.Mul.onElEl
 infix `⥰`: 10 := Setoid.HomEquProp
 
 definition Setoid.SingletonProp (S : SetoidType) : Prop := ∀(a b : S), a ≡_≡ b
