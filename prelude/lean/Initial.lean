@@ -23,7 +23,7 @@ print InitialType
 
 namespace Initial
 
-    abbreviation MkInitial {C : CatType} {Obj : C}
+    abbreviation Mk {C : CatType} {Obj : C}
     := @InitialType.mk C Obj
 
     lemma Singleton {C : CatType} {I : C}
@@ -49,10 +49,9 @@ namespace Initial
             I : C := FromLim lim,
             pr : (Cat.Delta C C I) ⟹ 𝟙
                 := (AdjType.counit (RightAdj.adj (lim C))) /$$ 𝟙
-        in
-        MkInitial
-            ( λ(X : C), pr /$$ X)
-            ( λ(A B : C), λ(m : A ⇒C⇒ B),  )
+        in Mk
+            ( Functor.CoconeFromNat pr)
+            ( Functor.IsCoconeFromNat pr)
             (sorry)
 
 end Initial
@@ -62,15 +61,22 @@ record TerminalType (C : CatType) (Obj : C) : Type :=
     (IsCocone : Functor.IsCoconeProp 𝟙 Obj Cocone)
     (Ok : Cocone Obj ≡(Obj ⇒C⇒ Obj)≡ ①)
 
-lemma Terminal.Singleton {C : CatType} {T : C} (term : TerminalType C T) (X : C)
-    : Setoid.SingletonType (X ⇒C⇒ T)
-:= Setoid.MkSingleton
-        ( TerminalType.Cocone term X)
-        ( λ(g : X ⇒C⇒ T),
-            (SetoidType.Sym _ (TerminalType.IsCocone term g)) ⊡_⊡
-            ((TerminalType.Ok term) /⊙C⊙ g) ⊡_⊡
-            (CatType.UnitL C g))
+namespace Terminal
 
-definition Terminal.FromColim {C : CatType.{o1 h1}} (colim : HaveAllColim.{o1 h1 o1 h1} C)
-    : C
+    abbreviation Mk {C : CatType} {Obj : C}
+    := @TerminalType.mk C Obj
+
+    lemma Singleton {C : CatType} {T : C} (term : TerminalType C T) (X : C)
+        : Setoid.SingletonType (X ⇒C⇒ T)
+    := Setoid.MkSingleton
+            ( TerminalType.Cocone term X)
+            ( λ(g : X ⇒C⇒ T),
+                (SetoidType.Sym _ (TerminalType.IsCocone term g)) ⊡_⊡
+                ((TerminalType.Ok term) /⊙C⊙ g) ⊡_⊡
+                (CatType.UnitL C g))
+
+    definition Terminal.FromColim {C : CatType.{o1 h1}} (colim : HaveAllColim.{o1 h1 o1 h1} C)
+        : C
     := LeftAdj.Left (colim C) 𝟙
+
+end Terminal
