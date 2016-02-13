@@ -23,7 +23,7 @@ print InitialType
 
 namespace Initial
 
-    abbreviation Mk {C : CatType} {Obj : C}
+    abbreviation MkI {C : CatType} {Obj : C}
     := @InitialType.mk C Obj
 
     lemma Singleton {C : CatType} {I : C}
@@ -39,20 +39,26 @@ namespace Initial
     definition FromLim {C : CatType.{o1 h1}}
         (lim : HaveAllLim.{o1 h1 o1 h1} C)
         : C
-    := RightAdj.Right (lim C) 𝟙
+    := Lim.Apply lim 𝟙
     print FromLim
 
     definition FromLim.Ok {C : CatType.{o1 h1}}
         (lim : HaveAllLim.{o1 h1 o1 h1} C)
-        : (InitialType C (FromLim lim))
-    := let
-            I : C := FromLim lim,
-            pr : (Cat.Delta C C I) ⟹ 𝟙
-                := (AdjType.counit (RightAdj.adj (lim C))) /$$ 𝟙
-        in Mk
-            ( Functor.CoconeFromNat pr)
-            ( Functor.IsCoconeFromNat pr)
-            (sorry)
+        : InitialType C ((RightAdj.Right (lim C)) $$ 𝟙) -- (Lim.Apply lim 𝟙)
+    :=
+        proof
+            MkI
+                -- ( Functor.CoconeFromNat (Lim.Prj lim 𝟙) )
+                ( λ X, ((AdjType.counit (RightAdj.adj (lim C))) /$$ 𝟙) /$$ X)
+                -- ( Functor.IsCoconeFromNat (Lim.Prj lim 𝟙) )
+                ( λ A B, λ(m : A ⇒C⇒ B),
+                    proof
+                        (CatType.UnitRInv C ((((AdjType.counit (RightAdj.adj (lim C))) /$$ 𝟙)) /$$ B))
+                            ⊡(((RightAdj.Right (lim C)) $$ 𝟙) ⇒C⇒ B)⊡
+                        (((AdjType.counit (RightAdj.adj (lim C))) /$$ 𝟙) /$$/ m)
+                    qed )
+                ( sorry )
+        qed
 
 end Initial
 
@@ -77,6 +83,6 @@ namespace Terminal
 
     definition Terminal.FromColim {C : CatType.{o1 h1}} (colim : HaveAllColim.{o1 h1 o1 h1} C)
         : C
-    := LeftAdj.Left (colim C) 𝟙
+    := Colim.Apply colim 𝟙
 
 end Terminal

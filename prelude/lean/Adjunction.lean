@@ -42,6 +42,19 @@ definition Colim (C D : CatType) := LeftAdj (Cat.Delta C D)
 definition HaveAllColim (D : CatType) : Type := Π (C : CatType), Colim C D
 record CocompleteCatType : Type := (C : CatType) (Colim : HaveAllColim C)
 
+definition Lim.Apply {D : CatType} (lim : HaveAllLim D) {C : CatType}
+    (F : C⟶D) : D
+    := (RightAdj.Right (lim C)) $$ F
+definition Lim.Prj {C D : CatType} (lim : HaveAllLim D)
+    (F : C⟶D) : (Cat.Delta C D (Lim.Apply lim F)) ⟹ F
+    := (AdjType.counit (RightAdj.adj (lim C))) /$$ F
+definition Colim.Apply {D : CatType} (colim : HaveAllColim D) {C : CatType}
+    (F : C⟶D) : D
+    := (LeftAdj.Left (colim C)) $$ F
+definition Colim.Inj {C D : CatType} (colim : HaveAllColim D)
+    (F : C⟶D) : F ⟹ (Cat.Delta C D (Colim.Apply colim F))
+    := (AdjType.unit (LeftAdj.adj (colim C))) /$$ F
+
 print AdjType
 print RightAdj
 print HaveAllLim
