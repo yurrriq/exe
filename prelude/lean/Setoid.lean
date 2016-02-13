@@ -88,14 +88,12 @@ definition Setoid.Mul.onElEl {A B C : SetoidType} (f : B ⥤ C) (g : A ⥤ B) : 
     Setoid.MkHom
         ( λ (a : A), f (g a))
         ( λ (a1 a2 : A), λ(a12 : a1 ≡_≡ a2), f (g a12) )
+definition Setoid.HomEquProp {A B : SetoidType} (f g : A ⥤ B) : Prop := f ≡_≡ g
 
-infix `∙` : 100 := Setoid.Mul.onElEl
+infix `∙`: 100 := Setoid.Mul.onElEl
+infix `⥰`: 10 := Setoid.HomEquProp
 
 definition Setoid.SingletonProp (S : SetoidType) : Prop := ∀(a b : S), a ≡_≡ b
-
-
-
-
 
 -- TODO: Hom (pro)functor;
 -- TODO: Sigma: (B→Type) → (E→B), UnSigma: (E→B) → (B→Type)

@@ -111,19 +111,23 @@ abbreviation CatType.AssocInv (C : CatType)
 section withCat
     variable (C : CatType)
 
-    definition hom_and_eq  {X Y Z : C}
+    definition CatType.MulHE  {X Y Z : C}
         (mYZ : Y ⇒C⇒ Z)
         {mXY1 mXY2 : X ⇒C⇒ Y}(e12 : mXY1 ≡(X ⇒C⇒ Y)≡ mXY2)
             : (mYZ ⊙C⊙ mXY1) ≡(X ⇒C⇒ Z)≡ (mYZ ⊙C⊙ mXY2) :=
         (CatType.Mul C $ mYZ) $/ e12
 
-    definition eq_and_hom {X Y Z : C}
+    definition CatType.MulEH {X Y Z : C}
         {mYZ1 mYZ2 : Y ⇒C⇒ Z}(e12 : mYZ1 ≡(Y ⇒C⇒ Z)≡ mYZ2)
         (mXY : X ⇒C⇒ Y)
             : (mYZ1 ⊙C⊙ mXY) ≡(X ⇒C⇒ Z)≡ (mYZ2 ⊙C⊙ mXY) :=
         (CatType.Mul C $/ e12) /$ mXY
 
 end withCat
+
+notation f `⊙` C `⊙/` geq := CatType.MulHE C f geq
+notation feq `/⊙` C `⊙` g := CatType.MulEH C feq g
+
 
 -- the category of `Setoid`s
 definition SetoidCat : CatType :=
@@ -132,7 +136,7 @@ definition SetoidCat : CatType :=
         @Setoid.Id @Setoid.Mul
         @Setoid.UnitL @Setoid.UnitR @Setoid.Assoc
 
-record LiftUniv (T : Type.{u}) : Type := (it : T) (dummy : Type.{u})
+-- record LiftUniv (T : Type.{u}) : Type := (it : T) (dummy : Type.{u})
 -- check (LiftUniv : Type.{u} → Type.{u+1})
 
 namespace Setoid

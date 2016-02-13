@@ -38,9 +38,9 @@ namespace Mor
             : SquareProp C m1x m3x (mb1 ⊙C⊙ ma1) (mb2 ⊙C⊙ ma2)
         :=
             (CatType.Assoc C mb2 ma2 m1x) ⊡_⊡
-            (hom_and_eq C mb2 sq12) ⊡_⊡
+            (mb2 ⊙C⊙/ sq12) ⊡_⊡
             (CatType.AssocInv C mb2 m2x ma1) ⊡_⊡
-            (eq_and_hom C sq23 ma1) ⊡_⊡
+            (sq23 /⊙C⊙ ma1) ⊡_⊡
             (CatType.Assoc C m3x mb1 ma1)
     end forMul1
 
@@ -86,13 +86,13 @@ namespace Mor
                 /- sq -/ (SquareMul1 C (HomType.sq mm12) (HomType.sq mm23)))
             /- onElEqu -/ (λ(mm23 : HomSet C m2 m3), λ(mm12 mm12' : HomSet C m1 m2),
                 λ(eq : mm12 ≡(HomSet C m1 m2)≡ mm12'), and.intro
-                    (hom_and_eq C (HomType.atDom mm23) (and.elim_left eq))
-                    (hom_and_eq C (HomType.atCod mm23) (and.elim_right eq)))
+                    ((HomType.atDom mm23) ⊙C⊙/ (and.elim_left eq))
+                    ((HomType.atCod mm23) ⊙C⊙/ (and.elim_right eq)))
             /- onEquEl -/ (λ(mm23 mm23' : HomSet C m2 m3),
                 λ(eq : mm23 ≡(HomSet C m2 m3)≡ mm23'),
                 λ(mm12 : HomSet C m1 m2), and.intro
-                    (eq_and_hom C (and.elim_left eq) (HomType.atDom mm12))
-                    (eq_and_hom C (and.elim_right eq) (HomType.atCod mm12)))
+                    ((and.elim_left eq) /⊙C⊙ (HomType.atDom mm12))
+                    ((and.elim_right eq) /⊙C⊙ (HomType.atCod mm12)))
 
     definition UnitL : Cat.UnitLProp (@Id C) (@Mul C) :=
         λ(m1 m2 : MorType C), λ(m12 : HomType C m1 m2), and.intro
