@@ -20,7 +20,7 @@ universe variable h3
 namespace Functor
     -- axioms of functor
     section withOnHom
-        variables (C D : CatType) (onOb : C → D)
+        variables (C D : CatType) (onOb : Π(c : C), D)
         variables (onHom : Π{X Y : C}, (X ⇒C⇒ Y)⥤(onOb X ⇒D⇒ onOb Y))
         definition OnIdProp : Prop :=
             ∀{X : C}, (onHom ①) ≡(onOb X ⇒D⇒ onOb X)≡ ①
@@ -37,7 +37,7 @@ end Functor
 
 -- functor as an object of the category `Functor`
 record FunctorType (C D : CatType) : Type :=
-    (onOb : C → D)
+    (onOb : Π(c : C), D)
     (onHom : Π{X Y : C}, (X ⇒C⇒ Y)⥤(onOb X ⇒D⇒ onOb Y))
     (onId : Functor.OnIdProp C D onOb @onHom)
     (onMul : Functor.OnMulProp C D onOb @onHom)
@@ -224,7 +224,7 @@ namespace Functor
     := ∀{A B : C}, ∀(m : A ⇒C⇒ B),
             ((arrow B) ⊙D⊙ (F m)) ≡(F A ⇒D⇒ X)≡ (arrow A)
 
-    definition FromCone {C D : CatType} {X : D} {F : C ⟶ D}
+    definition NatFromCone {C D : CatType} {X : D} {F : C ⟶ D}
         (arrow : ConeType X F)
         (cone : IsConeProp X F arrow)
         : (Cat.Delta C D X) ⟹ F
@@ -233,15 +233,42 @@ namespace Functor
         /- onHom -/ ( λ(A B: C), λ(m : A ⇒C⇒ B),
             (CatType.UnitR D (arrow B))⊡(X ⇒D⇒ F B)⊡(cone m))
 
-    definition FromCocone {C D : CatType} {F : C ⟶ D} {X : D}
+    definition ConeFromNat {C D : CatType} {X : D} {F : C ⟶ D}
+        (nat : (Cat.Delta C D X) ⟹ F)
+        : ConeType X F
+    := λ X, nat /$$ X
+
+    definition IsConeFromNat {C D : CatType} {X : D} {F : C ⟶ D}
+        (nat : (Cat.Delta C D X) ⟹ F)
+        : IsConeProp X F (ConeFromNat nat)
+    := λ(A B: C), λ(m : A ⇒C⇒ B),
+        proof
+            (CatType.UnitRInv D (nat /$$ B)) ⊡(X ⇒D⇒ F B)⊡
+            (nat /$$/ m)
+        qed
+
+    definition NatFromCocone {C D : CatType} {F : C ⟶ D} {X : D}
         (arrow : CoconeType F X)
         (cocone : IsCoconeProp F X arrow)
         : F ⟹ (Cat.Delta C D X)
     := MkHom
         /- onOb -/ arrow
         /- onHom -/ ( λ(A B: C), λ(m : A ⇒C⇒ B),
-            (cocone m)⊡(F A ⇒D⇒ X)⊡(CatType.UnitLInv D (arrow A))
-            )
+            (cocone m)⊡(F A ⇒D⇒ X)⊡(CatType.UnitLInv D (arrow A)))
+
+    definition CoconeFromNat {C D : CatType} {F : C ⟶ D} {X : D}
+        (nat : F ⟹ (Cat.Delta C D X))
+        : CoconeType F X
+    := λ X, nat /$$ X
+
+    definition IsCoconeFromNat {C D : CatType} {F : C ⟶ D} {X : D}
+        (nat : F ⟹ (Cat.Delta C D X))
+        : IsCoconeProp F X (CoconeFromNat nat)
+    := λ(A B: C), λ(m : A ⇒C⇒ B),
+        proof
+            (nat /$$/ m) ⊡(F A ⇒D⇒ X)⊡
+            (CatType.UnitL D (nat /$$ A))
+        qed
 
 end Functor
 

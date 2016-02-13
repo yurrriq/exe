@@ -47,7 +47,7 @@ notation ab `⊡` S `⊡` bc :100 := SetoidType.Trans S ab bc
 -- morphisms in the category `Setoid`
 namespace Setoid
     record HomType (A B : SetoidType) : Type :=
-        (onEl : A → B)
+        (onEl : Π(a : A), B)
         (onEqu : ∀{a1 a2 : A}, (a1 ≡_≡ a2) → (onEl a1 ≡_≡ onEl a2))
     abbreviation MkHom {A B : SetoidType} := @Setoid.HomType.mk A B
 end Setoid
