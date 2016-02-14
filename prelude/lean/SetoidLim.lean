@@ -4,6 +4,16 @@ import Setoid
 import Mor
 import Functor
 import Adjunction
+import Initial
+
+set_option pp.universes true
+set_option pp.metavar_args false
+universe variable o1
+universe variable h1
+universe variable o2
+universe variable h2
+universe variable o3
+universe variable h3
 
 /-
  - Definition of LIMIT in SetoidCat
@@ -14,6 +24,7 @@ namespace Setoid
         (atOb : Π(X : C), [F X])
         (atHom : ∀{X Y : C}, ∀(m : X ⇒C⇒ Y), (atOb Y) ≡(F Y)≡ ((F m) $ (atOb X)))
     abbreviation MkLim {C : CatType} {F : C⟶SetoidCat} := @LimType.mk C F
+    print LimType
 end Setoid
 
 -- action
@@ -32,6 +43,7 @@ namespace Setoid
             @SetoidType.Trans (F X) (a X) (b X) (c X) (ab X) (bc X))
         ( λ(a b : LimType F), λ ab, λ(X : C),
             @SetoidType.Sym (F X) (a X) (b X) (ab X))
+    check LimSet
 
 namespace Lim
 
@@ -81,10 +93,12 @@ namespace Lim
         /- onEl -/ ( λ(lim : Setoid.LimSet F), (lim X))
         /- onEqu -/ ( λ(lim lim': Setoid.LimSet F),
             λ(eq : lim ≡(Setoid.LimSet F)≡ lim'), eq X)
+    print projection
 
     definition projection.cone {C : CatType} (F : C⟶SetoidCat)
         : Functor.IsConeProp (LimSet F) F (projection F)
     := λ(A B : C), λ(m : A ⇒C⇒ B), λ(lim : LimSet F), lim m
+    print projection.cone
 
 end Lim
 
@@ -92,6 +106,7 @@ end Lim
     definition Lim {C : CatType}
         : (C⟶SetoidCat)⟶SetoidCat
     := Functor.MkOb (@LimSet C) (@Lim.onHom C) (@Lim.OnId C) (@Lim.OnMul C)
+    print Lim
 
     definition HasLim : HaveAllLim SetoidCat  :=
         λ(C : CatType), RightAdj.mk
@@ -105,5 +120,12 @@ end Lim
                 /- onHom -/ ( λ F1 F2, λ(f : F1 ⟹ F2), λ(X : C), λ(lim : LimSet F1), ⊜))
                 ( λ(T : SetoidCat), λ(X : C), λ(t : T), ⊜ )
                 ( λ(F : C⟶SetoidCat), λ(lim : LimSet F), λ(X : C), ⊜) )
+    print HasLim
 
 end Setoid
+
+-- problem with levels in PREDICATIVE universe hierarchy
+axiom BottomSet : SetoidType -- := Initial.FromLim Setoid.HasLim
+
+noncomputable -- OK in IMPREDICATIVE universe hierarchy
+definition BottomCat : CatType := Cat.FromSet BottomSet

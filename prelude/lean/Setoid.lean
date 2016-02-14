@@ -40,9 +40,9 @@ abbreviation Setoid.MkOb := SetoidType.mk
 -- carrier of setoid
 attribute SetoidType.El [coercion]
 notation `[` S `]` := SetoidType.El S        -- elements of `S`
-notation a `≡` S `≡` b :10 := SetoidType.Equ S a b      -- `a=b` in `S`
+notation a ` ≡` S `≡ ` b :10 := SetoidType.Equ S a b      -- `a=b` in `S`
 notation `⊜` := SetoidType.Refl _
-notation ab `⊡` S `⊡` bc :100 := SetoidType.Trans S ab bc
+notation ab ` ⊡` S `⊡ ` bc :100 := SetoidType.Trans S ab bc
 
 -- morphisms in the category `Setoid`
 namespace Setoid

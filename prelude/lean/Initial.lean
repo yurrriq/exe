@@ -40,7 +40,7 @@ namespace Initial
         (lim : HaveAllLim.{o1 h1 o1 h1} C)
         : C
     := Lim.Apply lim 𝟙
---    print FromLim
+    print FromLim
 
     definition FromLim.Ok {C : CatType.{o1 h1}}
         (lim : HaveAllLim.{o1 h1 o1 h1} C)
