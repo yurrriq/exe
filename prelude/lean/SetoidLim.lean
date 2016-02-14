@@ -96,12 +96,12 @@ end Lim
     definition HasLim : HaveAllLim SetoidCat  :=
         λ(C : CatType), RightAdj.mk
             (@Setoid.Lim C)
-            (Adjunction.mk
+            (AdjType.mk
                 (Functor.MkHom
                 /- onOb -/ ( Setoid.Lim.diagonal C )
                 /- onHom -/ ( λ(T T' : SetoidCat), λ(f : T ⥤ T'), λ(t : T), ⊜))
                 (Functor.MkHom
-                /- onOb -/ ( λ F, Functor.FromCone (Lim.projection F) (@Lim.projection.cone C F))
+                /- onOb -/ ( λ F, Functor.NatFromCone (Lim.projection F) (@Lim.projection.cone C F))
                 /- onHom -/ ( λ F1 F2, λ(f : F1 ⟹ F2), λ(X : C), λ(lim : LimSet F1), ⊜))
                 ( λ(T : SetoidCat), λ(X : C), λ(t : T), ⊜ )
                 ( λ(F : C⟶SetoidCat), λ(lim : LimSet F), λ(X : C), ⊜) )

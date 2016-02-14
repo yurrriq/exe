@@ -125,9 +125,13 @@ namespace Terminal
         : C
     := Colim.Apply colim 𝟙
 
+/- -- actually, we do not need it now
     definition FromColim.Ok {C : CatType.{o1 h1}}
         (colim : HaveAllColim.{o1 h1 o1 h1} C)
         : TerminalType C (FromColim colim)
     := sorry
+-/
+
+-- TODO: limit of empty is terminal (actually need it!)
 
 end Terminal
