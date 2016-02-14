@@ -19,11 +19,11 @@ record InitialType (C : CatType) (Obj : C) : Type :=
     (Cone : Functor.ConeType Obj 𝟙)
     (IsCone : Functor.IsConeProp Obj 𝟙 Cone)
     (Ok : Cone Obj ≡(Obj ⇒C⇒ Obj)≡ ①)
-print InitialType
+-- print InitialType
 
 namespace Initial
 
-    abbreviation MkI {C : CatType} {Obj : C}
+    abbreviation Mk {C : CatType} {Obj : C}
     := @InitialType.mk C Obj
 
     lemma Singleton {C : CatType} {I : C}
@@ -40,24 +40,63 @@ namespace Initial
         (lim : HaveAllLim.{o1 h1 o1 h1} C)
         : C
     := Lim.Apply lim 𝟙
-    print FromLim
+--    print FromLim
 
     definition FromLim.Ok {C : CatType.{o1 h1}}
         (lim : HaveAllLim.{o1 h1 o1 h1} C)
         : InitialType C ((RightAdj.Right (lim C)) $$ 𝟙) -- (Lim.Apply lim 𝟙)
     :=
-        proof
-            MkI
-                -- ( Functor.CoconeFromNat (Lim.Prj lim 𝟙) )
-                ( λ X, ((AdjType.counit (RightAdj.adj (lim C))) /$$ 𝟙) /$$ X)
-                -- ( Functor.IsCoconeFromNat (Lim.Prj lim 𝟙) )
-                ( λ A B, λ(m : A ⇒C⇒ B),
-                    proof
-                        (CatType.UnitRInv C ((((AdjType.counit (RightAdj.adj (lim C))) /$$ 𝟙)) /$$ B))
-                            ⊡(((RightAdj.Right (lim C)) $$ 𝟙) ⇒C⇒ B)⊡
-                        (((AdjType.counit (RightAdj.adj (lim C))) /$$ 𝟙) /$$/ m)
-                    qed )
-                ( sorry )
+        proof Mk
+            ( λ X, ((AdjType.counit (RightAdj.adj (lim C))) /$$ 𝟙) /$$ X)
+            ( λ A B, λ(m : A ⇒C⇒ B),
+                    (CatType.UnitRInv C ((((AdjType.counit (RightAdj.adj (lim C))) /$$ 𝟙)) /$$ B))
+                        ⊡(((RightAdj.Right (lim C)) $$ 𝟙) ⇒C⇒ B)⊡
+                    (((AdjType.counit (RightAdj.adj (lim C))) /$$ 𝟙) /$$/ m) )
+        begin
+            have eqNat :
+                    (((AdjType.counit (RightAdj.adj (lim C))) /$$ 𝟙) ⊙(C⟶C)⊙
+                    ((Cat.Delta C C) $$/
+                        (((AdjType.counit (RightAdj.adj (lim C))) /$$ 𝟙) /$$ ((RightAdj.Right (lim C)) $$ 𝟙))))
+                            ≡((Cat.Delta C C ((RightAdj.Right (lim C)) $$ 𝟙)) ⟹ 𝟙)≡
+                    (((AdjType.counit (RightAdj.adj (lim C))) /$$ 𝟙) ⊙(C⟶C)⊙
+                        ①),
+                from λ(X : C), proof
+                    SetoidType.Sym (((RightAdj.Right (lim C)) $$ 𝟙) ⇒C⇒ X)
+                    (((AdjType.counit (RightAdj.adj (lim C))) /$$ 𝟙) /$$/
+                    (((AdjType.counit (RightAdj.adj (lim C))) /$$ 𝟙) /$$ X))
+                qed,
+            have myCong : ∀ {g1 g2 : (Cat.Delta C C ((RightAdj.Right (lim C)) $$ 𝟙)) ⟹ 𝟙},
+                    ∀ (eq : g1 ≡((Cat.Delta C C ((RightAdj.Right (lim C)) $$ 𝟙)) ⟹ 𝟙)≡ g2),
+                    ( (((RightAdj.Right (lim C)) $$/ g1) ⊙C⊙
+                            ((AdjType.unit (RightAdj.adj (lim C))) /$$ ((RightAdj.Right (lim C)) $$ 𝟙)))
+                        ≡(((RightAdj.Right (lim C)) $$ 𝟙) ⇒C⇒ ((RightAdj.Right (lim C)) $$ 𝟙))≡
+                    (((RightAdj.Right (lim C)) $$/ g2) ⊙C⊙
+                            ((AdjType.unit (RightAdj.adj (lim C))) /$$ ((RightAdj.Right (lim C)) $$ 𝟙))) ),
+                from
+                    λ (g1 g2 : (Cat.Delta C C ((RightAdj.Right (lim C)) $$ 𝟙)) ⟹ 𝟙),
+                    λ (eq : g1 ≡((Cat.Delta C C ((RightAdj.Right (lim C)) $$ 𝟙)) ⟹ 𝟙)≡ g2),
+                proof
+                    ((RightAdj.Right (lim C)) $$// eq) /⊙C⊙
+                            ((AdjType.unit (RightAdj.adj (lim C))) /$$ ((RightAdj.Right (lim C)) $$ 𝟙))
+                qed,
+            show (
+                (((AdjType.counit (RightAdj.adj (lim C))) /$$ 𝟙) /$$ ((RightAdj.Right (lim C)) $$ 𝟙))
+                        ≡(((RightAdj.Right (lim C)) $$ 𝟙) ⇒C⇒ ((RightAdj.Right (lim C)) $$ 𝟙))≡
+                    ①),
+                from proof
+                    (SetoidType.Sym (((RightAdj.Right (lim C)) $$ 𝟙) ⇒C⇒ ((RightAdj.Right (lim C)) $$ 𝟙))
+                    ((Adj.IsoOnLR.ReqR (RightAdj.adj (lim C))
+                        ((RightAdj.Right (lim C)) $$ 𝟙) 𝟙)
+                    (((AdjType.counit (RightAdj.adj (lim C))) /$$ 𝟙) /$$ ((RightAdj.Right (lim C)) $$ 𝟙)))
+                    )
+                        ⊡(((RightAdj.Right (lim C)) $$ 𝟙) ⇒C⇒ ((RightAdj.Right (lim C)) $$ 𝟙))⊡
+                    (myCong eqNat)
+                        ⊡(((RightAdj.Right (lim C)) $$ 𝟙) ⇒C⇒ ((RightAdj.Right (lim C)) $$ 𝟙))⊡
+                    ((Adj.IsoOnLR.ReqR (RightAdj.adj (lim C))
+                        ((RightAdj.Right (lim C)) $$ 𝟙) 𝟙)
+                    ①)
+                qed
+        end
         qed
 
 end Initial
@@ -81,8 +120,14 @@ namespace Terminal
                 ((TerminalType.Ok term) /⊙C⊙ g) ⊡_⊡
                 (CatType.UnitL C g))
 
-    definition Terminal.FromColim {C : CatType.{o1 h1}} (colim : HaveAllColim.{o1 h1 o1 h1} C)
+    definition FromColim {C : CatType.{o1 h1}}
+        (colim : HaveAllColim.{o1 h1 o1 h1} C)
         : C
     := Colim.Apply colim 𝟙
+
+    definition FromColim.Ok {C : CatType.{o1 h1}}
+        (colim : HaveAllColim.{o1 h1 o1 h1} C)
+        : TerminalType C (FromColim colim)
+    := sorry
 
 end Terminal
