@@ -151,7 +151,7 @@ namespace Setoid
             ( λ x y z, λ xy yz, true.intro)
             ( λ x y, λ xy, true.intro)
 
-    definition FromType.Singleton (T : Type) : Setoid.SingletonProp (FromType T) :=
+    definition FromType.Singleton (T : Type) : Setoid.SubSingletonProp (FromType T) :=
         λ x y, true.intro
 
     definition FromMap {T1 T2 : Type} (f : T1 → T2)
