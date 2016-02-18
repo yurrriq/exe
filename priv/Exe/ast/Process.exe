@@ -1,0 +1,6 @@
+
+  import list, Eff
+
+  record Process: (Sigma: *) → (X: *) → * :=
+         (effect: list Eff)
+         (action: Sigma → X → X)

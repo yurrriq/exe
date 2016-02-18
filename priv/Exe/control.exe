@@ -1,0 +1,14 @@
+
+           record pure (P: * → *) (A: *) :=
+                  (return: P A)
+
+           record functor (F: * → *) (A B: *) :=
+                  (fmap: (A → B) → F A → F B)
+
+           record applicative (F: * → *) (A B: *)
+           extend pure F A, functor F A B :=
+                  (ap: F (A → B) → F A → F B)
+
+           record monad (F: * → *) (A B: *)
+           extend pure F A, functor F A B :=
+                  (join: F (F A) → F B)

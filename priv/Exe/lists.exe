@@ -1,6 +1,10 @@
 
+             data list: (A:*) → * :=
+                  (nil: () → list A)
+                  (cons: A → list A → list A)
+
            record lists: (A B: *) :=
                   (len: list A → integer)
-                  ((++): list A → list A → list A)
+                  (++: list A → list A → list A)
                   (map: (A → B) → (list A → list B))
                   (filter: (A → bool) → (list A → list A))

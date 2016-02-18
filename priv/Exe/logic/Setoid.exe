@@ -1,0 +1,4 @@
+
+  record Setoid: * :=
+         (ob: *)
+         (hom: ∀ (X Y: ob) → Hom X Y)

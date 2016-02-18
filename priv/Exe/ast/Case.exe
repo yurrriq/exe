@@ -1,0 +1,4 @@
+
+  record Case Receive: * :=
+         (legs: list (prod string (prod Om Exe)))
+         (default: Exe)

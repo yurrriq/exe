@@ -1,0 +1,9 @@
+
+    data Om: * :=
+         (nil: () → Om)
+         (star: nat → Om)
+         (box: () → Om)
+         (var: string → Om)
+         (app: Om → Om → Om)
+         (arrow: string → Om → Om → Om)
+         (pi: name → Om → Om → Om)

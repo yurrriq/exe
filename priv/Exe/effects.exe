@@ -1,0 +1,16 @@
+
+  import Eff
+
+  record IO: * extend Eff := ()
+  record Ex: * extend Eff := ()
+  record Rnd: * extend Eff := ()
+
+    data Socket: * :=
+         (out: list num → () → IO)
+         (in:  () → list num → IO)
+
+    data Exception: * :=
+         (out: list num → () → IO)
+
+    data Random: * :=
+         (in:  () → list num → IO)

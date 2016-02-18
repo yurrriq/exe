@@ -1,3 +1,0 @@
-
-             data product: (A:*) → (B:*) → * :=
-                  (make: (a:A) → (b:B) → prod A B)

@@ -1,0 +1,8 @@
+
+    data Exe: * :=
+         (om: Om → Exe)
+         (case: Case → Exe)
+         (record: Record → Exe)
+         (data: Data → Exe)
+         (let: Let → Exe)
+         (spawn: Process → Exe)

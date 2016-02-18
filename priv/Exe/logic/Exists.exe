@@ -1,0 +1,3 @@
+
+    data Exists: (A:*) → (A → *) → * :=
+         (intro: (P: A → *) → (x:A) → P x → exists A P)

@@ -1,4 +1,0 @@
-
-             data IO: * :=
-                  (out: list num → () → IO)
-                  (in:  () → list num → IO)

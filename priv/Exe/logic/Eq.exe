@@ -1,0 +1,3 @@
+
+   data Eq: (A:*) → A → A → Prop :=
+        (refl: (x:A) → Eq A x x)

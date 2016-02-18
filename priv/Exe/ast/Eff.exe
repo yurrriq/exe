@@ -1,0 +1,4 @@
+
+  import Exe
+
+  record Eff: * := (in: Exe) (out: Exe)
