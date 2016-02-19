@@ -1,3 +1,0 @@
-
-    data unit: * :=
-         (make: () → unit)

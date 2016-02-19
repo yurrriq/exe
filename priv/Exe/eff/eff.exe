@@ -1,0 +1,30 @@
+
+  import Exe, random, file, exception
+
+    -- simplified IO as free monad
+
+    data FIO: * :=
+         (in: (string → FIO) → FIO)
+         (out: string → FIO → FIO)
+         (rnd: (nat → FIO) → FIO)
+         (ex: exception → FIO → FIO)
+         (stop: () → FIO)
+
+    -- more sane effects handling
+
+    data effect: (v:*) → (r:*) → * :=
+         (intro: v → r → (v → r) → effect)
+
+  record effect: (v:*) → (r:*) → * :=
+         (values: v)
+         (resource: r)
+         (computation: v → r)
+         (handler: effect v r → monad effect v r)
+
+  record handler: (e: effect) → (m: * → *) :=
+         (action: (r: res) -> (eff: e t res resk) -> (k : ((x : t) -> resk x -> m a)) -> m a)
+
+    data RND: *        := (intro: effect.mk nat random)
+    data IO: (t:*) → * := (intro: effect.mk t file)
+    data EX: (t:*) → * := (intro: effect.mk () (exception t))
+

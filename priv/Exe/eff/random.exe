@@ -1,0 +1,4 @@
+
+    data random: (x:*) → * → (x → *) → * :=
+         (rand: random x) 
+         (seed: x -> random ())

@@ -2,7 +2,3 @@
              data bool: * :=
                   (true: () → bool)
                   (false: () → bool)
-
-           record boolean: * :=
-                  (and: bool → bool)
-                  (or: bool → bool)

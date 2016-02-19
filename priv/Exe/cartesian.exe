@@ -1,0 +1,17 @@
+
+    data empty: * := ()
+
+  record sum: (A:*) → (B:*) → * :=
+         (left: A)
+         (right: B)
+
+    data unit: * :=
+         (make: () → unit)
+
+  record prod: (A:*) → (B:*) → * :=
+         (pr1: A)
+         (pr2: B)
+
+  record sigma (A: *) → (B: A → *) → * :=
+         (pr1: A)
+         (pr2: B pr1)

@@ -1,0 +1,5 @@
+
+             data vector: (A:*) → nat → * :=
+                  (nil: () → vector A)
+                  (cons: (n: nat) → A → vector A n → vector A (succ n))
+

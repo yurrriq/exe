@@ -13,7 +13,9 @@ context default
     keyword whole data brown
     keyword whole record brown
 
-
+    keyword whole let brown
+    keyword whole in brown
+    keyword whole import brown
     keyword whole inductive brown
     keyword whole coinductive brown
     keyword whole enum brown

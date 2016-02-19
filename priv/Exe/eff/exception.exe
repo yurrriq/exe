@@ -1,0 +1,3 @@
+
+    data exception: (x:*) → * → (x → *) → * :=
+         (raise: x -> exception x)
