@@ -1,8 +1,14 @@
 
     data Exe: * :=
          (om: Om → Exe)
-         (case: Case → Exe)
          (record: Record → Exe)
          (data: Data → Exe)
          (let: Let → Exe)
+         (case: Case → Exe)
+         (receive: Case → Exe)
          (spawn: Process → Exe)
+         (send: * → Process → Exe)
+         (try: Exception → Exe)
+         (raise: Exception → Exe)
+         (write: File → Exe)
+         (read: File → Exe)

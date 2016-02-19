@@ -1,12 +1,12 @@
 
-  import Exe, random, file, exception
+  import random, file, exception
 
     -- simplified IO as free monad
 
     data FIO: * :=
-         (in: (string → FIO) → FIO)
-         (out: string → FIO → FIO)
-         (rnd: (nat → FIO) → FIO)
+         (read: (string → FIO) → FIO)
+         (write: string → FIO → FIO)
+         (coex: (nat → FIO) → FIO)
          (ex: exception → FIO → FIO)
          (stop: () → FIO)
 
@@ -18,8 +18,11 @@
   record effect: (v:*) → (r:*) → * :=
          (values: v)
          (resource: r)
-         (computation: v → r)
+         (computation: (v → r))
          (handler: effect v r → monad effect v r)
+
+    data monad_eff: list effect → (* → *) → * -> * :=
+         (intro: eff m a xs (\ (v) → xs) → monad_eff xs m a
 
   record handler: (e: effect) → (m: * → *) :=
          (action: (r: res) → (eff: e t res resk) → (k: (x: t) → resk x → m a) → m a)

@@ -1,4 +1,4 @@
 
   record Case Receive: * :=
-         (legs: list (prod string (prod Om Exe)))
+         (legs: list (prod atom (prod Om Exe)))
          (default: Exe)
