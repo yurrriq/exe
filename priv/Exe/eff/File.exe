@@ -1,0 +1,11 @@
+
+    data mode: * :=
+         (read: mode)
+         (write: mode)
+
+    data open: (m: mode) * :=
+         (handle: string → m → open m)
+
+    data File: (v:*) → (r:*) → (x → *) → * :=
+         (read: open mode → File v)
+         (write: v → open mode → File ())

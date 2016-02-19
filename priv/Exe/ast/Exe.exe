@@ -1,10 +1,11 @@
 
-    data Exe: * :=
-         (om: Om → Exe)
+    data Macro: * :=
          (record: Record → Exe)
          (data: Data → Exe)
          (let: Let → Exe)
          (case: Case → Exe)
+
+    data Effect: * :=
          (receive: Case → Exe)
          (spawn: Process → Exe)
          (send: * → Process → Exe)
@@ -12,3 +13,8 @@
          (raise: Exception → Exe)
          (write: File → Exe)
          (read: File → Exe)
+
+    data Exe: * :=
+         (om: Om → Exe)
+         (core: Macro → Exe)
+         (eff: Effect → Exe)

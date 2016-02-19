@@ -1,12 +1,12 @@
 
-  import random, file, exception
+  import Random, File, Exception
 
     -- simplified IO as free monad
 
     data FIO: * :=
          (read: (string → FIO) → FIO)
          (write: string → FIO → FIO)
-         (coex: (nat → FIO) → FIO)
+         (rand: (nat → FIO) → FIO)
          (ex: exception → FIO → FIO)
          (stop: () → FIO)
 

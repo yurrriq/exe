@@ -1,0 +1,4 @@
+
+    data Exception: (x:*) → * → (x → *) → * :=
+         (core: record := (try: Exe) (catch: Case) → Exception x)
+         (raise: x → Exception x)
