@@ -8,4 +8,4 @@
          
     data file: (v:*) → (r:*) → (x → *) → * :=
          (read: open mode → file v)
-         (write: string → open mode → file ())
+         (write: v → open mode → file ())

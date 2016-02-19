@@ -22,9 +22,9 @@
          (handler: effect v r → monad effect v r)
 
   record handler: (e: effect) → (m: * → *) :=
-         (action: (r: res) -> (eff: e t res resk) -> (k : ((x : t) -> resk x -> m a)) -> m a)
+         (action: (r: res) → (eff: e t res resk) → (k: (x: t) → resk x → m a) → m a)
 
-    data RND: *        := (intro: effect.mk nat random)
-    data IO: (t:*) → * := (intro: effect.mk t file)
+    data RND: *        := (intro: effect.mk nat (random nat))
+    data IO: (t:*) → * := (intro: effect.mk t (file t))
     data EX: (t:*) → * := (intro: effect.mk () (exception t))
 
