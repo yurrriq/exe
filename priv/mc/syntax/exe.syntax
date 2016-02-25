@@ -23,6 +23,13 @@ context default
 
 # Control Inductive Constructions
 
+    keyword whole try brown
+    keyword whole catch brown
+    keyword whole raise brown
+    keyword whole seed brown
+    keyword whole rand brown
+    keyword whole write brown
+    keyword whole read brown
     keyword whole case brown
     keyword whole receive brown
     keyword whole spawn brown
@@ -49,7 +56,7 @@ context default
     keyword () brightmagenta
     keyword [] brightmagenta
     keyword whole unit brightmagenta
-    keyword whole pair brightmagenta
+    keyword whole prod brightmagenta
     keyword whole :: brightmagenta
     keyword whole tl brightmagenta
     keyword whole hd brightmagenta

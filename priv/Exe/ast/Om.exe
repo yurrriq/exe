@@ -1,7 +1,0 @@
-
-    data Om: * :=
-         (star: nat → Om)
-         (var: string → Om)
-         (app: Om → Om → Om)
-         (arrow: string → Om → Om → Om)
-         (pi: name → Om → Om → Om)

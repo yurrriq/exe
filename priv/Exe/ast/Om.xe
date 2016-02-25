@@ -1,0 +1,23 @@
+
+    data Om: * :=
+         (star: Star → Om)
+         (var: Var → Om)
+         (app: App → Om)
+         (arrow: Arrow → Om)
+         (pi: Pi → Om)
+
+  record Star: * :=
+         (index: nat)
+
+  record Var: * :=
+         (name: string)
+    
+  record Arrow Pi: * :=
+         (name: string)
+         (arg: Om)
+         (body: Om)
+    
+  record App: * :=
+         (fun: Om)
+         (arg: Om)
+
