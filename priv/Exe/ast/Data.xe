@@ -1,0 +1,6 @@
+
+  record Record Data: * :=
+         (name: string)
+         (base: Om)
+         (body: list (prod string Exe))
+

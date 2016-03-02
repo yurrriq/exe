@@ -6,9 +6,9 @@
          (case: Case → Exe)
 
     data Effect: * :=
-         (receive: Case → Exe)
-         (spawn: Process → Exe)
-         (send: * → Process → Exe)
+         (receive: Receive → Exe)
+         (spawn: Spawn → Exe)
+         (send: Send → Exe)
          (try: Exception → Exe)
          (raise: Exception → Exe)
          (write: File → Exe)

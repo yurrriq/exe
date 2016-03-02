@@ -1,6 +1,0 @@
-
-  import Process
-
-  record Send: * :=
-         (msg: *)
-         (dst: Process)

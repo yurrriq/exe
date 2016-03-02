@@ -1,0 +1,6 @@
+
+  import Process
+
+  record Send: (Sigma: *) → * :=
+         (message: Sigma)
+         (to: Process Sigma)
