@@ -1,11 +1,11 @@
 Exe Language
 ============
 
-Depentent Records and Inductive Constructions
+Dependent Records and Inductive Constructions
 ---------------------------------------------
 
-This research project dedicated to formalization and implementation of Exe functional
-language with dependent-types that compiles to untyped Erlang AST that can be compiled
+This research project is dedicated to formalization and implementation of Exe functional
+language with dependent types that compiles to untyped Erlang AST that can be compiled
 with regular Erlang `erlc` compiler and run under BEAM or LING virtual machines.
 
 <center><img src="http://5ht.co/exe.svg" width="600"></center>
