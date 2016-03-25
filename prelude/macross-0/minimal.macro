@@ -1,0 +1,68 @@
+--
+-- minimal macross example
+--
+
+-- universes
+def Type.{u} : *.{u+1} := *.{u}
+def Prop : *.{1} := *0
+
+-- church encoding for Prop
+def AndProp (A, B : Prop) : Prop :=
+    ∀ (And : Prop) →
+    ∀ (Intro : A → B → And) →
+    And
+
+def And.Intro (A, B : Prop) (a : A) (b : B) : Prop :=
+    λ (And : Prop) →
+    λ (Intro : A → B → And) →
+    Intro a b
+
+def And.recur (A, B : Prop) (And : Prop) (Intro : A → B → And) : AndProp A B → And :=
+    λ (and : AndProp A B) →
+    and And Intro
+
+macro churchAnd : encoding.{0}.{0}.{0} := encoding.mk AndProp And.Intro And.recur
+
+-- equivalence
+def EquType.{u} (El : Type.{u}) : Type.{1} := El → El → Prop;
+def Equ.ReflProp.{u} (El : Type.{u}) (Equ : EquType.{u} El) : Prop := ∀(e0 : El) → Equ e0 e0
+def Equ.TransProp.{u} (El : Type.{u}) (Equ : EquType.{u} El) : Prop := ∀(e1 e2 e3 : El) → Equ e1 e2 → Equ e2 e3 → Equ e1 e3
+def Equ.SymProp.{u} (El : Type.{u}) (Equ : EquType.{u} El) : Prop := ∀(e1 e2 : El) → Equ e1 e2 → Equ e2 e1
+
+-- the very main type :)
+def SetoidType.{u} : Type.{u+1,1,1,0,0,0} := record
+    (El : Type.{u,0})
+    (Equ : EquType.{u} El.1)
+    (Refl : Equ.ReflProp.{u} Equ)
+    (Trans : Equ.TransProp.{u} Equ)
+    (Sym : Equ.SymProp.{u} Equ)
+
+let Setoid.HomType.{u} (A B : SetoidType.{u}) : Type.{u,0} := record.{onEl.1, (churchAnd onEl.2 onEqu)}
+    (onEl : SetoidType.El.{u} A → SetoidType.El.{u} B)
+    (onEqu : ∀(a1 a2 : SetoidType.El.{u} A) → (SetoidType.Equ.{u} A a1 a2) → (SetoidType.Equ.{u} B (onEl a1) (onEl a2)))
+
+let Setoid.Hom.Equ.{u} (A B : SetoidType.{u}) : EquType.{u} El :=
+    λ(f, g : Setoid.HomType.{u} A B) → ∀(a : A) → SetoidType.Equ.{u} B (f a) (g a)
+
+def Setoid.HomSet.{u} (A B : SetoidType.{u}) : SetoidType.{u} :=
+    SetoidType.mk.{u}
+    /- El -/    ( Setoid.HomType.{u} A B )
+    /- Equ -/   ( Setoid.Hom.Equ.{u} A B)
+    /- Refl -/  ( λ(f0 : Setoid.HomType.{u} A B) →
+                λ(a : SetoidType.El.{u} A) →
+                SetoidType.Refl.{u} A (f0 a))
+    /- Trans -/ ( λ(f1, f2, f3 : Setoid.HomType.{u} A B) →
+                λ(equ12 : Setoid.Hom.Equ.{u} f1 f2) → λ(equ23 : Setoid.Hom.Equ.{u} f2 f3) →
+                λ(a : SetoidType.El.{u} A) →
+                SetoidType.Trans.{u} A (f1 a) (f2 a) (f3 a) (equ12 a) (equ23 a))
+    /- Sym -/   ( λ(f1, f2 : Setoid.HomType.{u} A B) →
+                λ(equ12 : Setoid.Hom.Equ.{u} f1 f2) →
+                λ(a : SetoidType.El.{u} A) →
+                SetoidType.Sym.{u} A (f1 a) (f2 a) (equ12 a))
+
+def Setoid.Mul.onEl.{u} (A B C : SetoidType.{u})
+    (f : Setoid.HomType.{u} B C) (g : Setoid.HomType.{u} A B)
+    : Setoid.HomType.{u} A C :=
+    Setoid.HomType.mk.{u} A C
+        ( λ (a : SetoidType.El.{u} A) → f $ (g $ a)) -- use infix sugar for app?
+        ( λ (a1, a2 : SetoidType.El.{u} A) → λ(a12 : a1 ≡ a2) → f $/ (g $/ a12) )
