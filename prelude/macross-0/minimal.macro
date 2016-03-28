@@ -21,7 +21,7 @@ def And.recur (A, B : Prop) (And : Prop) (Intro : A → B → And) : AndProp A B
     λ (and : AndProp A B) →
     and And Intro
 
-macro churchAnd : encoding.{0}.{0}.{0} := encoding.mk AndProp And.Intro And.recur
+macro churchAnd : encoding.{0 0 0} := encoding.mk AndProp And.Intro And.recur
 
 -- equivalence
 def EquType.{u} (El : Type.{u}) : Type.{1} := El → El → Prop;
@@ -30,14 +30,14 @@ def Equ.TransProp.{u} (El : Type.{u}) (Equ : EquType.{u} El) : Prop := ∀(e1 e2
 def Equ.SymProp.{u} (El : Type.{u}) (Equ : EquType.{u} El) : Prop := ∀(e1 e2 : El) → Equ e1 e2 → Equ e2 e1
 
 -- the very main type :)
-def SetoidType.{u} : Type.{u+1,1,1,0,0,0} := record
-    (El : Type.{u,0})
+def SetoidType.{u} : Type.{(u+1,1,1,0,0,0)} := record
+    (El : Type.{(u,0)})
     (Equ : EquType.{u} El.1)
     (Refl : Equ.ReflProp.{u} Equ)
     (Trans : Equ.TransProp.{u} Equ)
     (Sym : Equ.SymProp.{u} Equ)
 
-let Setoid.HomType.{u} (A B : SetoidType.{u}) : Type.{u,0} := record.{onEl.1, (churchAnd onEl.2 onEqu)}
+let Setoid.HomType.{u} (A B : SetoidType.{u}) : Type.{u,0} := record.{(onEl.1, churchAnd onEl.2 onEqu)}
     (onEl : SetoidType.El.{u} A → SetoidType.El.{u} B)
     (onEqu : ∀(a1 a2 : SetoidType.El.{u} A) → (SetoidType.Equ.{u} A a1 a2) → (SetoidType.Equ.{u} B (onEl a1) (onEl a2)))
 
