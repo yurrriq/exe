@@ -109,6 +109,19 @@ end Setoid
 infixl `∙`: 100 := Setoid.Mul.onElEl
 infix `⥰`: 10 := Setoid.HomEquProp
 
+definition Prop.id {P : Prop} : (P → P) := λp, p
+
+definition Prop.mul {P Q R : Prop} (pq : P → Q) (qr : Q → R)
+    : (P → R) := λp, qr (pq p)
+
+definition PropSet : SetoidType :=
+    Setoid.MkOb
+    /- El -/ (Prop)
+    /- Equ -/ ( λ(P Q : Prop), and (P → Q) (Q → P))
+    /- Refl -/ ( λ P, and.intro Prop.id Prop.id)
+    /- Trans -/ ( λ P Q R, λ pq qr, and.intro
+        (Prop.mul (and.left pq) (and.left qr)) (Prop.mul (and.right qr) (and.right pq)))
+    /- Sym -/ ( λ P Q, λ pq, and.intro (and.right pq) (and.left pq))
 
 -- TODO: Hom (pro)functor;
 -- TODO: Sigma: (B→Type) → (E→B), UnSigma: (E→B) → (B→Type)
