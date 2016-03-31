@@ -106,3 +106,21 @@ definition OverCat (C : CatType) (X : C) : CatType :=
         (OverType C X) (Over.HomSet C X)
         (@Over.Id C X) (@Over.Mul C X)
         (@Over.UnitL C X) (@Over.UnitR C X) (@Over.Assoc C X)
+
+definition OverSetoidType (Base : SetoidType) : Type :=
+    OverType SetoidCat Base
+definition OverSetoid.HomSet {Base : SetoidType} : Cat.HomType (OverSetoidType Base) :=
+    Over.HomSet SetoidCat Base
+definition OverSetoid.Id {Base : SetoidType} : Cat.IdType (@OverSetoid.HomSet Base) :=
+    @Over.Id SetoidCat Base
+definition OverSetoid.Mul {Base : SetoidType} : Cat.MulType (@OverSetoid.HomSet Base) :=
+    @Over.Mul SetoidCat Base
+definition OverSetoid.UnitL {Base : SetoidType} : Cat.UnitLProp (@OverSetoid.Id Base) (@OverSetoid.Mul Base) :=
+    @Over.UnitL SetoidCat Base
+definition OverSetoid.UnitR {Base : SetoidType} : Cat.UnitRProp (@OverSetoid.Id Base) (@OverSetoid.Mul Base) :=
+    @Over.UnitR SetoidCat Base
+definition OverSetoid.Assoc {Base : SetoidType} : Cat.AssocProp (@OverSetoid.Mul Base) :=
+    @Over.Assoc SetoidCat Base
+
+definition OverSetoidCat (Base : SetoidType) : CatType :=
+    OverCat SetoidCat Base
