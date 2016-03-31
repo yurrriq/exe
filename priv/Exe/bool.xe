@@ -1,4 +1,6 @@
 
-             data bool: * :=
-                  (true: () → bool)
-                  (false: () → bool)
+             data bool: *.{max i h} :=
+                  (true: () -> bool)
+                  (false: () -> bool)
+
+             data false: * := ()
