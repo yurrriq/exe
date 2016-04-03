@@ -1,8 +1,7 @@
-/- Setoid : universe-polymorphic -/
+/- Setoid.lean -/
 
 set_option pp.universes true
 set_option pp.metavar_args false
-universe variable u
 
 /-  naming conventions:
         - names with suffix Type are types,
@@ -12,24 +11,26 @@ universe variable u
         - additional definitions for `MyType` are in `My` namespace
 -/
 
+namespace EXE
+
 -- equivalence
-definition EquType (El : Type) : Type := El → El → Prop
+definition EquType.{uEl} : Type.{uEl} → Type.{max uEl 1} := λ El, ∀ (l r : El), Prop
 
 -- axioms of equivalence
-section withEqu
-    variables {El : Type} (Equ : EquType El)
-    definition Equ.ReflProp : Prop := ∀{e : El}, Equ e e
-    definition Equ.TransProp : Prop := ∀{e1 e2 e3 : El}, Equ e1 e2 → Equ e2 e3 → Equ e1 e3
-    definition Equ.SymProp : Prop := ∀{e1 e2 : El}, Equ e1 e2 → Equ e2 e1
-end withEqu
+definition Equ.ReflProp {El : Type} (Equ : EquType El) : Prop
+    := ∀{e0 : El}, Equ e0 e0
+definition Equ.TransProp {El : Type} (Equ : EquType El) : Prop
+    := ∀{e1 e2 e3 : El}, Equ e1 e2 → Equ e2 e3 → Equ e1 e3
+definition Equ.SymProp {El : Type} (Equ : EquType El) : Prop
+    := ∀{e1 e2 : El}, Equ e1 e2 → Equ e2 e1
 
 /-
  - Definition of the type of categories (CatType) and the category of setoids (SetoidCat)
  -/
 
 -- the type of setoids, objects of the category `Setoid`
-record SetoidType : Type :=
-    (El : Type)
+record SetoidType.{uEl} : Type.{uEl + 1} :=
+    (El : Type.{uEl})
     (Equ : EquType El)
     (Refl : Equ.ReflProp Equ)
     (Trans : Equ.TransProp Equ)
@@ -39,24 +40,26 @@ abbreviation Setoid.MkOb := SetoidType.mk
 
 -- carrier of setoid
 attribute SetoidType.El [coercion]
-notation `[` S `]` := SetoidType.El S        -- elements of `S`
+notation ` [` S `] ` := SetoidType.El S        -- elements of `S`
 notation a ` ≡` S `≡ ` b :10 := SetoidType.Equ S a b      -- `a=b` in `S`
-notation `⊜` := SetoidType.Refl _
+notation ` ⊜ ` := SetoidType.Refl _
 notation ab ` ⊡` S `⊡ ` bc :100 := SetoidType.Trans S ab bc
 
 -- morphisms in the category `Setoid`
 namespace Setoid
-    record HomType (A B : SetoidType) : Type :=
+    record HomType (A : SetoidType) (B : SetoidType)
+        : Type :=
         (onEl : Π(a : A), B)
         (onEqu : ∀{a1 a2 : A}, (a1 ≡_≡ a2) → (onEl a1 ≡_≡ onEl a2))
+    print HomType
     abbreviation MkHom {A B : SetoidType} := @Setoid.HomType.mk A B
 end Setoid
 
 -- action on carrier
 attribute Setoid.HomType.onEl [coercion]
-infixl `$`:100 := Setoid.HomType.onEl
+infixl ` $ `:100 := Setoid.HomType.onEl
 attribute Setoid.HomType.onEqu [coercion]
-infixl `$/`:100 := Setoid.HomType.onEqu
+infixl ` $/ `:100 := Setoid.HomType.onEqu
 
 -- hom-sets in `Setoid` category
 definition Setoid.HomSet (A B : SetoidType) : SetoidType :=
@@ -71,10 +74,10 @@ definition app_set_hom_equ {A B : SetoidType} {f g : Setoid.HomType A B}
     (eq : ∀(a : A), (f a) ≡_≡ (g a)) (a : A) : (f a) ≡_≡ (g a)
 := eq a
 
-infixl `/$`:100 := app_set_hom_equ
+infixl ` /$ `:100 := app_set_hom_equ
 
 -- the dedicated arrow for morphisms of setoids
-infixr `⥤`:10 := Setoid.HomSet
+infixr ` ⥤ `:10 := Setoid.HomSet
 
 namespace Setoid
 
@@ -104,6 +107,27 @@ namespace Setoid
         λ a b, (SetoidType.Sym _ (okk a)) ⊡_⊡ ((okk b))
 
     abbreviation MkSingleton {S : SetoidType} := @SingletonType.mk S
+
+
+    definition FromType (T : Type) : SetoidType :=
+        Setoid.MkOb
+            T
+            ( λ x y, true)
+            ( λ x, true.intro)
+            ( λ x y z, λ xy yz, true.intro)
+            ( λ x y, λ xy, true.intro)
+
+    definition FromType.Singleton (T : Type) : Setoid.SubSingletonProp (FromType T) :=
+        λ x y, true.intro
+
+    definition FromMap {T1 T2 : Type} (f : T1 → T2)
+        : (FromType T1) ⥤ (FromType T2) :=
+        Setoid.MkHom f (λ x y, λ xy, true.intro)
+
+    definition Const (X Y : SetoidType) (y : Y) : X ⥤ Y := Setoid.MkHom
+        ( λ x, y )
+        ( λ x1 x2, λ e12, ⊜ )
+
 end Setoid
 
 infixl `∙`: 100 := Setoid.Mul.onElEl
@@ -130,3 +154,4 @@ definition PropSet : SetoidType :=
 -- TODO: TT-like recursor, induction
 
 -- TODO: Id(Refl) coincide with SetoidType.Equ
+end EXE

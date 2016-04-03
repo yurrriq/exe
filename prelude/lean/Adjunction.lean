@@ -7,12 +7,8 @@ import Functor
 
 set_option pp.universes true
 set_option pp.metavar_args false
-universe variable o1
-universe variable h1
-universe variable o2
-universe variable h2
-universe variable o3
-universe variable h3
+
+namespace EXE
 
 namespace Adj
     abbreviation TriangleLProp {C D : CatType} (L : D⟶C) (R : C⟶D)
@@ -23,16 +19,18 @@ namespace Adj
         := ∀ (Y : C), ((R $$/ (ε /$$ Y)) ⊙D⊙ (η /$$ (R $$ Y))) ≡((R Y) ⇒D⇒ (R Y))≡ ①
 end Adj
 
-record AdjType {C : CatType.{o1 h1}} {D : CatType.{o2 h2}} (L : D⟶C) (R : C⟶D) : Type :=
+record AdjType
+    {C : CatType} {D : CatType} (L : D⟶C) (R : C⟶D)
+        : Type :=
     (unit : 𝟙 ⟹ (R ⊗ L) )
     (counit : (L ⊗ R) ⟹ 𝟙 )
     (triangleL : Adj.TriangleLProp L R unit counit)
     (triangleR : Adj.TriangleRProp L R unit counit)
 
-infix `⊣`:10 := AdjType
+infix ` ⊣ `:10 := AdjType
 
-record LeftAdj {C D : CatType} (Right : C⟶D) : Type := (Left : D ⟶ C) (adj : Left ⊣ Right)
-record RightAdj {C D : CatType} (Left : D ⟶ C) : Type := (Right : C⟶D) (adj : Left ⊣ Right)
+record LeftAdj {C D : CatType} (Right : C ⟶ D) : Type := (Left : D ⟶ C) (adj : Left ⊣ Right)
+record RightAdj {C D : CatType} (Left : D ⟶ C) : Type := (Right : C ⟶ D) (adj : Left ⊣ Right)
 
 definition Lim (C D : CatType) := RightAdj (Cat.Delta C D)
 definition HaveAllLim (D : CatType) : Type := Π (C : CatType), Lim C D
@@ -110,11 +108,13 @@ end IsoOnLR
     definition IsoOnLR
         {C D : CatType} {L : D⟶C} {R : C⟶D}
         (adj : AdjType L R) (X : D) (Y : C)
-        : (L X ⇒C⇒ Y) ⇔ (X ⇒D⇒ R Y)
-    := CatType.MkIso
+            : (L X ⇒C⇒ Y) ⇔ (X ⇒D⇒ R Y) :=
+        CatType.MkIso
             (@IsoOnLR.LtoR C D L R adj X Y)
             (@IsoOnLR.RtoL C D L R adj X Y)
             (@IsoOnLR.LeqL C D L R adj X Y)
             (@IsoOnLR.ReqR C D L R adj X Y)
 
 end Adj
+
+end EXE

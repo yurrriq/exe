@@ -4,8 +4,8 @@ import Setoid
 
 set_option pp.universes true
 set_option pp.metavar_args false
-universe variable u
 
+namespace EXE
 namespace Cat
 
     -- carrier of a category: type of morphisms
@@ -13,11 +13,14 @@ namespace Cat
     print HomType
 
     -- structure of a category
-    section withHom
-        variables {Ob : Type} (Hom : Cat.HomType Ob)
-        definition IdType : Type := Π{a : Ob}, Hom a a
-        definition MulType : Type := Π{a b c : Ob}, Hom b c ⥤ Hom a b ⥤ Hom a c
-    end withHom
+    definition IdType
+        {Ob : Type} (Hom : Cat.HomType Ob)
+            : Type :=
+        Π{a : Ob}, Hom a a
+    definition MulType
+        {Ob : Type} (Hom : Cat.HomType Ob)
+            : Type :=
+        Π{a b c : Ob}, Hom b c ⥤ Hom a b ⥤ Hom a c
 
     -- axioms of category
     section withIdMul
@@ -85,10 +88,10 @@ abbreviation Cat.MkOb := CatType.mk
 
 -- carrier of category
 attribute CatType.Ob [coercion]
-notation `⟦` C `⟧` := CatType.Ob C
-notation a `⇒` C `⇒` b := CatType.Hom C a b
-notation `①` := CatType.Id _
-notation f `⊙` C `⊙` g := CatType.Mul C f $ g
+notation ` ⟦ ` C ` ⟧ ` := CatType.Ob C
+notation a ` ⇒` C `⇒ ` b := CatType.Hom C a b
+notation ` ① ` := CatType.Id _
+notation f ` ⊙` C `⊙ ` g := CatType.Mul C f $ g
 
 abbreviation CatType.UnitC (C : CatType)
     : Cat.UnitCProp (@CatType.Id C) (@CatType.Mul C) :=
@@ -110,25 +113,20 @@ abbreviation CatType.AssocInv (C : CatType)
     : Cat.AssocInvProp (@CatType.Mul C) :=
     λ X Y Z T, λ f g h, SetoidType.Sym _ (CatType.Assoc C f g h)
 
-section withCat
-    variable (C : CatType)
+definition CatType.MulHE (C : CatType) {X Y Z : C}
+    (mYZ : Y ⇒C⇒ Z)
+    {mXY1 mXY2 : X ⇒C⇒ Y}(e12 : mXY1 ≡(X ⇒C⇒ Y)≡ mXY2)
+        : (mYZ ⊙C⊙ mXY1) ≡(X ⇒C⇒ Z)≡ (mYZ ⊙C⊙ mXY2) :=
+    (CatType.Mul C $ mYZ) $/ e12
 
-    definition CatType.MulHE  {X Y Z : C}
-        (mYZ : Y ⇒C⇒ Z)
-        {mXY1 mXY2 : X ⇒C⇒ Y}(e12 : mXY1 ≡(X ⇒C⇒ Y)≡ mXY2)
-            : (mYZ ⊙C⊙ mXY1) ≡(X ⇒C⇒ Z)≡ (mYZ ⊙C⊙ mXY2) :=
-        (CatType.Mul C $ mYZ) $/ e12
+definition CatType.MulEH (C : CatType) {X Y Z : C}
+    {mYZ1 mYZ2 : Y ⇒C⇒ Z}(e12 : mYZ1 ≡(Y ⇒C⇒ Z)≡ mYZ2)
+    (mXY : X ⇒C⇒ Y)
+        : (mYZ1 ⊙C⊙ mXY) ≡(X ⇒C⇒ Z)≡ (mYZ2 ⊙C⊙ mXY) :=
+    (CatType.Mul C $/ e12) /$ mXY
 
-    definition CatType.MulEH {X Y Z : C}
-        {mYZ1 mYZ2 : Y ⇒C⇒ Z}(e12 : mYZ1 ≡(Y ⇒C⇒ Z)≡ mYZ2)
-        (mXY : X ⇒C⇒ Y)
-            : (mYZ1 ⊙C⊙ mXY) ≡(X ⇒C⇒ Z)≡ (mYZ2 ⊙C⊙ mXY) :=
-        (CatType.Mul C $/ e12) /$ mXY
-
-end withCat
-
-notation f `⊙` C `⊙/` geq := CatType.MulHE C f geq
-notation feq `/⊙` C `⊙` g := CatType.MulEH C feq g
+notation f ` ⊙` C `⊙/ ` geq := CatType.MulHE C f geq
+notation feq ` /⊙` C `⊙ ` g := CatType.MulEH C feq g
 
 
 -- the category of `Setoid`s
@@ -137,32 +135,6 @@ definition SetoidCat : CatType :=
         SetoidType Setoid.HomSet
         @Setoid.Id @Setoid.Mul
         @Setoid.UnitL @Setoid.UnitR @Setoid.Assoc
-
--- record LiftUniv (T : Type.{u}) : Type := (it : T) (dummy : Type.{u})
--- check (LiftUniv : Type.{u} → Type.{u+1})
-
-namespace Setoid
-
-    definition FromType (T : Type) : SetoidType :=
-        Setoid.MkOb
-            T
-            ( λ x y, true)
-            ( λ x, true.intro)
-            ( λ x y z, λ xy yz, true.intro)
-            ( λ x y, λ xy, true.intro)
-
-    definition FromType.Singleton (T : Type) : Setoid.SubSingletonProp (FromType T) :=
-        λ x y, true.intro
-
-    definition FromMap {T1 T2 : Type} (f : T1 → T2)
-        : (FromType T1) ⥤ (FromType T2) :=
-        Setoid.MkHom f (λ x y, λ xy, true.intro)
-
-    definition Const (X Y : SetoidType) (y : Y) : X ⥤ Y := Setoid.MkHom
-        ( λ x, y )
-        ( λ x1 x2, λ e12, ⊜ )
-
-end Setoid
 
 namespace Cat
     definition FromSet (S : SetoidType) : CatType :=
@@ -190,6 +162,8 @@ namespace CatType
     abbreviation MkIso {C : CatType} {A B : C} := @IsoHom.mk C A B
 end CatType
 
-notation a `⇐` C `⇒` b := CatType.IsoHom C a b
+notation a ` ⇐` C `⇒ ` b := CatType.IsoHom C a b
 
-infix `⇔`:10 := CatType.IsoHom SetoidCat
+infix ` ⇔ `:10 := CatType.IsoHom SetoidCat
+
+end EXE

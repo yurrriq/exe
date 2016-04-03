@@ -8,12 +8,8 @@ import Adjunction
 
 set_option pp.universes true
 set_option pp.metavar_args false
-universe variable o1
-universe variable h1
-universe variable o2
-universe variable h2
-universe variable o3
-universe variable h3
+
+namespace EXE
 
 record InitialType (C : CatType) (Obj : C) : Type :=
     (Cone : Functor.ConeType Obj 𝟙)
@@ -23,29 +19,28 @@ record InitialType (C : CatType) (Obj : C) : Type :=
 
 namespace Initial
 
-    abbreviation Mk {C : CatType} {Obj : C}
-    := @InitialType.mk C Obj
+    abbreviation Mk {C : CatType} {Obj : C} :=
+        @InitialType.mk C Obj
 
     lemma Singleton {C : CatType} {I : C}
         (init : InitialType C I) (X : C)
-        : Setoid.SingletonType (I ⇒C⇒ X)
-    := Setoid.MkSingleton
+            : Setoid.SingletonType (I ⇒C⇒ X) :=
+        Setoid.MkSingleton
             ( InitialType.Cone init X)
             ( λ(f : I ⇒C⇒ X),
                 (InitialType.IsCone init f) ⊡_⊡
                 (f ⊙C⊙/ (InitialType.Ok init)) ⊡_⊡
                 (CatType.UnitR C f) )
 
-    definition FromLim {C : CatType.{o1 h1}}
+    definition FromLim.{o1 h1} {C : CatType.{o1 h1}}
         (lim : HaveAllLim.{o1 h1 o1 h1} C)
-        : C
-    := Lim.Apply lim 𝟙
+            : C :=
+        Lim.Apply lim 𝟙
     print FromLim
 
-    definition FromLim.Ok {C : CatType.{o1 h1}}
+    definition FromLim.Ok.{o1 h1} {C : CatType.{o1 h1}}
         (lim : HaveAllLim.{o1 h1 o1 h1} C)
-        : InitialType C ((RightAdj.Right (lim C)) $$ 𝟙) -- (Lim.Apply lim 𝟙)
-    :=
+            : InitialType C ((RightAdj.Right (lim C)) $$ 𝟙) := -- (Lim.Apply lim 𝟙)
         proof Mk
             ( λ X, ((AdjType.counit (RightAdj.adj (lim C))) /$$ 𝟙) /$$ X)
             ( λ A B, λ(m : A ⇒C⇒ B),
@@ -108,19 +103,19 @@ record TerminalType (C : CatType) (Obj : C) : Type :=
 
 namespace Terminal
 
-    abbreviation Mk {C : CatType} {Obj : C}
-    := @TerminalType.mk C Obj
+    abbreviation Mk {C : CatType} {Obj : C} :=
+        @TerminalType.mk C Obj
 
     lemma Singleton {C : CatType} {T : C} (term : TerminalType C T) (X : C)
-        : Setoid.SingletonType (X ⇒C⇒ T)
-    := Setoid.MkSingleton
+            : Setoid.SingletonType (X ⇒C⇒ T) :=
+        Setoid.MkSingleton
             ( TerminalType.Cocone term X)
             ( λ(g : X ⇒C⇒ T),
                 (SetoidType.Sym _ (TerminalType.IsCocone term g)) ⊡_⊡
                 ((TerminalType.Ok term) /⊙C⊙ g) ⊡_⊡
                 (CatType.UnitL C g))
 
-    definition FromColim {C : CatType.{o1 h1}}
+    definition FromColim.{o1 h1} {C : CatType.{o1 h1}}
         (colim : HaveAllColim.{o1 h1 o1 h1} C)
         : C
     := Colim.Apply colim 𝟙
@@ -135,3 +130,5 @@ namespace Terminal
 -- TODO: limit of empty is terminal (actually need it!)
 
 end Terminal
+
+end EXE
