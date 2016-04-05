@@ -45,6 +45,14 @@ notation a ` ≡` S `≡ ` b :10 := SetoidType.Equ S a b      -- `a=b` in `S`
 notation ` ⊜ ` := SetoidType.Refl _
 notation ab ` ⊡` S `⊡ ` bc :100 := SetoidType.Trans S ab bc
 
+-- util
+
+definition Equ.Trans3Prop {El : Type} (Equ : EquType El) : Prop
+    := ∀{e1 e2 e3 e4 : El}, Equ e1 e2 → Equ e2 e3 → Equ e3 e4 → Equ e1 e4
+
+definition SetoidType.Trans3 (S : SetoidType) : Equ.Trans3Prop (SetoidType.Equ S)
+    := λ e1 e2 e3 e4, λ eq12 eq23 eq34, eq12 ⊡S⊡ eq23 ⊡S⊡ eq34
+
 -- morphisms in the category `Setoid`
 namespace Setoid
     record HomType (A : SetoidType) (B : SetoidType)
@@ -107,7 +115,6 @@ namespace Setoid
         λ a b, (SetoidType.Sym _ (okk a)) ⊡_⊡ ((okk b))
 
     abbreviation MkSingleton {S : SetoidType} := @SingletonType.mk S
-
 
     definition FromType (T : Type) : SetoidType :=
         Setoid.MkOb
