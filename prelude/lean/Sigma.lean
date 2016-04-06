@@ -69,68 +69,15 @@ definition Sigma.Sym {Base : SetoidType} (P : DepSetoidCat Base)
     λ (s1 s2 : SigmaType P),
     λ (eq12 : Sigma.Equ P s1 s2),
     exists.intro
-        (@SetoidType.Sym Base
-            (SigmaType.base s1)
-            (SigmaType.base s2)
-            (Sigma.Equ.base eq12))
-        (@SetoidType.Trans (P $$ (SigmaType.base s1))
-            ((P $$/ (@SetoidType.Sym Base
-                        (SigmaType.base s1)
-                        (SigmaType.base s2)
-                        (Sigma.Equ.base eq12))) $
-                (SigmaType.fiber s2))
-            ((P $$/ (@SetoidType.Sym Base
-                        (SigmaType.base s1)
-                        (SigmaType.base s2)
-                        (Sigma.Equ.base eq12))) $
-                ((P $$/ (Sigma.Equ.base eq12)) $
-                    (SigmaType.fiber s1)))
-            (SigmaType.fiber s1)
-            (@SetoidType.Sym (P $$ (SigmaType.base s1))
-                ((P $$/ (@SetoidType.Sym Base
-                            (SigmaType.base s1)
-                            (SigmaType.base s2)
-                            (Sigma.Equ.base eq12))) $
-                    ((P $$/ (Sigma.Equ.base eq12)) $
-                        (SigmaType.fiber s1)))
-                ((P $$/ (@SetoidType.Sym Base
-                            (SigmaType.base s1)
-                            (SigmaType.base s2)
-                            (Sigma.Equ.base eq12))) $
-                    (SigmaType.fiber s2))
-                ((P $$/ (@SetoidType.Sym Base
-                            (SigmaType.base s1)
-                            (SigmaType.base s2)
-                            (Sigma.Equ.base eq12))) $/
-                    (Sigma.Equ.fiber eq12)))
-            ((@SetoidType.Trans3 (P $$ (SigmaType.base s1))
-                ((P $$/ (@SetoidType.Sym Base
-                            (SigmaType.base s1)
-                            (SigmaType.base s2)
-                            (Sigma.Equ.base eq12))) $
-                    ((P $$/ (Sigma.Equ.base eq12)) $
-                        (SigmaType.fiber s1)))
-                ((P $$/ (@SetoidType.Trans Base
-                    (SigmaType.base s1)
-                    (SigmaType.base s2)
-                    (SigmaType.base s1)
-                    (Sigma.Equ.base eq12)
-                    (@SetoidType.Sym Base
-                            (SigmaType.base s1)
-                            (SigmaType.base s2)
-                            (Sigma.Equ.base eq12))))
-                    $ (SigmaType.fiber s1))
-                ((P $$/ (@SetoidType.Refl Base (SigmaType.base s1)))
-                    $  (SigmaType.fiber s1))
+        (SetoidType.Sym Base (Sigma.Equ.base eq12))
+        (SetoidType.Sym
+            (P $$ (SigmaType.base s1))
+            (DepAdj P
+                (Sigma.Equ.base eq12)
+                (SetoidType.Sym Base (Sigma.Equ.base eq12))
                 (SigmaType.fiber s1)
-                ((FunctorType.onMulInv P
-                    (@SetoidType.Sym Base
-                            (SigmaType.base s1)
-                            (SigmaType.base s2)
-                            (Sigma.Equ.base eq12))
-                    (Sigma.Equ.base eq12)) /$ (SigmaType.fiber s1))
-                ((P $$// (true.intro)) /$ (SigmaType.fiber s1))
-                ((FunctorType.onId P))) /$ (SigmaType.fiber s1)))
+                (SigmaType.fiber s2)
+                (Sigma.Equ.fiber eq12)))
 
 definition SigmaSet {Base : SetoidType} (P : DepSetoidCat Base)
     : SetoidType :=
