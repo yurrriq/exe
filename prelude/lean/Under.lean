@@ -1,4 +1,4 @@
-/- Over.lean -/
+/- Under.lean -/
 
 import Setoid
 import Cat
@@ -9,48 +9,48 @@ namespace EXE
  - The category over X
  -/
 
-record OverType (C : CatType) (X : C) : Type :=
-    (Dom : C)
-    (Hom : Dom ⇒C⇒ X)
+record UnderType (C : CatType) (X : C) : Type :=
+    (Cod : C)
+    (Hom : X ⇒C⇒ Cod)
 
-namespace Over
+namespace Under
 
     -- commutative triangles
     abbreviation TriProp
         (C : CatType) (X : C) {X1 X2 : C}
-        (m1 : X1 ⇒C⇒ X)
-        (m2 : X2 ⇒C⇒ X)
+        (m1 : X ⇒C⇒ X1)
+        (m2 : X ⇒C⇒ X2)
         (m12: X1 ⇒C⇒ X2)
             : Prop :=
-        (m2 ⊙C⊙ m12) ≡(X1 ⇒C⇒ X)≡ m1
+        m2 ≡(X ⇒C⇒ X2)≡ (m12 ⊙C⊙ m1)
 
     definition TriId
-        (C : CatType) (X : C) {X1 : C} (m : X1 ⇒C⇒ X)
+        (C : CatType) (X : C) {X1 : C} (m : X ⇒C⇒ X1)
             : TriProp C X m m ① :=
-        CatType.UnitR C m
+        CatType.UnitLInv C m
 
     definition TriMul
         (C : CatType) (X : C) {X1 X2 X3 : C}
-        {m1 : X1 ⇒C⇒ X} {m2 : X2 ⇒C⇒ X} {m3 : X3 ⇒C⇒ X}
+        {m1 : X ⇒C⇒ X1} {m2 : X ⇒C⇒ X2} {m3 : X ⇒C⇒ X3}
         {m12 : X1 ⇒C⇒ X2} {m23 : X2 ⇒C⇒ X3}
         (tr12 : TriProp C X m1 m2 m12)
         (tr23 : TriProp C X m2 m3 m23)
             : TriProp C X m1 m3 (m23 ⊙C⊙ m12) :=
-        (CatType.AssocInv C m3 m23 m12) ⊡_⊡
-        (tr23 /⊙C⊙ m12) ⊡_⊡
-        tr12
+        tr23 ⊡_⊡
+        (m23 ⊙C⊙/ tr12) ⊡_⊡
+        (CatType.AssocInv C m23 m12 m1)
 
     -- morphisms in the category of morphisms
-    record HomType (C : CatType) (X : C) (A B : OverType C X) : Type :=
-        (atDom : OverType.Dom A ⇒C⇒ OverType.Dom B)
-        (tr : TriProp C X (OverType.Hom A) (OverType.Hom B) atDom)
+    record HomType (C : CatType) (X : C) (A B : UnderType C X) : Type :=
+        (atCod : UnderType.Cod A ⇒C⇒ UnderType.Cod B)
+        (tr : TriProp C X (UnderType.Hom A) (UnderType.Hom B) atCod)
 
-    definition HomEqu (C : CatType) (X : C) {A B : OverType C X} : EquType (HomType C X A B) :=
+    definition HomEqu (C : CatType) (X : C) {A B : UnderType C X} : EquType (HomType C X A B) :=
         λ(f g : HomType C X A B),
-            (HomType.atDom f ≡(OverType.Dom A ⇒C⇒ OverType.Dom B)≡ HomType.atDom g)
+            (HomType.atCod f ≡(UnderType.Cod A ⇒C⇒ UnderType.Cod B)≡ HomType.atCod g)
 
-    definition HomSet (C : CatType) (X : C) : Cat.HomType (OverType C X) :=
-        λ(A B : OverType C X), Setoid.MkOb
+    definition HomSet (C : CatType) (X : C) : Cat.HomType (UnderType C X) :=
+        λ(A B : UnderType C X), Setoid.MkOb
             /- El -/ (HomType C X A B)
             /- Equ -/ (@HomEqu C X A B)
             /- Refl -/ ( λ(f : HomType C X A B), ⊜)
@@ -62,47 +62,47 @@ namespace Over
                     (SetoidType.Sym _ fg))
 
     definition Id (C : CatType) (X : C) : Cat.IdType (@HomSet C X) :=
-        λ(A : OverType C X),
-            HomType.mk ① (TriId C X (OverType.Hom A))
+        λ(A : UnderType C X),
+            HomType.mk ① (TriId C X (UnderType.Hom A))
 
     definition Mul (C : CatType) (X : C) : Cat.MulType (@HomSet C X) :=
-        λ(m1 m2 m3 : OverType C X), Setoid.MkHom2
+        λ(m1 m2 m3 : UnderType C X), Setoid.MkHom2
             (HomSet C X m2 m3) (HomSet C X m1 m2) (HomSet C X m1 m3)
             /- onElEl -/ ( λ(mm23 : HomSet C X m2 m3), λ(mm12 : HomSet C X m1 m2), HomType.mk
-                /- atDom -/ (HomType.atDom mm23 ⊙C⊙ HomType.atDom mm12)
+                /- atCod -/ (HomType.atCod mm23 ⊙C⊙ HomType.atCod mm12)
                 /- tr -/ (TriMul C X (HomType.tr mm12) (HomType.tr mm23)))
             /- onElEqu -/ ( λ(mm23 : HomSet C X m2 m3), λ(mm12 mm12' : HomSet C X m1 m2),
                 λ(eq : mm12 ≡(HomSet C X m1 m2)≡ mm12'),
-                    ((HomType.atDom mm23) ⊙C⊙/ eq))
+                    ((HomType.atCod mm23) ⊙C⊙/ eq))
             /- onEquEl -/ ( λ(mm23 mm23' : HomSet C X m2 m3),
                 λ(eq : mm23 ≡(HomSet C X m2 m3)≡ mm23'),
                 λ(mm12 : HomSet C X m1 m2),
-                    (eq /⊙C⊙ (HomType.atDom mm12)))
+                    (eq /⊙C⊙ (HomType.atCod mm12)))
 
     definition UnitL (C : CatType) (X : C) : Cat.UnitLProp (@Id C X) (@Mul C X) :=
-        λ(m1 m2 : OverType C X), λ(m12 : HomType C X m1 m2),
-            (@CatType.UnitL C (OverType.Dom m1) (OverType.Dom m2) (HomType.atDom m12))
+        λ(m1 m2 : UnderType C X), λ(m12 : HomType C X m1 m2),
+            (@CatType.UnitL C (UnderType.Cod m1) (UnderType.Cod m2) (HomType.atCod m12))
 
     definition UnitR (C : CatType) (X : C) : Cat.UnitRProp (@Id C X) (@Mul C X) :=
-        λ(m1 m2 : OverType C X), λ(m12 : HomType C X m1 m2),
-            (@CatType.UnitR C (OverType.Dom m1) (OverType.Dom m2) (HomType.atDom m12))
+        λ(m1 m2 : UnderType C X), λ(m12 : HomType C X m1 m2),
+            (@CatType.UnitR C (UnderType.Cod m1) (UnderType.Cod m2) (HomType.atCod m12))
 
     definition Assoc (C : CatType) (X : C) : Cat.AssocProp (@Mul C X) :=
-        λ(m1 m2 m3 m4: OverType C X),
+        λ(m1 m2 m3 m4: UnderType C X),
         λ(m34 : HomType C X m3 m4),
         λ(m23 : HomType C X m2 m3),
         λ(m12 : HomType C X m1 m2),
             (@CatType.Assoc C
-                (OverType.Dom m1) (OverType.Dom m2)
-                (OverType.Dom m3) (OverType.Dom m4)
-                (HomType.atDom m34) (HomType.atDom m23) (HomType.atDom m12))
+                (UnderType.Cod m1) (UnderType.Cod m2)
+                (UnderType.Cod m3) (UnderType.Cod m4)
+                (HomType.atCod m34) (HomType.atCod m23) (HomType.atCod m12))
 
-end Over
+end Under
 
-definition OverCat (C : CatType) (X : C) : CatType :=
+definition UnderCat (C : CatType) (X : C) : CatType :=
     Cat.MkOb
-        (OverType C X) (Over.HomSet C X)
-        (@Over.Id C X) (@Over.Mul C X)
-        (@Over.UnitL C X) (@Over.UnitR C X) (@Over.Assoc C X)
+        (UnderType C X) (Under.HomSet C X)
+        (@Under.Id C X) (@Under.Mul C X)
+        (@Under.UnitL C X) (@Under.UnitR C X) (@Under.Assoc C X)
 
 end EXE
