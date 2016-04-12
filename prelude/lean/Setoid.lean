@@ -45,6 +45,41 @@ notation a ` ≡` S `≡ ` b :10 := SetoidType.Equ S a b      -- `a=b` in `S`
 notation ` ⊜ ` := SetoidType.Refl _
 notation ab ` ⊡` S `⊡ ` bc :100 := SetoidType.Trans S ab bc
 
+definition Equ.Closure {El : Type} : EquType El → EquType El :=
+    λ (rel : EquType El),
+    λ (e1 e2 : El),
+    ∀ (equ : EquType El),
+    ∀ (refl : Equ.ReflProp equ)(trans : Equ.TransProp equ)(sym : Equ.SymProp equ),
+    ∀ (impl : ∀ (ee1 ee2 : El), rel ee1 ee2  → equ ee1 ee2),
+    equ e1 e2
+
+definition Setoid.Closure {El : Type} : EquType El → SetoidType :=
+    λ (rel : EquType El),
+    Setoid.MkOb
+        El
+        (Equ.Closure rel)
+        ( λ (e0 : El),
+            λ (equ : EquType El),
+            λ (refl : Equ.ReflProp equ)(trans : Equ.TransProp equ)(sym : Equ.SymProp equ),
+            λ (impl : ∀ (ee1 ee2 : El), rel ee1 ee2  → equ ee1 ee2),
+            @refl e0)
+        ( λ (e1 e2 e3 : El),
+          λ (eq12 : Equ.Closure rel e1 e2),
+          λ (eq23 : Equ.Closure rel e2 e3),
+            λ (equ : EquType El),
+            λ (refl : Equ.ReflProp equ)(trans : Equ.TransProp equ)(sym : Equ.SymProp equ),
+            λ (impl : ∀ (ee1 ee2 : El), rel ee1 ee2  → equ ee1 ee2),
+            @trans e1 e2 e3
+                (eq12 equ @refl @trans @sym impl)
+                (eq23 equ @refl @trans @sym impl))
+        ( λ (e1 e2 : El),
+          λ (eq12 : Equ.Closure rel e1 e2),
+            λ (equ : EquType El),
+            λ (refl : Equ.ReflProp equ)(trans : Equ.TransProp equ)(sym : Equ.SymProp equ),
+            λ (impl : ∀ (ee1 ee2 : El), rel ee1 ee2  → equ ee1 ee2),
+            @sym e1 e2
+                (eq12 equ @refl @trans @sym impl))
+
 -- util
 
 definition Equ.Trans3Prop {El : Type} (Equ : EquType El) : Prop

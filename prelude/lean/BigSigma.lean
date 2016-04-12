@@ -102,11 +102,17 @@ definition BigSigmaOver (Base : SetoidType)
     /- Dom -/ (BigSigmaSet P)
     /- Hom -/ (BigSigmaFirst P)
 
+definition BigSIgma.onHom (Base : SetoidType) (X Y : DepSetoidCat Base)
+        : (X ⇒(DepSetoidCat Base)⇒ Y)⥤(onOb X ⇒(OverSetoidCat Base)⇒ onOb Y) :=
+    Setoid.MkHom
+        ( λ (m : X ⟹ Y), )
+        (sorry)
+
 definition BigSigmaFunctor (Base : SetoidType)
         : DepSetoidCat Base ⟶ OverSetoidCat Base :=
     Functor.MkOb
     /- onOb -/ ( λ(X : DepSetoidCat Base), BigSigmaOver Base X)
-    /- onHom -/ ( λ(X Y : DepSetoidCat Base), sorry)
+    /- onHom -/ ( λ(X Y : DepSetoidCat Base), BigSigma.onHom Base X Y)
     /- onId -/ ( λ(X : DepSetoidCat Base), sorry)
     /- onMul -/ ( λ(X Y Z : DepSetoidCat Base), λ(g : Y ⇒_⇒ Z), λ(f : X ⇒_⇒ Y), sorry)
 
