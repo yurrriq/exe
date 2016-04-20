@@ -332,11 +332,14 @@ abbreviation Cat.FullEqu {C D : CatType} {F G : C ⟶ D} : EquType [F ⟹ G]
 
 infix `≣` : 10 := Cat.FullEqu
 
-abbreviation Cat.Wiskering {C D : CatType} {F G H : C ⟶ D}
-    (b : G ⟹ H) (a : F ⟹ G) : (F ⟹ H)
-    := b ⊙(C ⟶ D)⊙ a
+abbreviation Cat.Vertical
+    {C D : CatType} {F G H : C ⟶ D}
+    (b : G ⟹ H) (a : F ⟹ G)
+        : (F ⟹ H) :=
+    b ⊙(C ⟶ D)⊙ a
 
-infixl ` ○ ` : 100 := Cat.Wiskering
+infixl ` ○ ` : 100 := Cat.Vertical
+
 
 -- TODO: Cat.Mul, Cat,UnitorLR, Cat.Associator, Cat.TriangleLCREqu, Cat.PentagonEqu
 

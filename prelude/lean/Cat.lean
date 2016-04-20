@@ -9,39 +9,37 @@ namespace EXE
 namespace Cat
 
     -- carrier of a category: type of morphisms
-    abbreviation HomType (Ob : Type) : Type := Π(A B : Ob), SetoidType
-    print HomType
+    abbreviation HomType (Ob : Type) : Type := Π(Dom Cod : Ob), SetoidType
 
     -- structure of a category
-    definition IdType
-        {Ob : Type} (Hom : Cat.HomType Ob)
-            : Type :=
-        Π{a : Ob}, Hom a a
-    definition MulType
-        {Ob : Type} (Hom : Cat.HomType Ob)
-            : Type :=
-        Π{a b c : Ob}, Hom b c ⥤ Hom a b ⥤ Hom a c
+    section withHom
+        variables {Ob : Type} (Hom : HomType Ob)
+        abbreviation IdType : Type :=
+            Π{a : Ob}, Hom a a
+        abbreviation MulType : Type :=
+            Π{a b c : Ob}, Hom b c ⥤ Hom a b ⥤ Hom a c
+    end withHom
 
     -- axioms of category
     section withIdMul
-        variables {Ob : Type} {Hom : Cat.HomType Ob}
-        variables (Id : Cat.IdType Hom) (Mul : Cat.MulType Hom)
-        definition UnitLProp : Prop :=
+        variables {Ob : Type} {Hom : HomType Ob}
+        variables (Id : IdType Hom) (Mul : MulType Hom)
+        abbreviation UnitLProp : Prop :=
             ∀{a b : Ob}, ∀(f : Hom a b), (Mul Id $ f) ≡(Hom a b)≡ f
-        definition UnitRProp : Prop :=
+        abbreviation UnitRProp : Prop :=
             ∀{a b : Ob}, ∀(f : Hom a b), (Mul f $ Id) ≡(Hom a b)≡ f
-        definition UnitCProp : Prop :=
+        abbreviation UnitCProp : Prop :=
             ∀{a : Ob}, (Mul Id $ Id) ≡(Hom a a)≡ Id
-        definition UnitLInvProp : Prop :=
+        abbreviation UnitLInvProp : Prop :=
             ∀{a b : Ob}, ∀(f : Hom a b), f ≡(Hom a b)≡ (Mul Id $ f)
-        definition UnitRInvProp : Prop :=
+        abbreviation UnitRInvProp : Prop :=
             ∀{a b : Ob}, ∀(f : Hom a b), f ≡(Hom a b)≡ (Mul f $ Id)
-        definition UnitCInvProp : Prop :=
+        abbreviation UnitCInvProp : Prop :=
             ∀{a : Ob}, Id ≡(Hom a a)≡ (Mul Id $ Id)
-        definition AssocProp : Prop :=
+        abbreviation AssocProp : Prop :=
             ∀{a b c d : Ob}, ∀(f : Hom c d), ∀(g : Hom b c), ∀(h : Hom a b),
                 (Mul (Mul f $ g) $ h) ≡(Hom a d)≡ (Mul f $ (Mul g $ h))
-        definition AssocInvProp : Prop :=
+        abbreviation AssocInvProp : Prop :=
             ∀{a b c d : Ob}, ∀(f : Hom c d), ∀(g : Hom b c), ∀(h : Hom a b),
                 (Mul f $ (Mul g $ h)) ≡(Hom a d)≡ (Mul (Mul f $ g) $ h)
     end withIdMul
