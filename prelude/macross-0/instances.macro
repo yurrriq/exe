@@ -111,3 +111,34 @@ def ListRichClass (Item : *) (L : *) : * := record
     (filter : List -> (Item -> Bool) -> List)
     (isEmpty : List -> Bool)
     (map : ??? )
+
+
+________________________
+
+LimEl (DOb : *) (U : DOb -> *) : * :=
+    \/(A : DOb) -> U A
+
+LimOk (DOb) (DMor) (U) (Umap) (el) : Prop :=
+    \/(A1 A2 : DOb) -> \/(m : DMor A1 A2) -> Equ (U A2) (Umap m (el A1)) (el A2)
+
+def CreatorElType (P : * -> * -> *) : * :=
+    \/(DOb : *) ->
+    \/(U : DOb -> *) ->
+    \/(end : \/(A : DOb) -> P (U A) (U A)) ->
+    P (LimEl DOb U) (LimEl DOb U)
+
+def PointAlg (A : *) (B : *) : * := B
+def ConstArgAlg (P : * -> * -> *) (X : *) (A : *) (B : *) : * := X -> P A B
+def IdArgAlg (P : * -> * -> *) (A : *) (B : *) : * := A -> P A B
+
+def PointCreatorEl 
+        : CreatorElType PointAlg := 
+    \ DOb -> \ U -> \ end -> \ A -> end A
+
+def ConstArgCreatorEl (P : * -> * -> *) (X : *)
+        : CreatorElType P -> CreatorElType (ConstArgAlg P X) :=
+    \ q -> \ DOb -> \ U -> \ end -> \ x -> q DOb U (\ A -> end A x)
+
+def IdArgCreatorEl (P : * -> * -> *)
+        : CreatorElType P -> CreatorElType (IdArgAlg P X) :=
+    \ q -> \ DOb -> \ U -> \ end -> \ el -> q DOb U (\ A -> end A (el A))
