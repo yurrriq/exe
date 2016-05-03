@@ -1,9 +1,7 @@
 
-    import Eff
-    
-    data IO: (A:*) → * :=
-         (in: (String → IO) → IO)
-         (out: String → IO → IO)
-         (rnd: (nat → IO) → IO)
-         (raise: String → IO → IO)
+    data IO: * -> * :=
+         (in1: (String -> IO) -> IO)
+         (out: String -> IO -> IO)
+         (rnd: (nat -> IO) -> IO)
+         (raise1: String -> IO -> IO)
          (term: IO)

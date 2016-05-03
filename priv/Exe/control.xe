@@ -1,8 +1,8 @@
 
-           record pure (P: * → *) (A: *) :=
+           record pure: (P: * → *) (A: *) :=
                   (return: P A)
 
-           record functor (F: * → *) (A B: *) :=
+           record functor: (F: * → *) -> (A B: *) :=
                   (fmap: (A → B) → F A → F B)
 
            record applicative (F: * → *) (A B: *)

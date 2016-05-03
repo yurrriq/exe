@@ -35,8 +35,9 @@ names        -> var names  		         : ['$1'|'$2'].
 
 type         -> '*'                                  : '$1'.
 type         -> '()'                                 : '$1'.
+type         -> '(' type ')'                         : '$2'.
 type         -> var                                  : '$1'.
-type         -> pi '(' names ':' type ')' '->' type  : {pi,   '$3','$5','$8'}.
+type         -> '(' names ':' type ')' '->' type     : {pi,   '$2','$4','$7'}.
 type         -> type type                            : {app,  '$1','$2'}.
 type         -> type '->' type                       : {arrow,'$1','$3'}.
 
