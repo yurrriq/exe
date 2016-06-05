@@ -3,66 +3,83 @@
 --
 
 -- universes
-def Type.{u} : *.{u+1} := *.{u}
-def Prop : *.{1} := *0
+def Type.{t} : *.{t+1} := *.{t}
+def Prop.{p} : *.{p+1} := *.{p}
 
 -- church encoding for Prop
-def AndProp (A, B : Prop) : Prop :=
-    ∀ (And : Prop) →
-    ∀ (Intro : A → B → And) →
-    And
 
-def And.Intro (A, B : Prop) (a : A) (b : B) : Prop :=
-    λ (And : Prop) →
-    λ (Intro : A → B → And) →
-    Intro a b
+namespace Prop
 
-def And.recur (A, B : Prop) (And : Prop) (Intro : A → B → And) : AndProp A B → And :=
-    λ (and : AndProp A B) →
-    and And Intro
+    -- Prod0 = True; Prod2 = And;
 
-macro churchAnd : encoding.{0 0 0} := encoding.mk AndProp And.Intro And.recur
+    def Prod0.{p} : Prop.{p} :=
+        ∀ (True : Prop.{p}) →
+        ∀ (Mk : True) →
+        True
 
--- equivalence
-def EquType.{u} (El : Type.{u}) : Type.{1} := El → El → Prop;
-def Equ.ReflProp.{u} (El : Type.{u}) (Equ : EquType.{u} El) : Prop := ∀(e0 : El) → Equ e0 e0
-def Equ.TransProp.{u} (El : Type.{u}) (Equ : EquType.{u} El) : Prop := ∀(e1 e2 e3 : El) → Equ e1 e2 → Equ e2 e3 → Equ e1 e3
-def Equ.SymProp.{u} (El : Type.{u}) (Equ : EquType.{u} El) : Prop := ∀(e1 e2 : El) → Equ e1 e2 → Equ e2 e1
+    def Prod0.Mk.{p} : Prod0.{p} :=
+        λ (True : Prop.{p}) →
+        λ (Mk : True) →
+        Mk
 
--- the very main type :)
-def SetoidType.{u} : Type.{(u+1,1,1,0,0,0)} := record
-    (El : Type.{(u,0)})
-    (Equ : EquType.{u} El.1)
-    (Refl : Equ.ReflProp.{u} Equ)
-    (Trans : Equ.TransProp.{u} Equ)
-    (Sym : Equ.SymProp.{u} Equ)
+    def Prop0.elim.{p} (True : Prop.{p}) (Mk : True) (true : Prod0.{p}) : True :=
+        true True Mk
 
-let Setoid.HomType.{u} (A B : SetoidType.{u}) : Type.{u,0} := record.{(onEl.1, churchAnd onEl.2 onEqu)}
-    (onEl : SetoidType.El.{u} A → SetoidType.El.{u} B)
-    (onEqu : ∀(a1 a2 : SetoidType.El.{u} A) → (SetoidType.Equ.{u} A a1 a2) → (SetoidType.Equ.{u} B (onEl a1) (onEl a2)))
+    def Prod2.{p} (A, B : Prop.{p}) : Prop.{p} :=
+        ∀ (And : Prop.{p}) →
+        ∀ (Mk : A → B → And) →
+        And
 
-let Setoid.Hom.Equ.{u} (A B : SetoidType.{u}) : EquType.{u} El :=
-    λ(f, g : Setoid.HomType.{u} A B) → ∀(a : A) → SetoidType.Equ.{u} B (f a) (g a)
+    def Prod2.Mk.{p} (A, B : Prop.{p}) (a : A) (b : B) : Prod2.{p} A B :=
+        λ (And : Prop.{p}) →
+        λ (Mk : A → B → And) →
+        Mk a b
 
-def Setoid.HomSet.{u} (A B : SetoidType.{u}) : SetoidType.{u} :=
-    SetoidType.mk.{u}
-    /- El -/    ( Setoid.HomType.{u} A B )
-    /- Equ -/   ( Setoid.Hom.Equ.{u} A B)
-    /- Refl -/  ( λ(f0 : Setoid.HomType.{u} A B) →
-                λ(a : SetoidType.El.{u} A) →
-                SetoidType.Refl.{u} A (f0 a))
-    /- Trans -/ ( λ(f1, f2, f3 : Setoid.HomType.{u} A B) →
-                λ(equ12 : Setoid.Hom.Equ.{u} f1 f2) → λ(equ23 : Setoid.Hom.Equ.{u} f2 f3) →
-                λ(a : SetoidType.El.{u} A) →
-                SetoidType.Trans.{u} A (f1 a) (f2 a) (f3 a) (equ12 a) (equ23 a))
-    /- Sym -/   ( λ(f1, f2 : Setoid.HomType.{u} A B) →
-                λ(equ12 : Setoid.Hom.Equ.{u} f1 f2) →
-                λ(a : SetoidType.El.{u} A) →
-                SetoidType.Sym.{u} A (f1 a) (f2 a) (equ12 a))
+    def Prop2.elim.{p} (A, B : Prop.{p}) (And : Prop.{p}) (Mk : A → B → And) (and : Prod2.{p} A B) : And :=
+        and And Mk
 
-def Setoid.Mul.onEl.{u} (A B C : SetoidType.{u})
-    (f : Setoid.HomType.{u} B C) (g : Setoid.HomType.{u} A B)
-    : Setoid.HomType.{u} A C :=
-    Setoid.HomType.mk.{u} A C
-        ( λ (a : SetoidType.El.{u} A) → f $ (g $ a)) -- use infix sugar for app?
-        ( λ (a1, a2 : SetoidType.El.{u} A) → λ(a12 : a1 ≡ a2) → f $/ (g $/ a12) )
+    def church.{p} : encoding.{p} := encoding.mk Prod0.{p} Prod0.Mk.{p} Prod2.{p} Prod2.Mk.{p} Prod2.elim.{p}
+
+end Prop
+
+namespace Setoid
+
+    def Ob.{u p} : Type.{(u+1,p+1,p+1,p,p,p)} :=
+        record
+        (El : Type.{(u,p)})
+        (Equ : ∀(e1, e2 :(.1 El)) → Prop.{p})
+        (Refl : ∀(e0 : (.1 El)) → Equ e0 e0)
+        (Trans : ∀(e1, e2, e3 : (.1 El)) → Equ e1 e2 → Equ e2 e3 → Equ e1 e3)
+        (Sym : ∀(e1, e2 : (.1 El)) → Equ e1 e2 → Equ e2 e1)
+
+--  notation (a1 ≡A≡ a2)
+
+    def Hom.{u} (A, B : Ob.{u}) : Ob.{u} :=
+        Ob.mk
+        ( El := record.{((.1 onEl), church (.2 onEl) onEqu)}
+            (onEl : .El A → .El B)
+            (onEqu : ∀(a1, a2 : .El A) → (a1 ≡A≡ a2) → ((onEl a1) ≡B≡ (onEl a2))))
+        ( Equ := λ(f, g : El) → ∀(a : A) → ((f a) ≡B≡ (g a)))
+        ( Refl := λ(f0 : El) → λ(a : .El A) → (.Refl A (f0 a)))
+        ( Trans := λ(f1, f2, f3 : El) → λ(equ12 : Equ f1 f2) → λ(equ23 : Equ f2 f3) →
+                λ(a : .El A) → .Trans A (f1 a) (f2 a) (f3 a) (equ12 a) (equ23 a))
+        ( Sym := λ(f1, f2 : El) → λ(equ12 : Equ f1 f2) →
+                λ(a : .El A) → .Sym A (f1 a) (f2 a) (equ12 a))
+
+--  notation (f $ x) (f $/ xEqu) (fEqu /$ x)
+
+    def Mul.onEl.{u} (A, B, C : Ob.{u})
+        (f : Hom.El.{u} B C) (g : Hom.El.{u} A B) : Hom.El.{u} A C :=
+        Hom.El.mk.{u} A C
+            ( λ (a : .El A) → f $ (g $ a))
+            ( λ (a1, a2 : .El A) → λ(a12 : a1 ≡A≡ a2) → f $/ (g $/ a12) )
+
+end Setoid
+
+--
+def PropSet.{p pp} : Setoid.Ob.{p pp} := Setoid.Ob.mk.{p pp}
+    (El := record.{(P, church)} (P: Prop))
+    (Equ := )
+
+--
+def DepSet.{u p } : Setoid.Ob.{} := ;

@@ -247,6 +247,8 @@ definition BigSigmaFunctor (Base : SetoidType)
     /- onOb -/ ( λ(X : DepSetoidCat Base), BigSigma.onOb Base X)
     /- onHom -/ ( λ(X Y : DepSetoidCat Base), BigSigma.onHom Base X Y)
     /- onId -/ ( λ(X : DepSetoidCat Base), sorry)
+    --  BigSigma.onHom.onEl.onDom.onEl Base P P (@Functor.Id _ _ P) == @Setoid.Id (BigSigmaType P)
     /- onMul -/ ( λ(X Y Z : DepSetoidCat Base), λ(g : Y ⇒_⇒ Z), λ(f : X ⇒_⇒ Y), sorry)
+    -- 
 
 end EXE

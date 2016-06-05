@@ -2,6 +2,7 @@
 
 import Setoid
 import Cat
+import Functor
 
 namespace EXE
 
@@ -104,5 +105,14 @@ definition UnderCat (C : CatType) (X : C) : CatType :=
         (UnderType C X) (Under.HomSet C X)
         (@Under.Id C X) (@Under.Mul C X)
         (@Under.UnitL C X) (@Under.UnitR C X) (@Under.Assoc C X)
+
+definition Under.Forget (C : CatType) (X : C) : UnderCat C X ⟶ C :=
+    Functor.MkOb
+        (UnderType.Cod)
+        ( λ(U1 U2 : UnderCat C X), Setoid.MkHom
+            λ(m : U1 ⇒_⇒ U2), Under.HomType.atCod m
+            )
+        (sorry)
+        (sorry)
 
 end EXE
