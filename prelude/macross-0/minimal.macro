@@ -187,7 +187,7 @@ def PredicateSet.{u, p} (X : Setoid.Ob.{u, p}) : Setoid.Ob.{p, p} :=
     X ⥤ PropSet.{p};
 
 --
-def SmallSigmaSet (B : Setoid.Ob.{u, p}) (P : .El PredicateSet.{u, p}) : Setoid.Ob.{u, p} :=
+def SmallSigmaSet (B : Setoid.Ob.{u, p}) (P : .El (PredicateSet.{u, p} B)) : Setoid.Ob.{u, p} :=
     Setoid.Ob.mk.{u, p}
     ( El :=
         packed (1 := base.1) (2 := church base.2 pred)
@@ -210,12 +210,31 @@ def SmallSigmaSet (B : Setoid.Ob.{u, p}) (P : .El PredicateSet.{u, p}) : Setoid.
         .Sym B b1 b2 equ12 )
 
 --
-def SubsetType (B : Setoid.Ob.{u, p}) : Type.{} := record
-    (A : Setoid.Ob.{u, p} )
-    (i : A ⥤ B)
-    (uniq : ∀(a1, a2 : A) → ((i a1) ≡B≡ (i a2)) → (a1 ≡A≡ a2))
+def SubsetType (B : Setoid.Ob.{u, p}) : Type.{((u+1,p+1),p+1,p,p,p),(u,p),p} :=
+    record
+        (A : Setoid.Ob.{u, p} )
+        (i : .El (A ⥤ B) )
+        (uniq : ∀(a1, a2 : .El A) → ((i $ a1) ≡B≡ (i $ a2)) → (a1 ≡A≡ a2) )
 
 --
-def (B : Setoid.Ob.{u, p}) (P : .El PredicateSet.{u, p}) : SubsetType B :=
+def Pred2Sub (B : Setoid.Ob.{u, p}) (P : .El (PredicateSet.{u, p} B)) : SubsetType B :=
+    SubsetType.mk.{u,p}
+        ( A := SmallSigmaSet B P )
+        ( i :=
+            Setoid.Hom.El.mk
+                ( onEl := λ (a : .El A) → (.base a) )
+                ( onEqu := λ (a1, a2 : .El A) → λ (equ12 : a1 ≡A≡ a2) → equ12 ) )
+        ( uniq := λ (a1, a2 : .El A) → λ (equ12 : (i $ a1) ≡B≡ (i $ a2)) → equ12 )
 
 --
+def Sub2Pred (B : Setoid.Ob.{u, p}) (S : SubsetType B) : .El (PredicateSet.{u, p} B) :=
+    Setoid.Hom.El.mk
+        ( onEl := λ (b : .El B) →
+            packed church
+            record
+                (a : .A S)
+                (equ : (.i S a) ≡B≡ b) )
+        ( onEqu := λ (b1 b2 : .El B) → λ (equ12 : b1 ≡B≡ b2) →
+            PropSet.Equ.mk (onEl b1) (onEl b2)
+            (--)
+            (--) )
