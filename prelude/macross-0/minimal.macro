@@ -236,5 +236,14 @@ def Sub2Pred (B : Setoid.Ob.{u, p}) (S : SubsetType B) : .El (PredicateSet.{u, p
                 (equ : (.i S a) ≡B≡ b) )
         ( onEqu := λ (b1 b2 : .El B) → λ (equ12 : b1 ≡B≡ b2) →
             PropSet.Equ.mk (onEl b1) (onEl b2)
-            (--)
-            (--) )
+                ( λ (pair : onEl b1) →
+                    let (a1 := .a pair) (equ1 := .equ pair) in
+                    onEl.mk b2
+                        ( a := a1 )
+                        ( equ := .Trans B (.i S a1) b1 b2 equ1 equ12) )
+                ( λ (pair : onEl b2) →
+                    let (a2 := .a pair) (equ2 := .equ pair) in
+                    let (equ21 := .Sym B b1 b2 equ12) in
+                    onEl.mk b1
+                        ( a := a2 )
+                        ( equ := .Trans B (.i S a2) b2 b1 equ2 equ21) ) )
