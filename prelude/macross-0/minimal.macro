@@ -44,6 +44,7 @@ An *encoding instance* is given by
 - at value-level: isomorphism guaranteeing seamless substitution
     ` ENCODE: ∀(R: *{u}) -> R -> PACK R `
     ` DECODE: ∀(R: *{u}) -> PACK R -> R `
+- and possible coherence information (due to homotopy truncation level), for setoids:
     ` encodedOK: mul (ENCODE R) (DECODE R) = id (PACK R)`
     ` decodedOK: mul (DECODE R) (ENCODE R) = id R`
 
@@ -60,14 +61,16 @@ of multiple calls of encoding method for given context structure.
 
 A complex term is accompanied (at compile-time) by
 a sequence of field type terms (physical representation)
-and a sequence of named field projection (logical representation).
+and a sequence of named field projection (logical representation)
+and a constructor function `mk`.
 Physical representation we have seen in (1.) as multiple files in a folder.
-
+Physical fields of top-level terms (`def` clause) and function arguments are
+available by namespace notation: `Hom.El`, `Hom.Equ` etc.
 Simple records have both representation coinciding, with projections just returning one of arguments.
-A call of a projection is denoted here by dot-notation: `.El S`, `.Equ S` etc.
+A call of a projection is denoted here by application of dot-notation functions: `.El S`, `.Equ S` etc.
 The type-checker must ensure that given complex term possesses the projection name called.
 By the contract, packed records have different physical and logical representations.
-The *encoding instance* declared by `packed` is a way to define coincidence of the both.
+The *encoding instance* declared by `packed` is a way to define the relation of the both.
 
 */
 
@@ -114,7 +117,7 @@ end Prop
 
 namespace Setoid
 
-    def Ob.{u p} : Type.{((u+1,p+1),p+1,p,p,p)} :=
+    def Ob.{u, p} : Type.{((u+1,p+1),p+1,p,p,p)} :=
         record
         (El : Type.{(u,p)})
         (Equ : ∀(e1, e2 : El) → Prop.{p})
@@ -124,7 +127,7 @@ namespace Setoid
 
 --  sugar (a1 ≡A≡ a2)
 
-    def Hom.{u} (A, B : Ob.{u}) : Ob.{u} :=
+    def Hom.{u1, p1, u2, p2} (A : Ob.{u1, p1}) (B : Ob.{u2, p2}) : Ob.{u2, p2} :=
         Ob.mk
         ( El := pack (1 := onEl.1) (2 := church onEl.2 onEqu)
             record
@@ -139,21 +142,28 @@ namespace Setoid
 
 --  sugar (A ⥤ B), (f $ x), (f $/ xEqu), (fEqu /$ x)
 
-    def Mul.onEl.{u} (A, B, C : Ob.{u})
+    def Id.{u1, p1} (A : Ob.{u1, p1}) : A ⥤ A :=
+        Hom.El.mk.{u1, p1, u1, p1} A A
+            ( onEl := λ (a : .El A) → a )
+            ( onEqu := λ (a1, a2 : .El A) → λ(equ12 : a1 ≡A≡ a2) → a12 )
+
+    def Mul.onEl.{u1, p1, u2, p2, u3, p3} (A : Ob.{u1, p1}) (B : Ob.{u2, p2}) (C : Ob.{u3, p3})
         (f : B ⥤ C) (g : A ⥤ B) : A ⥤ C :=
-        Hom.El.mk.{u} A C
+        Hom.El.mk.{u1, p1, u3, p3} A C
             ( onEl := λ (a : .El A) → (f $ (g $ a)) )
-            ( onEqu := λ (a1, a2 : .El A) → λ(a12 : a1 ≡A≡ a2) → (f $/ (g $/ a12)) )
+            ( onEqu := λ (a1, a2 : .El A) → λ(equ12 : a1 ≡A≡ a2) → (f $/ (g $/ a12)) )
 
 end Setoid
 
 --
-def PropSet.{p pp} : Setoid.Ob.{p pp} := Setoid.Ob.mk.{p pp}
+def PropSet.{p} : Setoid.Ob.{p, p} := Setoid.Ob.mk.{p, p}
     (El := packed (1 := P) (2 := church) record (P: Prop.{p}) )
     (Equ := λ (e1, e2 : El) →
         let (P1 : Prop := .P e1) (P2 : Prop := .P e2) in
-        packed (1 := church forward backward)   -- need shortcut
-        record (forward: P1 → P2) (backward: P2 → P1)
+        packed church -- shortcut
+        record
+            (forward: P1 → P2)
+            (backward: P2 → P1)
         -- should emit `Equ.mk` symbol )
     (Refl := λ (e0 : El) →
         let (P0 : Prop := .P e0) (f00 : P0 → P0 := Prop.id P0) in
@@ -173,15 +183,39 @@ def PropSet.{p pp} : Setoid.Ob.{p pp} := Setoid.Ob.mk.{p pp}
         Equ.mk e2 e1 f21 f12 )
 
 --
-def PredicatesSet.{} (X : Setoid.Ob.{}) : Setoid.Ob.{} :=
-    X ⥤ PropSet;
+def PredicateSet.{u, p} (X : Setoid.Ob.{u, p}) : Setoid.Ob.{p, p} :=
+    X ⥤ PropSet.{p};
 
 --
-def Injection := record
-    (A : Setoid.Ob)
-    (B : Setoid.Ob)
-    (p : A ⥤ B)
-    (uniq : ∀(a1, a2 : A) → ((p a1) ≡B≡ (p a2)) → (a1 ≡A≡ a2))
+def SmallSigmaSet (B : Setoid.Ob.{u, p}) (P : .El PredicateSet.{u, p}) : Setoid.Ob.{u, p} :=
+    Setoid.Ob.mk.{u, p}
+    ( El :=
+        packed (1 := base.1) (2 := church base.2 pred)
+        record
+            (base : .El B)
+            (pred : P $ base) )
+    ( Equ := λ (e1, e2 : El) →
+        let (b1 : .El B := .base e1) (b2 : .El B := .base e2) in
+        (b1 ≡A≡ b2) )
+    ( Refl := λ (e0 : El) →
+        let (b0 : .El B := .base e0) in
+        .Refl B b0 )
+    ( Trans := λ (e1, e2, e3 : El) →
+        λ (equ12 : Equ e1 e2) → λ (equ23 : Equ e2 e3) →
+        let (b1 : .El B := .base e1) (b2 : .El B := .base e2) (b3 : .El B := .base e3) in
+        .Trans B b1 b2 b3 equ12 equ23 )
+    ( Sym := λ (e1, e2 : El) →
+        λ (equ12 : Equ e1 e2) →
+        let (b1 : .El B := .base e1) (b2 : .El B := .base e2) in
+        .Sym B b1 b2 equ12 )
 
 --
-def Predicate2Injection
+def SubsetType (B : Setoid.Ob.{u, p}) : Type.{} := record
+    (A : Setoid.Ob.{u, p} )
+    (i : A ⥤ B)
+    (uniq : ∀(a1, a2 : A) → ((i a1) ≡B≡ (i a2)) → (a1 ≡A≡ a2))
+
+--
+def (B : Setoid.Ob.{u, p}) (P : .El PredicateSet.{u, p}) : SubsetType B :=
+
+--
