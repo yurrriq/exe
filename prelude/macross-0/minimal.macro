@@ -187,7 +187,7 @@ def PredicateSet.{u, p} (X : Setoid.Ob.{u, p}) : Setoid.Ob.{p, p} :=
     X ⥤ PropSet.{p};
 
 --
-def SmallSigmaSet (B : Setoid.Ob.{u, p}) (P : .El (PredicateSet.{u, p} B)) : Setoid.Ob.{u, p} :=
+def SmallSigmaSet.{u, p} (B : Setoid.Ob.{u, p}) (P : PredicateSet.El.{u, p} B) : Setoid.Ob.{u, p} :=
     Setoid.Ob.mk.{u, p}
     ( El :=
         packed (1 := base.1) (2 := church base.2 pred)
@@ -210,14 +210,14 @@ def SmallSigmaSet (B : Setoid.Ob.{u, p}) (P : .El (PredicateSet.{u, p} B)) : Set
         .Sym B b1 b2 equ12 )
 
 --
-def SubsetType (B : Setoid.Ob.{u, p}) : Type.{((u+1,p+1),p+1,p,p,p),(u,p),p} :=
+def SubsetType.{u, p} (B : Setoid.Ob.{u, p}) : Type.{((u+1,p+1),p+1,p,p,p),(u,p),p} :=
     record
         (A : Setoid.Ob.{u, p} )
         (i : .El (A ⥤ B) )
         (uniq : ∀(a1, a2 : .El A) → ((i $ a1) ≡B≡ (i $ a2)) → (a1 ≡A≡ a2) )
 
 --
-def Pred2Sub (B : Setoid.Ob.{u, p}) (P : .El (PredicateSet.{u, p} B)) : SubsetType B :=
+def Pred2Sub.{u, p} (B : Setoid.Ob.{u, p}) (P : PredicateSet.El.{u, p} B) : SubsetType.{u,p} B :=
     SubsetType.mk.{u,p}
         ( A := SmallSigmaSet B P )
         ( i :=
@@ -227,10 +227,10 @@ def Pred2Sub (B : Setoid.Ob.{u, p}) (P : .El (PredicateSet.{u, p} B)) : SubsetTy
         ( uniq := λ (a1, a2 : .El A) → λ (equ12 : (i $ a1) ≡B≡ (i $ a2)) → equ12 )
 
 --
-def Sub2Pred (B : Setoid.Ob.{u, p}) (S : SubsetType B) : .El (PredicateSet.{u, p} B) :=
+def Sub2Pred.{u, p} (B : Setoid.Ob.{u, p}) (S : SubsetType.{u, p} B) : PredicateSet.El.{u, p} B :=
     Setoid.Hom.El.mk
         ( onEl := λ (b : .El B) →
-            packed church
+            packed church.{p} -- ???
             record
                 (a : .A S)
                 (equ : (.i S a) ≡B≡ b) )
@@ -239,7 +239,7 @@ def Sub2Pred (B : Setoid.Ob.{u, p}) (S : SubsetType B) : .El (PredicateSet.{u, p
                 ( λ (pair : onEl b1) →
                     let (a1 := .a pair) (equ1 := .equ pair) in
                     onEl.mk b2
-                        ( a := a1 )
+                        ( a := a1 ).{u, p}
                         ( equ := .Trans B (.i S a1) b1 b2 equ1 equ12) )
                 ( λ (pair : onEl b2) →
                     let (a2 := .a pair) (equ2 := .equ pair) in
@@ -247,3 +247,19 @@ def Sub2Pred (B : Setoid.Ob.{u, p}) (S : SubsetType B) : .El (PredicateSet.{u, p
                     onEl.mk b1
                         ( a := a2 )
                         ( equ := .Trans B (.i S a2) b2 b1 equ2 equ21) ) )
+
+--
+def isSection.{u, p} (B : Setoid.Ob.{u, p}) (S : SubsetType.{u, p} B)
+        (f : .El (B ⥤ (.A S))) : Prop.{p} :=
+    ∀ (b : .El B) → (.i S (f $ b) ≡B≡ b)
+
+--
+def Forall{u, p} (B : Setoid.Ob.{u, p}) (P : PredicateSet.El.{u, p} B) : Prop.{p} :=
+    ∀ (b : .El B) → (P $ b)
+
+--
+def sec2all.{u, p} (B : Setoid.Ob.{u, p}) (P : PredicateSet.El.{u, p} B)
+        (f : .El (B ⥤ (.A (Pred2Sub B P)))) (sec : isSection.{u,p} B (Pred2Sub B P) f) : Forall.{u,p} B P :=
+    ∀ (b : .El B) → ((.forward (P $/ (sec b))) (.pred (f $ b)))
+
+--
