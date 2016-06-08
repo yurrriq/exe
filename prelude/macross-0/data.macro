@@ -1,0 +1,109 @@
+import minimal
+
+namespace Data
+
+--------------------------------------------------
+def Empty : Setoid.Ob.{u,p} := Setoid.Ob.mk.{u,p}
+    ( El := packed (...) record
+        (atOb :
+            ∀ (T : Setoid.Ob.{u,p}) →
+            [T])
+        (atHom :
+            ∀ (T1 : Setoid.Ob.{u,p}) →
+            ∀ (T2 : Setoid.Ob.{u,p}) →
+            ∀ (homT : [T1 ⥤ T2]) →
+            ((homT $ (atOb T1)) ≡T2≡ (atOb T2))) )
+    ( Equ :=
+        λ (e1, e2 : El) →
+        ∀ (T : Setoid.Ob.{u,p}) →
+        ((.atOb e1 T) ≡T≡ (.atOb e2 T)) )
+    ( Refl :=
+        λ (e0 : El) →
+        λ (T : Setoid.Ob.{u,p}) →
+        (.Refl T (.atOb e0 T)) )
+    ( Trans :=
+        λ (e1, e2, e3 : El) →
+        λ (equ12 : Equ e1 e2) → λ (equ23 : Equ e2 e3) →
+        λ (T : Setoid.Ob.{u,p}) →
+        (.Trans T (.atOb e1 T) (.atOb e2 T) (.atOb e3 T) (equ12 T) (equ23 T)) )
+    ( Sym :=
+        λ (e1, e2 : El) →
+        λ (equ12 : Equ e1 e2) →
+        λ (T : Setoid.Ob.{u,p}) →
+        (.Sym T (.atOb e1 T) (.atOb e2 T) (equ12 T)) )
+
+def Empty.recur.onOb (T : Setoid.Ob.{u,p})
+    : Empty.{u,p} → T :=
+    λ (e : Empty) → (.atOb e T)
+
+-- TODO recur.onHom, recur.onId
+
+def Empty.induc (P : PredicateSet.El.{u, p} Empty)
+    : Forall.{u,p} Empty P :=
+    !!!
+
+--------------------------------------------------
+def Unit : Setoid.Ob.{u,p} := Setoid.Ob.mk.{u,p}
+    ( El := packed (...)
+        record
+            (atOb :
+                ∀ (T : Setoid.Ob.{u,p}) →
+                ∀ (Mk : [T]) →
+                [T])
+            (atHom :
+                ∀ (T1 : Setoid.Ob.{u,p}) →
+                ∀ (Mk1 : [T1]) →
+                ∀ (T2 : Setoid.Ob.{u,p}) →
+                ∀ (Mk2 : [T2]) →
+                ∀ (homT : [T1 ⥤ T2]) →
+                ∀ (homMk : (homT $ Mk1) ≡T2≡ Mk2) →
+                ((homT $ (atOb T1)) ≡T2≡ (atOb T2))) )
+    ( Equ :=
+        λ (e1, e2 : El) →
+        ∀ (T : Setoid.Ob.{u,p}) →
+        ∀ (Mk : [T]) →
+        ((.atOb e1 T Mk) ≡T≡ (.atOb e2 T Mk)) )
+    ( Refl :=
+        λ (e0 : El) →
+        λ (T : Setoid.Ob.{u,p}) →
+        λ (Mk : [T]) →
+        (.Refl T (.atOb e0 T Mk)) )
+    ( Trans :=
+        λ (e1, e2, e3 : El) →
+        λ (equ12 : Equ e1 e2) → λ (equ23 : Equ e2 e3) →
+        λ (T : Setoid.Ob.{u,p}) →
+        λ (Mk : [T]) →
+        (.Trans T (.atOb e1 T Mk) (.atOb e2 T Mk) (.atOb e3 T Mk) (equ12 T Mk) (equ23 T Mk)) )
+    ( Sym :=
+        λ (e1, e2 : El) →
+        λ (equ12 : Equ e1 e2) →
+        λ (T : Setoid.Ob.{u,p}) →
+        λ (Mk : [T]) →
+        (.Sym T (.atOb e1 T Mk) (.atOb e2 T Mk) (equ12 T Mk)) )
+
+def Unit.Mk : [Unit] :=
+    Unit.El.mk
+        (atOb :=
+            λ (T : Setoid.Ob.{u,p}) →
+            λ (Mk : [T]) →
+            Mk )
+        (atHom :=
+            λ (T1 : Setoid.Ob.{u,p}) →
+            λ (Mk1 : [T1]) →
+            λ (T2 : Setoid.Ob.{u,p}) →
+            λ (Mk2 : [T2]) →
+            λ (homT : [T1 ⥤ T2]) →
+            λ (homMk : (homT $ Mk1) ≡T2≡ Mk2) →
+            homMk )
+
+def Unit.recur (T : Setoid.Ob.{u,p})
+    (Mk : [T])
+    : Unit.{u,p} → T :=
+    λ (u : Unit) → (.atOb u T Mk)
+
+def Unit.induc (P : PredicateSet.El.{u, p} Unit)
+    (mk : P $ Unit.Mk)
+    : Forall.{u,p} Unit P :=
+    !!!
+
+end Data
