@@ -52,13 +52,18 @@ def Empty.recurP.forOb (P : PredicateSet.El Empty)
     Empty.recur.forOb (SmallSigmaSet Empty P)
 
 def Empty.recurP.forHom (P : PredicateSet.El Empty)
-: (Setoid.Mul.onEl Empty (SmallSigmaSet Empty P) Empty (Pred2Sub.i Empty P) (Empty.recurP.forOb P))
-    ≡[ Empty ⥤ Empty ]≡ (Empty.recur.forOb Empty) :=
+    : (Setoid.Mul.onEl Empty (SmallSigmaSet Empty P) Empty (Pred2Sub.i Empty P) (Empty.recurP.forOb P))
+        ≡[ Empty ⥤ Empty ]≡ (Empty.recur.forOb Empty) :=
     Empty.recur.forHom (SmallSigmaSet Empty P) Empty (Pred2Sub.i Empty P)
 
 def Empty.section (P : PredicateSet.El Empty)
     : isSection Empty (Pred2Sub Empty P) (Empty.recur.forOb (SmallSigmaSet Empty P)) :=
-    .Trans (Empty ⥤ Empty) ! ! ! (Empty.recurP.forHom P) (Empty.recur.forId)
+    .Trans (Empty ⥤ Empty)
+        (Setoid.Mul.onEl Empty (SmallSigmaSet Empty P) Empty (Pred2Sub.i Empty P) (Empty.recurP.forOb P))
+        (Empty.recur.forOb Empty)
+        (Setoid.Id Empty)
+        (Empty.recurP.forHom P)
+        Empty.recur.forId
 
 def Empty.induc (P : PredicateSet.El.{u, p} Empty)
     : Forall.{u,p} Empty P :=
@@ -118,14 +123,66 @@ def Unit.Mk : [Unit] :=
             λ (homMk : (homT $ Mk1) ≡T2≡ Mk2) →
             homMk )
 
-def Unit.recur (T : Setoid.Ob.{u,p})
-    (Mk : [T])
-    : Unit.{u,p} → T :=
+def Unit.recur.forOb (T : Setoid.Ob.{u,p}) (Mk : [T])
+    : [ Unit ⥤ T ] :=
     λ (u : Unit) → (.atOb u T Mk)
 
-def Unit.induc (P : PredicateSet.El.{u, p} Unit)
-    (mk : P $ Unit.Mk)
-    : Forall.{u,p} Unit P :=
-    !!!
+def Unit.recur.forHom
+        (T1 : Setoid.Ob.{u,p})
+        (Mk1 : [T1])
+        (T2 : Setoid.Ob.{u,p})
+        (Mk2 : [T2])
+        (homT : [T1 ⥤ T2])
+        (homMk : (homT $ Mk1) ≡T2≡ Mk2)
+    : (Setoid.Mul.onEl Unit T1 T2 homT (Unit.recur.forOb T1 Mk1))
+        ≡[ Unit ⥤ T2 ]≡ (Unit.recur.forOb T2 Mk2) :=
+    λ (u : Unit) → (.atHom u T1 Mk1 T2 Mk2 homT homMk)
+
+def Unit.recur.forId
+    : (Unit.recur.forOb Unit) ≡[ Unit ⥤ Unit ]≡ (Setoid.Id Unit) :=
+    λ (u : Unit.{u,p}) →
+    λ (T : Setoid.Ob.{u,p}) →
+    λ (Mk : [T]) →
+    (.atHom u Unit Unit.Mk T Mk (Unit.recur.forOb T Mk) (.Refl T Mk)) u
+
+def Unit.Predicate : Setoid.Ob.{p, p} :=
+    PredicateSet Unit
+
+def Unit.Sigma.Carrier (P : [Unit.Predicate]) : Setoid.Ob.{u, p} :=
+    SmallSigmaSet Unit P
+
+def Unit.Sigma.Inj (P : [Unit.Predicate]) : [ (Unit.Sigma.Carrier P) ⥤ Unit ] :=
+    Pred2Sub.i Unit P
+
+def Unit.Sigma.Mk (P : [Unit.Predicate]) (mk : P $ Unit.Mk)
+    : [Unit.Sigma.Carrier] :=
+    SmallSigmaSet.El.mk Unit P
+        ( base := Unit.Mk )
+        ( pred := mk )
+
+def Unit.recurP.forOb (P : [Unit.Predicate]) (mk : P $ Unit.Mk)
+    : [ Unit ⥤ (Unit.Sigma.Carrier P) ] :=
+    Unit.recur.forOb (Unit.Sigma.Carrier P) (Unit.Sigma.Mk P mk)
+
+def Unit.recurP.forHom (P : [Unit.Predicate]) (mk : P $ Unit.Mk)
+    : (Setoid.Mul.onEl Unit (Unit.Sigma.Carrier P) Unit (Unit.Sigma.Inj P) (Unit.recurP.forOb P mk))
+        ≡[ Unit ⥤ Unit ]≡ (Unit.recur.forOb Unit Unit.Mk) :=
+    Unit.recur.forHom
+        (Unit.Sigma.Carrier P) (Unit.Sigma.Mk P mk)
+        Unit Unit.Mk
+        (Unit.Sigma.Inj P) (.Refl Unit Unit.Mk)
+
+def Unit.section (P : [Unit.Predicate]) (mk : P $ Unit.Mk)
+    : isSection Unit (Pred2Sub Unit P) (Unit.recur.forOb (Unit.Sigma.Carrier P)) :=
+    .Trans (Unit ⥤ Unit)
+        (Setoid.Mul.onEl Unit (Unit.Sigma.Carrier P) Unit (Unit.Sigma.Inj P) (Unit.recurP.forOb P mk))
+        (Unit.recur.forOb Unit Unit.Mk)
+        (Setoid.Id Unit)
+        (Unit.recurP.forHom P mk)
+        (Unit.recur.forId)
+
+def Unit.induc (P : [Unit.Predicate]) (mk : P $ Unit.Mk)
+    : Forall.{u,p} Empty P :=
+    sec2all Unit P (Unit.recurP.forOb P mk) (Unit.section P mk)
 
 end Data
