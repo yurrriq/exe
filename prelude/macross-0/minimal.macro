@@ -251,7 +251,7 @@ def Sub2Pred.{u, p} (B : Setoid.Ob.{u, p}) (S : SubsetType.{u, p} B) : Predicate
 --
 def isSection.{u, p} (B : Setoid.Ob.{u, p}) (S : SubsetType.{u, p} B)
         (f : [B ⥤ (.A S)]) : Prop.{p} :=
-    ∀ (b : [B]) → (.i S (f $ b) ≡B≡ b)
+    (Setoid.Mul.onEl B (.A S) B (.i S) f) ≡B≡ (Setoid.Id B)
 
 --
 def Forall.{u, p} (B : Setoid.Ob.{u, p}) (P : PredicateSet.El.{u, p} B) : Prop.{p} :=
