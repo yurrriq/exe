@@ -12,7 +12,7 @@ The macro code (non-polymorphic, with fixed universe levels):
 
 ```
     def A : Type.{uA} := ...
-    def B : A -> Type.{uB} := ...
+    def B : A → Type.{uB} := ...
     def RecT : Type.{(uA, uB)} := record (a : A) (b : B a)
     def recV : RecT   := RecT.mk (a := aVal) (b := bVal a)
 ```
@@ -24,12 +24,20 @@ should emit the following file-system structure in OM:
     #B/@ := ...
 
     #RecT/ (folder)
-    #RecT/a : *{uA} := #A/@
-    #RecT/b : A -> *{uB} := #B/@
+    #RecT/@a : *{uA} :=
+        #A/@
+    #RecT/@b : #RecT/@a → *{uB} :=
+        #B/@
+    #RecT/.a : ∀(a: #RecT/@a)→ ∀(b: #RecT/@b a)→ #RecT/@a :=
+        λ(a: #RecT/@a)→ λ(b: #RecT/@b a)→ a
+    #RecT/.b : ∀(a: #RecT/@a)→ ∀(b: #RecT/@b a)→ #RecT/@b (#RecT/.a a b) := 
+        λ(a: #RecT/@a)→ λ(b: #RecT/@b a)→ b
 
     #recV/ (folder)
-    #recV/a : #RecT/a := aVal
-    #recV/a : #RecT/b #recV/a := bVal #recV/a
+    #recV/a : #RecT/a :=
+        aVal
+    #recV/a : #RecT/b #recV/a :=
+        bVal #recV/a
 ```
 
 TODO: distinct treatment for dependent and independent contexts
