@@ -30,14 +30,14 @@ should emit the following file-system structure in OM:
         #B/@
     #RecT/.a : ∀(a: #RecT/@a)→ ∀(b: #RecT/@b a)→ #RecT/@a :=
         λ(a: #RecT/@a)→ λ(b: #RecT/@b a)→ a
-    #RecT/.b : ∀(a: #RecT/@a)→ ∀(b: #RecT/@b a)→ #RecT/@b (#RecT/.a a b) := 
+    #RecT/.b : ∀(a: #RecT/@a)→ ∀(b: #RecT/@b a)→ #RecT/@b (#RecT/.a a b) :=
         λ(a: #RecT/@a)→ λ(b: #RecT/@b a)→ b
 
     #recV/ (folder)
-    #recV/a : #RecT/a :=
+    #recV/=a : #RecT/@a :=
         aVal
-    #recV/a : #RecT/b #recV/a :=
-        bVal #recV/a
+    #recV/=b : #RecT/@b #recV/=a :=
+        bVal #recV/=a
 ```
 
 TODO: distinct treatment for dependent and independent contexts
@@ -125,8 +125,7 @@ end Prop
 
 namespace Setoid
 
-    def Ob.{u, p} : Type.{((u+1,p+1),p+1,p,p,p)} :=
-        record
+    def Ob.{u, p} : Type.{((u+1,p+1),p+1,p,p,p)} := record
         (El : Type.{(u,p)})
         (Equ : ∀(e1, e2 : El) → Prop.{p})
         (Refl : ∀(e0 : El) → Equ e0 e0)
@@ -135,8 +134,8 @@ namespace Setoid
 
 --  sugar ( [A] ), (a1 ≡A≡ a2)
 
-    def Hom.{u1, p1, u2, p2} (A : Ob.{u1, p1}) (B : Ob.{u2, p2}) : Ob.{u2, p2} :=
-        Ob.mk
+    def Hom.{u1, p1, u2, p2} (A : Ob.{u1, p1}) (B : Ob.{u2, p2})
+        : Ob.{u2, p2} := Ob.mk
         ( El := pack (1 := onEl.1) (2 := church onEl.2 onEqu)
             record
             (onEl : [A] → [B])
