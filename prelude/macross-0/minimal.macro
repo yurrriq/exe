@@ -110,13 +110,44 @@ namespace Prop
         ∀ (Mk : A → B → And) →
         And
 
-    def Prod2.Mk.{p} (A, B : Prop.{p}) (a : A) (b : B) : Prod2.{p} A B :=
+    def Prod2.Mk.{p} (A, B : Prop.{p})
+        (a : A) (b : B) : Prod2.{p} A B :=
         λ (And : Prop.{p}) →
         λ (Mk : A → B → And) →
         Mk a b
 
     def Prop2.elim.{p} (A, B : Prop.{p}) (And : Prop.{p}) (Mk : A → B → And) (and : Prod2.{p} A B) : And :=
         and And Mk
+
+    -- aka DEP.AND
+    def Sigma.{p} (A : Prop.{p}) (B : A → Prop.{p})
+        : Prop.{p} :=
+        ∀ (P : Prop.{p}) →
+        ∀ (Mk : ∀ (a : A) → ∀ (b : B a) → P) →
+        P
+
+    def Sigma.Mk.{p} (A : Prop.{p}) (B : A → Prop.{p})
+        (a : A) (b : B a) : Sigma.{p} A B :=
+        λ (P : Prop.{p}) →
+        λ (Mk : ∀ (a : A) → ∀ (b : B a) → P) →
+        Mk a b
+
+    def Sigma.pr1 (A : Prop.{p}) (B : A → Prop.{p})
+        (s : Sigma A B) : A :=
+        s A (λ (a : A) → λ (b : B a) → a)
+
+    def Sigma.pr2 (A : Prop.{p}) (B : A → Prop.{p})
+        (B.Cong : ∀ (a1, a2 : A) → (B a1 → B a2))
+        (s : Sigma A B) : B (Sigma.pr1 s) :=
+        s (B (Sigma.pr1 s)) (λ (a : A) → λ (b : B a) → B.cong a (Sigma.pr1 s) b)
+
+    def Sigma.induc (A : Prop.{p}) (B : A → Prop.{p})
+        (s : Sigma A B)
+        (P : Sigma A B → Prop.{p})
+        (P.cong : ∀ (s1, s2 : Sigma A B) → (P s1 → P s2))
+        (mk : ∀ (a : A) → ∀ (b : B a) → P (Sigma.Mk a b))
+        : P s :=
+        s (P s) (λ (a : A) → λ (b : B a) → P.cong (Sigma.Mk a b) s (mk a b))
 
     def church.{p} : encoding.{p} :=
         encoding.mk Prod0.{p} Prod0.Mk.{p} Prod2.{p} Prod2.Mk.{p} Prod2.elim.{p}
