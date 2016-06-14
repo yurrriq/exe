@@ -158,10 +158,23 @@ namespace Setoid
 
     def Ob.{u, p} : Type.{((u+1,p+1),p+1,p,p,p)} := record
         (El : Type.{(u,p)})
-        (Equ : ∀(e1, e2 : El) → Prop.{p})
-        (Refl : ∀(e0 : El) → Equ e0 e0)
-        (Trans : ∀(e1, e2, e3 : El) → Equ e1 e2 → Equ e2 e3 → Equ e1 e3)
-        (Sym : ∀(e1, e2 : El) → Equ e1 e2 → Equ e2 e1)
+        (Equ :
+            ∀(e1, e2 : El) → Prop.{p})
+        (Cong :
+            ∀(a.1, b.1 : El.1) →
+            ∀(a.21, a.22 : El.2 a.1) →
+            ∀(b.21, b.22 : El.2 b.1) →
+            Equ (a.1, a.21) (b.1, b.21) →
+            Equ (a.1, a.22) (b.1, b.22))
+        (Refl :
+            ∀(e0 : El) →
+            Equ e0 e0)
+        (Trans :
+            ∀(e1, e2, e3 : El) →
+            Equ e1 e2 → Equ e2 e3 → Equ e1 e3)
+        (Sym :
+            ∀(e1, e2 : El) →
+            Equ e1 e2 → Equ e2 e1)
 
 --  sugar ( [A] ), (a1 ≡A≡ a2)
 
@@ -170,13 +183,22 @@ namespace Setoid
         ( El := pack (1 := onEl.1) (2 := church onEl.2 onEqu)
             record
             (onEl : [A] → [B])
+            (onEl :
+                ∀(a.1 : A.1) → ∀(a.21, a.22 : A.2 a.1) →
+                ((onEl (a.1,a.21)) ≡B≡ (onEl (a.1,a.22))))
             (onEqu : ∀(a1, a2 : [A]) → (a1 ≡A≡ a2) → ((onEl a1) ≡B≡ (onEl a2))))
-        ( Equ := λ(f, g : El) → ∀(a : A) → ((f a) ≡B≡ (g a)))
-        ( Refl := λ(f0 : El) → λ(a : [A]) → (.Refl A (f0 a)))
-        ( Trans := λ(f1, f2, f3 : El) → λ(equ12 : Equ f1 f2) → λ(equ23 : Equ f2 f3) →
-                λ(a : [A]) → .Trans A (f1 a) (f2 a) (f3 a) (equ12 a) (equ23 a))
-        ( Sym := λ(f1, f2 : El) → λ(equ12 : Equ f1 f2) →
-                λ(a : [A]) → .Sym A (f1 a) (f2 a) (equ12 a))
+        ( Equ := λ(f, g : El) → ∀(a : A) → ((.onEl f a) ≡B≡ (.on El g a)))
+        ( Equ.Cong := λ ... → B.Equ.Cong ? )
+        ( Refl :=
+            λ(f0 : El) →
+            λ(a : [A]) → (.Refl A (.onEl f0 a)))
+        ( Trans :=
+            λ(f1, f2, f3 : El) →
+            λ(equ12 : Equ f1 f2) → λ(equ23 : Equ f2 f3) →
+            λ(a : [A]) → .Trans A (.onEl f1 a) (.onEl f2 a) (.onEl f3 a) (equ12 a) (equ23 a))
+        ( Sym :=
+            λ(f1, f2 : El) → λ(equ12 : Equ f1 f2) →
+            λ(a : [A]) → .Sym A (f1 a) (f2 a) (equ12 a))
 
 --  sugar (A ⥤ B), (f $ x), (f $/ xEqu), (fEqu /$ x)
 
@@ -203,6 +225,7 @@ def PropSet.{p} : Setoid.Ob.{p, p} := Setoid.Ob.mk.{p, p}
             (forward: P1 → P2)
             (backward: P2 → P1)
         -- should emit `Equ.mk` symbol )
+    (Equ.Cong := λ ... → Prop.id ?)
     (Refl := λ (e0 : El) →
         let (P0 : Prop := .P e0) (f00 : P0 → P0 := Prop.id P0) in
         Equ.mk e0 e0 f00 f00 )
@@ -225,7 +248,7 @@ def PredicateSet.{u, p} (X : Setoid.Ob.{u, p}) : Setoid.Ob.{p, p} :=
     X ⥤ PropSet.{p};
 
 --
-def SmallSigmaSet.{u, p} (B : Setoid.Ob.{u, p}) (P : PredicateSet.El.{u, p} B) : Setoid.Ob.{u, p} :=
+def SmallSigmaSet.{u, p} (B : Setoid.Ob.{u, p}) (P : [PredicateSet.{u, p} B]) : Setoid.Ob.{u, p} :=
     Setoid.Ob.mk.{u, p}
     ( El :=
         packed (1 := base.1) (2 := church base.2 pred)
@@ -235,6 +258,7 @@ def SmallSigmaSet.{u, p} (B : Setoid.Ob.{u, p}) (P : PredicateSet.El.{u, p} B) :
     ( Equ := λ (e1, e2 : El) →
         let (b1 : [B] := .base e1) (b2 : [B] := .base e2) in
         (b1 ≡A≡ b2) )
+    ( Equ.Cong := λ ... → Prop.id ? )
     ( Refl := λ (e0 : El) →
         let (b0 : [B] := .base e0) in
         .Refl B b0 )
@@ -255,7 +279,7 @@ def SubsetType.{u, p} (B : Setoid.Ob.{u, p}) : Type.{((u+1,p+1),p+1,p,p,p),(u,p)
         (uniq : ∀(a1, a2 : [A]) → ((i $ a1) ≡B≡ (i $ a2)) → (a1 ≡A≡ a2) )
 
 --
-def Pred2Sub.{u, p} (B : Setoid.Ob.{u, p}) (P : PredicateSet.El.{u, p} B) : SubsetType.{u,p} B :=
+def Pred2Sub.{u, p} (B : Setoid.Ob.{u, p}) (P : [PredicateSet.{u, p} B]) : SubsetType.{u,p} B :=
     SubsetType.mk.{u,p}
         ( A := SmallSigmaSet B P )
         ( i :=
@@ -292,11 +316,11 @@ def isSection.{u, p} (B : Setoid.Ob.{u, p}) (S : SubsetType.{u, p} B)
     (Setoid.Mul.onEl B (.A S) B (.i S) f) ≡B≡ (Setoid.Id B)
 
 --
-def Forall.{u, p} (B : Setoid.Ob.{u, p}) (P : PredicateSet.El.{u, p} B) : Prop.{p} :=
+def Forall.{u, p} (B : Setoid.Ob.{u, p}) (P : [PredicateSet.{u, p} B]) : Prop.{p} :=
     ∀ (b : [B]) → (P $ b)
 
 --
-def sec2all.{u, p} (B : Setoid.Ob.{u, p}) (P : PredicateSet.El.{u, p} B)
+def sec2all.{u, p} (B : Setoid.Ob.{u, p}) (P : [PredicateSet.{u, p} B])
         (f : [B ⥤ (.A (Pred2Sub B P))]) (sec : isSection.{u,p} B (Pred2Sub B P) f) : Forall.{u,p} B P :=
     ∀ (b : [B]) → ((.forward (P $/ (sec b))) (.pred (f $ b)))
 
