@@ -1,0 +1,140 @@
+import minimal
+
+namespace Data
+namespace Unit
+
+def Alg.Ob : Type.{u,p} := record
+    ( Carrier : Setoid.Ob.{u,p} )
+    ( Mk : [Carrier] ) -- do we need full [] or just Carrier.El?
+
+def Alg.Hom (A1, A2 : Alg.Ob) : Setoid.Ob :=
+    let (C1 := A1.Carrier) (C2 := A2.Carrier) in
+    Setoid.Ob.mk
+        ( El := .El (C1 ⥤ C2) )
+        ( To := λ (m1, m2 : El) → packed record
+            (mk1 : (m1 A1.Mk) =C2= A2.Mk)
+            (mk2 : (m2 A1.Mk) =C2= A2.Mk) -- do we need it? drop?
+            (equ : m1 =(C1 ⥤ C2)= m2) )
+        ( Trans := λ (m1, m2, m3 : El) →
+            λ (to12 : To m1 m2) → λ (to23 : To m2 m3) → To.mk m1 m3
+                (mk1 := to12.mk1)
+                (mk2 := to23.mk2)
+                (equ := .Trans (C1 ⥤ C2) m1 m2 m3 to12.equ to23.equ) )
+
+-- sugar (A1 ⟹ A2)
+
+def Alg.Id (A : Alg.Ob) : [A ⟹ A] :=
+    Ob.brackets.mk (A ⟹ A)
+        ( El := .El (Setoid.Id A.Carrier) )
+        ( Ok := Alg.Hom.To.mk A A El El
+            (mk1 := .Refl A.Carrier A.Mk)
+            (mk2 := mk1)
+            (equ := .Ok (Setoid.Id A.Carrier)) )
+
+def Alg.Mul.onEl (A1, A2, A3 : Alg.Ob)
+    (m23 : [A2 ⟹ A3]) (m12 : [A1 ⟹ A2])
+    : [A1 ⟹ A3] :=
+    Ob.brackets.mk (A1 ⟹ A3)
+        ( El := .El (Setoid.Mul.onEl A1.Carrier A2.Carrier A3.Carrier m23.hom m12.hom) )
+        ( Ok := Alg.Hom.To.mk A1 A3 El El
+            ( mk1 := .Trans A3.Carrier
+                (m23 $ (m12 $ A1.Mk))
+                (m23 $ A2.Mk)
+                (A3.Mk)
+                (m23.hom $/ m12.Ok.mk1)
+                (m23.Ok.mk1) )
+            ( mk2 := mk1 )
+            ( equ := .Ok (Setoid.Mul.onEl A1.Carrier A2.Carrier A3.Carrier m23.hom m12.hom) ) )
+
+def Init : Alg.Ob := Alg.Ob.mk
+    ( Carrier := Setoid.Ob.mk.{u,p}
+        ( El := packed (...) record
+            (atOb :
+                ∀ (A : Alg.Ob) →
+                A.Carrier )
+            (atHom :
+                ∀ (A1, A2 : Alg.Ob) → ∀ (hom : [A1 ⟹ A2]) →
+                ((hom.hom $ (atOb A1)) =A2.Carrier= (atOb A2))) )
+        ( To :=
+            λ (e1, e2 : El) →
+            ∀ (A : Alg.Ob) →
+            ((.atOb e1 A) =T= (.atOb e2 A)) )
+        ( Refl :=
+            λ (e0 : El) →
+            λ (A : Alg.Ob) →
+            (.Refl T (.atOb e0 A)) )
+        ( Trans :=
+            λ (e1, e2, e3 : El) →
+            λ (to12 : To e1 e2) → λ (to23 : To e2 e3) →
+            λ (A : Alg.Ob) →
+            (.Trans T (.atOb e1 A) (.atOb e2 A) (.atOb e3 A) (to12 A) (to23 A)) )
+        ( Sym :=
+            λ (e1, e2 : El) →
+            λ (to12 : To e1 e2) →
+            λ (A : Alg.Ob) →
+            (.Sym T (.atOb e1 A) (.atOb e2 A) (to12 A)) ))
+    ( Mk := Carrier.El.mk
+        ( atOb :=
+            λ (A : Alg.Ob) →
+            A.Mk )
+        ( atHom :=
+            λ (A1, A2 : Alg.Ob) → λ (hom : [A1 ⟹ A2]) →
+            hom.homMk ))
+
+def recur.forOb (A : Alg.Ob) : [ Init ⟹ A ] :=
+    Alg.Hom.mk Init A
+        ( hom := λ (u : [Init.Carrier]) → (.atOb u A) )
+        ( homMk := .Refl A.Carrier A.Mk )
+
+def recur.forHom (A1, A2 : Alg.Ob) (hom : [A1 ⟹ A2])
+    : (Alg.Mul.onEl Init A1 A2 hom (recur.forOb A1))
+        =[ Init ⟹ A2 ]= (recur.forOb A2) :=
+    λ (u : [Init.Carrier]) → (.atHom u A1 A2 hom)
+
+def Endo : Setoid.Ob := Init ⟹ Init
+
+def IId : [Endo] := Alg.Id Init
+
+def recur.forId : (recur.forOb Init) =Endo= IId :=
+    λ (u : [Init.Carrier]) →
+    λ (A : Alg.Ob) →
+    (.atHom u Init A (recur.forOb A)) u
+
+def Predicate : Setoid.Ob.{p, p} := PredicateSet Init.Carrier
+
+def Sigma (P : [Predicate]) (mk : P $ Init.Mk) : Alg.Ob :=
+    ( Carrier := SmallSigmaSet Init.Carrier P )
+    ( Mk := SmallSigmaSet.El.mk Init.Carrier P
+        ( base := Init.Mk )
+        ( pred := mk ) )
+
+def SInj (P : [Predicate]) (mk : P $ Init.Mk)
+    : [ (Sigma P mk) ⟹ Init ] :=
+    Alg.Hom.mk (Sigma P mk) Init
+        ( hom := Pred2Sub.i Init.Carrier P )
+        ( homMk := .Refl Init.Carrier Init.Mk )
+
+def recurP.forOb (P : [Predicate]) (mk : P $ Init.Mk)
+    : [ Init ⟹ (Sigma P mk) ] :=
+    recur.forOb (Sigma P mk)
+
+def recurP.forHom (P : [Predicate]) (mk : P $ Init.Mk)
+    : (Alg.Mul.onEl Init (Sigma P mk) Init (SInj P mk) (recurP.forOb P mk))
+        =Endo= (recur.forOb Init) :=
+    recur.forHom (Sigma P mk) Init (SInj P mk)
+
+def section (P : [Predicate]) (mk : P $ Init.Mk)
+    : isSection Init.Carrier (Pred2Sub Init.Carrier P) (recur.forOb.hom (Sigma P mk)) :=
+    .Trans Endo
+        (Alg.Mul.onEl Init (Sigma P mk) Init (SInj P mk) (recurP.forOb P mk))
+        (recur.forOb Init)
+        IId
+        (recurP.forHom P mk)
+        recur.forId
+
+def induc (P : [Predicate]) (mk : P $ Init.Mk)
+    : Forall.{u,p} Init.Carrier P :=
+    sec2all Init.Carrier P (recurP.forOb.hom P mk) (section P mk)
+
+end Unit
+end Data
