@@ -75,7 +75,7 @@ namespace Prop
 
 end Prop
 
-namespace Setoid
+namespace Poset
 
     def Ob.{u, p} : Type.{(u+1,p+1,p)} := record
         (El : Type.{u})
@@ -83,106 +83,95 @@ namespace Setoid
         (Trans : ∀(e1, e2, e3 : El) → To e1 e2 → To e2 e3 → To e1 e3)
 
     def Ob.Ok (S : Ob) (el : El) → Prop := S.To el el
-    def Ob.brackets (S : Ob) : Type := record (El : S.El) (Ok : S.To El El)
+    def brackets (S : Ob) : Type := record (el : S.El) (ok : S.To el el)
 
---  sugar ( [A] ), (a1 >A> a2) -- irreversible toality is intoality
+--  sugar ( [A] ), (a1 =A= a2) -- irreversible equality is inequality
 
     def Hom.{u1, p1, u2, p2} (A : Ob.{u1, p1}) (B : Ob.{u2, p2})
         : Ob.{u2, p2} := Ob.mk
         ( El := A.El → B.El )
-        ( To := λ(f1, f2 : El) → ∀(a1, a2 : A.El) →
-            (a1 >A> a2) → ((f1 a1) >B> (f2 a2)))
-        ( Trans := λ(f1, f2, f3 : El) →
-            λ(to12 : To f1 f2) → λ(to23 : To f2 f3) →
-            λ(a1, a2 : A.El) → .Trans B (f1 a1) (f2 a1) (f3 a2) (to12 a1 a1) (to23 a1 a2))
+        ( To f1 f2 := ∀(a1, a2 : [A]) →
+            (a1 ==A== a2) → ((f1 a1.el) =B= (f2 a2.el)))
+        ( Trans f1 f2 f3 fto12 fto23 :=
+            λ (a1, a2 : [A]) → λ (ato12 : a1 ==A== a2) →
+            .Trans B
+                (f1 a1.el) (f2 a1.el) (f3 a2.el)
+                (fto12 a1 a1 a1.ok) (fto23 a1 a2 ato12) )
 
 --  sugar (A ⥤ B), (f $ x), (f [$] x), (f $/ xTo), (fTo /$ x)
 
-    def Arrow (A, B : Ob) := [A ⥤ B]
+    def Id.{u1, p1} (A : Ob.{u1, p1}) : [A ⥤ A] := brackets.mk (A ⥤ A)
+        ( el a := a )
+        ( ok a1 a2 := Prop.id (a1 ==A== a2))
 
-    def Id.{u1, p1} (A : Ob.{u1, p1}) : [A ⥤ A] := Arrow.mk A A
-        ( El := λ (a : A.El) → a )
-        ( Ok := λ (a1, a2 : A.El) → Prop.id (a1 >A> a2))
+    def Mul.onEl.{u1, p1, u2, p2, u3, p3}
+        (A : Ob.{u1, p1}) (B : Ob.{u2, p2}) (C : Ob.{u3, p3})
+        (f : [B ⥤ C]) (g : [A ⥤ B]) : [A ⥤ C] := brackets.mk (A ⥤ C)
+        ( el a := (f $ (g $ a)) )
+        ( ok a1 a2 to12 := (f $/ (g $/ to12)) )
 
-    def Mul.onEl.{u1, p1, u2, p2, u3, p3} (A : Ob.{u1, p1}) (B : Ob.{u2, p2}) (C : Ob.{u3, p3})
-        (f : [B ⥤ C]) (g : [A ⥤ B]) : [A ⥤ C] := Arrow.mk A C
-        ( El := λ (a : A.El) → (f $ (g $ a)))
-        ( Ok := λ (a1, a2 : A.El) → λ(to12 : a1 >A> a2) → (f $/ (g $/ to12)) )
-
-end Setoid
+end Poset
 
 --
-def PropSet.{p} : Setoid.Ob.{p, p} := Setoid.Ob.mk.{p, p}
+def PropSet.{p} : Poset.Ob.{p, p} := Poset.Ob.mk.{p, p}
     (El := Prop.{p})
     (To := P1 → P2)
-    (Trans := λ (P1, P2, P3 : El) → λ (to12 : To e1 e2) → λ (to23 : To e2 e3) →
-        Prop.mul P1 P2 P3 to23 to12)
+    (Trans P1 P2 P3 to12 to23 p1 := to23 (to12 p1))
 
 --
-def PredicateSet.{u, p} (X : Setoid.Ob.{u, p}) : Setoid.Ob.{p, p} :=
+def PredicateSet.{u, p} (X : Poset.Ob.{u, p}) : Poset.Ob.{p, p} :=
     X ⥤ PropSet.{p};
 
-def Pred (X : Setoid.Ob) := [PredicateSet X]
-
 --
-def SmallSigmaSet.{u, p} (B : Setoid.Ob.{u, p}) (P : [PredicateSet.{u, p} B]) : Setoid.Ob.{u, p} :=
-    Setoid.Ob.mk.{u, p}
+def SmallSigmaSet.{u, p} (B : Poset.Ob.{u, p}) (P : [PredicateSet.{u, p} B]) : Poset.Ob.{u, p} :=
+    Poset.Ob.mk.{u, p}
     ( El := B.El )
-    ( To := λ (b1, b2 : El) → record
-        (pred1 : P.El b1)
-        (pred2 : P.El b2)
-        (to : b1 >A> b2) )
-    ( Trans := λ (b1, b2, b3 : El) →
-        λ (to12 : To e1 e2) → λ (to23 : To e2 e3) →
-        To.mk b1 b3
-            (pred1 := to12.pred1)
-            (pred2 := to23.pred2)
-            (to := .Trans B b1 b2 b3 to12.to to23.to) )
+    ( To b1 b2 := record
+        (pred1 : P $ b1)
+        (to : b1 =A= b2) )
+    ( Trans b1 b2 b3 to12 to23 := To.mk b1 b3
+        (pred1 := to12.pred1)
+        (to := .Trans B b1 b2 b3 to12.to to23.to) )
 
 --
-def SubsetType.{u, p} (B : Setoid.Ob.{u, p}) : Type.{(u+1,p+1,p),(u,p),p} :=
-    record
-        (A : Setoid.Ob.{u, p} )
-        (i : [A ⥤ B] )
-        (uniq : ∀(a1, a2 : [A]) → ((i.El a1.El) >B> (i.El a2.El)) → (a1.El >A> a2.El) )
+def SubsetType.{u, p} (B : Poset.Ob.{u, p}) : Type.{(u+1,p+1,p),(u,p),p} := record
+    (A : Poset.Ob.{u, p} )
+    (i : [A ⥤ B] )
+    (uniq : ∀ (a1, a2 : [A]) →
+        ((i $ a1.el) =B= (i $ a2.el)) → (a1 ==A== a2) )
 
 --
-def Pred2Sub.{u, p} (B : Setoid.Ob.{u, p}) (P : [PredicateSet.{u, p} B]) : SubsetType.{u,p} B :=
-    SubsetType.mk.{u,p}
-        ( A := SmallSigmaSet B P )
-        ( i := Arrow.mk A B
-            ( El := λ (a : A.El) → a )
-            ( Ok := λ (a1, a2 : A.El) → λ (to12 : a1 >A> a2) → to12.to)
-        ( uniq := λ (a1, a2 : [A]) → λ (to12 : a1.El >B> a2.El) →
-            SmallSigmaSet.mk B P a1.El a2.El
-                ( pred1 := a1.Ok.pred1 )
-                ( pred2 := a1.Ok.pred2 )
-                ( to := to12) )
+def Pred2Sub.{u, p} (B : Poset.Ob.{u, p}) (P : [PredicateSet.{u, p} B])
+    : SubsetType.{u,p} B := SubsetType.mk.{u,p}
+    ( A := SmallSigmaSet B P )
+    ( i := brackets.mk (A ⥤ B)
+        ( el a := a )
+        ( ok a1 a2 to12 := to12.to)
+    ( uniq a1 a2 to12 := SmallSigmaSet.To.mk B P a1.el a2.el
+        ( pred1 := a1.ok.pred1 )
+        ( to := to12) )
 
 --
-def Sub2Pred.{u, p} (B : Setoid.Ob.{u, p}) (S : SubsetType.{u, p} B) : [PredicateSet.{u, p} B] :=
-    Pred.mk
-        ( El := λ (b : B.El) → packed church.{p} record
-            (a : S.A.El)
-            (to : (S.i $ a) >B> b) )
-        ( Ok := λ (b1, b2 : B.El) → λ (to12 : b1 >B> b2) →
-            ( λ (pair : El b1) → El.mk b2
-                ( a := pair.1 )
-                ( to := .Trans B (S.i $ a1) b1 b2 pair.to to12) )
+def Sub2Pred.{u, p} (B : Poset.Ob.{u, p}) (S : SubsetType.{u, p} B)
+    : [PredicateSet.{u, p} B] := brackets.mk (PredicateSet B)
+    ( el b := packed church.{p} record
+        (a : S.A.El)
+        (to : (S.i $ a) =B= b) )
+    ( ok b1 b2 to12 (xa,xto) := el.mk b2
+        ( a := xa )
+        ( to := .Trans B (S.i $ a1) b1 b2 xto to12 )
 
 --
-def isSection.{u, p} (B : Setoid.Ob.{u, p}) (S : SubsetType.{u, p} B)
+def isSection.{u, p} (B : Poset.Ob.{u, p}) (S : SubsetType.{u, p} B)
         (f : [B ⥤ S.A]) : Prop.{p} :=
-    (Setoid.Mul.onEl B S.A B S.i f) >B> (Setoid.Id B)
+    (Poset.Mul.onEl B S.A B S.i f) =B= (Poset.Id B)
 
 --
-def Forall.{u, p} (B : Setoid.Ob.{u, p}) (P : [PredicateSet.{u, p} B]) : Prop.{p} :=
-    ∀ (b : [B]) → (P $ b.El)
+def Forall.{u, p} (B : Poset.Ob.{u, p}) (P : [PredicateSet.{u, p} B]) : Prop.{p} :=
+    ∀ (b : [B]) → (P $ b.el)
 
 --
-def sec2all.{u, p} (B : Setoid.Ob.{u, p}) (P : [PredicateSet.{u, p} B])
+def sec2all.{u, p} (B : Poset.Ob.{u, p}) (P : [PredicateSet.{u, p} B])
         (f : [B ⥤ SmallSigmaSet B P]) (sec : isSection B (Pred2Sub B P) f)
         : Forall.{u,p} B P :=
     ∀ (b : [B]) → ((P $/ (sec /$ b)) (.pred (f [$] b)))
-
---

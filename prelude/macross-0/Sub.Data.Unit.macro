@@ -57,8 +57,8 @@ def Init : Alg.Ob := Alg.Ob.mk
         ( Trans :=
             λ (e1, e2, e3 : El) →
             λ (to12 : To e1 e2) → λ (to23 : To e2 e3) →
-            λ (A : Alg.Ob) →
-            (.Trans T (.atOb e1 A) (.atOb e2 A) (.atOb e3 A) (to12 A) (to23 A)) )
+            λ (A1, A2 : Alg.Ob) → λ (hom : [A1 ⟹ A2]) →
+            (.Trans T (e1 A1) (e2 A1) (e3 A2) (to12 A) (to23 A)) )
     ( Mk := Carrier.El.mk
         ( atOb :=
             λ (A : Alg.Ob) →

@@ -41,7 +41,7 @@ def Alg.Mul.onEl (A1, A2, A3 : Alg.Ob)
             (m23.hom $/ m12.homMk)
             (m23.homMk) )
 
-def Init : AlgType := AlgType.mk
+def Init : Alg.Ob := Alg.Ob.mk
     ( Carrier := Setoid.Ob.mk.{u,p}
         ( El := packed (...) record
             (atOb :
