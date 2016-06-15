@@ -242,7 +242,8 @@ def Forall.{u, p} (B : Setoid.Ob.{u, p}) (P : [PredicateSet.{u, p} B]) : Prop.{p
 
 --
 def sec2all.{u, p} (B : Setoid.Ob.{u, p}) (P : [PredicateSet.{u, p} B])
-        (f : [B ⥤ (.A (Pred2Sub B P))]) (sec : isSection.{u,p} B (Pred2Sub B P) f) : Forall.{u,p} B P :=
-    ∀ (b : [B]) → ((.forward (P $/ (sec b))) (.pred (f $ b)))
+        (f : [B ⥤ SmallSigmaSet B P]) (sec : isSection B (Pred2Sub B P) f)
+        : Forall.{u,p} B P :=
+    ∀ (b : [B]) → ((.forward (P $/ (sec /$ b))) (.pred (f $ b)))
 
 --

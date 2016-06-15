@@ -172,16 +172,17 @@ def Sub2Pred.{u, p} (B : Setoid.Ob.{u, p}) (S : SubsetType.{u, p} B) : [Predicat
 
 --
 def isSection.{u, p} (B : Setoid.Ob.{u, p}) (S : SubsetType.{u, p} B)
-        (f : [B ⥤ (.A S)]) : Prop.{p} :=
-    (Setoid.Mul.onEl B (.A S) B (.i S) f) ≡B≡ (Setoid.Id B)
+        (f : [B ⥤ S.A]) : Prop.{p} :=
+    (Setoid.Mul.onEl B S.A B S.i f) ≡B≡ (Setoid.Id B)
 
 --
 def Forall.{u, p} (B : Setoid.Ob.{u, p}) (P : [PredicateSet.{u, p} B]) : Prop.{p} :=
-    ∀ (b : [B]) → (P $ b)
+    ∀ (b : [B]) → (P $ b.El)
 
 --
 def sec2all.{u, p} (B : Setoid.Ob.{u, p}) (P : [PredicateSet.{u, p} B])
-        (f : [B ⥤ (.A (Pred2Sub B P))]) (sec : isSection.{u,p} B (Pred2Sub B P) f) : Forall.{u,p} B P :=
-    ∀ (b : [B]) → ((.forward (P $/ (sec b))) (.pred (f $ b)))
+        (f : [B ⥤ SmallSigmaSet B P]) (sec : isSection B (Pred2Sub B P) f)
+        : Forall.{u,p} B P :=
+    ∀ (b : [B]) → ((P $/ (sec /$ b)) (.pred (f [$] b)))
 
 --
