@@ -1,7 +1,6 @@
 --
--- minimal macross example
+-- even more minimal macross example
 --
-
 
 -- universes
 def Type.{t} : *.{t+1} := *.{t}
@@ -78,62 +77,46 @@ end Prop
 
 namespace Setoid
 
-    def Ob.{u, p} : Type.{((u+1,p+1),p+1,p,p,p)} := record
-        (El : Type.{(u,p)})
-        (Equ :
-            ∀(e1, e2 : El) → Prop.{p})
-        (Cong :
-            ∀(a.1, b.1 : El.1) →
-            ∀(a.21, a.22 : El.2 a.1) →
-            ∀(b.21, b.22 : El.2 b.1) →
-            Equ (a.1, a.21) (b.1, b.21) →
-            Equ (a.1, a.22) (b.1, b.22))
-        (Refl :
-            ∀(e0 : El) →
-            Equ e0 e0)
-        (Trans :
-            ∀(e1, e2, e3 : El) →
-            Equ e1 e2 → Equ e2 e3 → Equ e1 e3)
-        (Sym :
-            ∀(e1, e2 : El) →
-            Equ e1 e2 → Equ e2 e1)
+    def Ob.{u, p} : Type.{(u+1,p+1,p)} := record
+        (El : Type.{u})
+        (Equ : ∀(e1, e2 : El) → Prop.{p})
+        (Trans : ∀(e1, e2, e3 : El) → Equ e1 e2 → Equ e2 e3 → Equ e1 e3)
+
+    def Ob.Ok (S : Ob) (el : El) → Prop := S.Equ el el
+    def Ob.brackets (S : Ob) : Type := record (El : Ob.El) (Ok : Ob.Ok S El)
 
 --  sugar ( [A] ), (a1 ≡A≡ a2)
 
     def Hom.{u1, p1, u2, p2} (A : Ob.{u1, p1}) (B : Ob.{u2, p2})
         : Ob.{u2, p2} := Ob.mk
-        ( El := pack (1 := onEl.1) (2 := church onEl.2 onEqu)
-            record
-            (onEl : [A] → [B])
-            (onEl :
-                ∀(a.1 : A.1) → ∀(a.21, a.22 : A.2 a.1) →
-                ((onEl (a.1,a.21)) ≡B≡ (onEl (a.1,a.22))))
-            (onEqu : ∀(a1, a2 : [A]) → (a1 ≡A≡ a2) → ((onEl a1) ≡B≡ (onEl a2))))
-        ( Equ := λ(f, g : El) → ∀(a : A) → ((.onEl f a) ≡B≡ (.on El g a)))
-        ( Equ.Cong := λ ... → B.Equ.Cong ? )
-        ( Refl :=
-            λ(f0 : El) →
-            λ(a : [A]) → (.Refl A (.onEl f0 a)))
+        ( El := A.El → B.El )
+        ( Equ := λ(f1, f2 : El) → record
+            (of1Equ : ∀(a1, a2 : A.El) → (a1 ≡A≡ a2) → ((f1 a1) ≡B≡ (f1 a2)))
+            (of2Equ : ∀(a1, a2 : A.El) → (a1 ≡A≡ a2) → ((f2 a1) ≡B≡ (f2 a2)))
+            (ofEl : ∀(a : [A]) → ((f1 a) ≡B≡ (f2 a))))
         ( Trans :=
             λ(f1, f2, f3 : El) →
             λ(equ12 : Equ f1 f2) → λ(equ23 : Equ f2 f3) →
             λ(a : [A]) → .Trans A (.onEl f1 a) (.onEl f2 a) (.onEl f3 a) (equ12 a) (equ23 a))
-        ( Sym :=
-            λ(f1, f2 : El) → λ(equ12 : Equ f1 f2) →
-            λ(a : [A]) → .Sym A (f1 a) (f2 a) (equ12 a))
 
 --  sugar (A ⥤ B), (f $ x), (f $/ xEqu), (fEqu /$ x)
 
-    def Id.{u1, p1} (A : Ob.{u1, p1}) : [A ⥤ A] :=
-        Hom.El.mk.{u1, p1, u1, p1} A A
-            ( onEl := λ (a : [A]) → a )
-            ( onEqu := λ (a1, a2 : [A]) → λ(equ12 : a1 ≡A≡ a2) → a12 )
+    def Arrow (A, B : Ob) := [A ⥤ B]
+
+    def Id.{u1, p1} (A : Ob.{u1, p1}) : [A ⥤ A] := Arrow.mk A A
+        ( El := λ (a : A.El) → a )
+        ( Ok := Hom.Equ.mk A A El El
+            (of1Equ := λ (a1, a2 : A.El) → Prop.id (a1 ≡A≡ a2))
+            (of2Equ := λ (a1, a2 : A.El) → Prop.id (a1 ≡A≡ a2))
+            (ofEl := λ (a : [A]) → a.Ok ))
 
     def Mul.onEl.{u1, p1, u2, p2, u3, p3} (A : Ob.{u1, p1}) (B : Ob.{u2, p2}) (C : Ob.{u3, p3})
-        (f : [B ⥤ C]) (g : [A ⥤ B]) : [A ⥤ C] :=
-        Hom.El.mk.{u1, p1, u3, p3} A C
-            ( onEl := λ (a : [A]) → (f $ (g $ a)) )
-            ( onEqu := λ (a1, a2 : [A]) → λ(equ12 : a1 ≡A≡ a2) → (f $/ (g $/ equ12)) )
+        (f : [B ⥤ C]) (g : [A ⥤ B]) : [A ⥤ C] := Arrow.mk A C
+        ( El := λ (a : A.El) → (f.El (g.El a)))
+        ( Ok := Hom.Equ.mk A C El El
+            ( of1Equ := λ (a1, a2 : A.El) → λ(equ12 : a1 ≡A≡ a2) → (f $/ (g $/ equ12)) )
+            ( of1Equ := λ (a1, a2 : A.El) → λ(equ12 : a1 ≡A≡ a2) → (f $/ (g $/ equ12)) )
+            ( ofEl := λ (a : [A]) → (f $/ (g $/ a.Ok)) ))
 
 end Setoid
 
