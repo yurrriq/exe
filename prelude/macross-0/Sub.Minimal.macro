@@ -85,11 +85,11 @@ namespace Poset
     def Ob.Ok (S : Ob) (el : El) → Prop := S.To el el
     def brackets (S : Ob) : Type := record (el : S.El) (ok : S.To el el)
 
---  sugar ( [A] ), (a1 =A= a2) -- irreversible equality is inequality
+--  sugar [A], |A|, (a1 =A= a2) -- irreversible equality is inequality
 
     def Hom.{u1, p1, u2, p2} (A : Ob.{u1, p1}) (B : Ob.{u2, p2})
         : Ob.{u2, p2} := Ob.mk
-        ( El := A.El → B.El )
+        ( El := |A| → |B| )
         ( To f1 f2 := ∀(a1, a2 : [A]) →
             (a1 ==A== a2) → ((f1 a1.el) =B= (f2 a2.el)))
         ( Trans f1 f2 f3 fto12 fto23 :=
@@ -155,7 +155,7 @@ def Pred2Sub.{u, p} (B : Poset.Ob.{u, p}) (P : [PredicateSet.{u, p} B])
 def Sub2Pred.{u, p} (B : Poset.Ob.{u, p}) (S : SubsetType.{u, p} B)
     : [PredicateSet.{u, p} B] := brackets.mk (PredicateSet B)
     ( el b := packed church.{p} record
-        (a : S.A.El)
+        (a : |S.A|)
         (to : (S.i $ a) =B= b) )
     ( ok b1 b2 to12 (xa,xto) := el.mk b2
         ( a := xa )
