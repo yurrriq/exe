@@ -33,7 +33,7 @@ def Alg.Mul.onEl (A1, A2, A3 : Alg.Ob)
     let (setmul := Poset.Mul.onEl A1.Carrier A2.Carrier A3.Carrier m23.hom m12.hom) in
     brackets.mk (A1 ⟹ A3)
         ( el := setmul.el )
-        ( ok := Alg.Hom.To.mk A1 A3 El El
+        ( ok := Alg.Hom.To.mk A1 A3 el el
             ( mk1 := .Trans A3.Carrier
                 (m23 $ (m12 $ A1.Mk))
                 (m23 $ A2.Mk)
@@ -46,31 +46,28 @@ def Init : Alg.Ob := Alg.Ob.mk
     ( Carrier := Poset.Ob.mk.{u,p}
         ( El :=
             ∀ (A : Alg.Ob) →
-            A.Carrier )
-        ( To := λ (e1, e2 : El) →
+            |A.Carrier| )
+        ( To e1 e2 :=
             ∀ (A1, A2 : Alg.Ob) → ∀ (hom : [A1 ⟹ A2]) →
             ((hom $ (e1 A1)) =A2.Carrier= (e2 A2)) )
-        ( Trans :=
-            λ (e1, e2, e3 : El) →
-            λ (to12 : To e1 e2) → λ (to23 : To e2 e3) →
-            λ (A1, A2 : Alg.Ob) → λ (hom : [A1 ⟹ A2]) →
-            (.Trans T (e1 A1) (e2 A1) (e3 A2) (to12 A) (to23 A)) )
-    ( Mk := Carrier.El.mk
-        ( atOb :=
-            λ (A : Alg.Ob) →
-            A.Mk )
-        ( atHom :=
-            λ (A1, A2 : Alg.Ob) → λ (hom : [A1 ⟹ A2]) →
-            hom.homMk ))
+        ( Trans e1 e2 e3 to12 to23 A1 A2 hom :=
+            .Trans T (e1 A1) (e2 A1) (e3 A2) (to12 A1 A1 (Alg.Id A1)) (to23 A1 A2 hom) )
+    ( Mk := brackets.mk Carrier
+        ( el A := A.Mk.el )
+        ( ok A1 A2 hom := hom.ok.mk1 ) )
 
 def recur.forOb (A : Alg.Ob) : [ Init ⟹ A ] :=
-    Alg.Hom.mk Init A
-        ( hom := λ (u : [Init.Carrier]) → (.atOb u A) )
-        ( homMk := .Refl A.Carrier A.Mk )
+    brackets.mk (Init ⟹ A)
+        ( el u := u A )
+        ( ok := Alg.Hom.To.mk Init A el el
+            ( mk1 := .Refl A.Carrier A.Mk.el )
+            ( equ u1 u2 uto12 := uto12 A A (Alg.Id A) ) )
+
+-- untill here
 
 def recur.forHom (A1, A2 : Alg.Ob) (hom : [A1 ⟹ A2])
     : (Alg.Mul.onEl Init A1 A2 hom (recur.forOb A1))
-        =[ Init ⟹ A2 ]= (recur.forOb A2) :=
+        =(Init ⟹ A2)= (recur.forOb A2) :=
     λ (u : [Init.Carrier]) → (.atHom u A1 A2 hom)
 
 def Endo : Poset.Ob := Init ⟹ Init
