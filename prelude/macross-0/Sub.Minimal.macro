@@ -90,14 +90,11 @@ namespace Setoid
     def Hom.{u1, p1, u2, p2} (A : Ob.{u1, p1}) (B : Ob.{u2, p2})
         : Ob.{u2, p2} := Ob.mk
         ( El := A.El → B.El )
-        ( Equ := λ(f1, f2 : El) → record
-            (of1Equ : ∀(a1, a2 : A.El) → (a1 ≡A≡ a2) → ((f1 a1) ≡B≡ (f1 a2)))
-            (of2Equ : ∀(a1, a2 : A.El) → (a1 ≡A≡ a2) → ((f2 a1) ≡B≡ (f2 a2)))
-            (ofEl : ∀(a : [A]) → ((f1 a) ≡B≡ (f2 a))))
-        ( Trans :=
-            λ(f1, f2, f3 : El) →
+        ( Equ := λ(f1, f2 : El) → ∀(a1, a2 : A.El) →
+            (a1 ≡A≡ a2) → ((f1 a1) ≡B≡ (f2 a2)))
+        ( Trans := λ(f1, f2, f3 : El) →
             λ(equ12 : Equ f1 f2) → λ(equ23 : Equ f2 f3) →
-            λ(a : [A]) → .Trans A (.onEl f1 a) (.onEl f2 a) (.onEl f3 a) (equ12 a) (equ23 a))
+            λ(a1, a2 : A.El) → .Trans B (f1 a1) (f2 a1) (f3 a2) (equ12 a1 a1) (equ23 a1 a2))
 
 --  sugar (A ⥤ B), (f $ x), (f $/ xEqu), (fEqu /$ x)
 
@@ -105,115 +102,73 @@ namespace Setoid
 
     def Id.{u1, p1} (A : Ob.{u1, p1}) : [A ⥤ A] := Arrow.mk A A
         ( El := λ (a : A.El) → a )
-        ( Ok := Hom.Equ.mk A A El El
-            (of1Equ := λ (a1, a2 : A.El) → Prop.id (a1 ≡A≡ a2))
-            (of2Equ := λ (a1, a2 : A.El) → Prop.id (a1 ≡A≡ a2))
-            (ofEl := λ (a : [A]) → a.Ok ))
+        ( Ok := λ (a1, a2 : A.El) → Prop.id (a1 ≡A≡ a2))
 
     def Mul.onEl.{u1, p1, u2, p2, u3, p3} (A : Ob.{u1, p1}) (B : Ob.{u2, p2}) (C : Ob.{u3, p3})
         (f : [B ⥤ C]) (g : [A ⥤ B]) : [A ⥤ C] := Arrow.mk A C
-        ( El := λ (a : A.El) → (f.El (g.El a)))
-        ( Ok := Hom.Equ.mk A C El El
-            ( of1Equ := λ (a1, a2 : A.El) → λ(equ12 : a1 ≡A≡ a2) → (f $/ (g $/ equ12)) )
-            ( of1Equ := λ (a1, a2 : A.El) → λ(equ12 : a1 ≡A≡ a2) → (f $/ (g $/ equ12)) )
-            ( ofEl := λ (a : [A]) → (f $/ (g $/ a.Ok)) ))
+        ( El := λ (a : A.El) → (f $ (g $ a)))
+        ( Ok := λ (a1, a2 : A.El) → λ(equ12 : a1 ≡A≡ a2) → (f $/ (g $/ equ12)) )
 
 end Setoid
 
 --
 def PropSet.{p} : Setoid.Ob.{p, p} := Setoid.Ob.mk.{p, p}
-    (El := packed (1 := P) (2 := church) record (P: Prop.{p}) )
-    (Equ := λ (e1, e2 : El) →
-        let (P1 : Prop := .P e1) (P2 : Prop := .P e2) in
-        packed church -- shortcut
-        record
-            (forward: P1 → P2)
-            (backward: P2 → P1)
-        -- should emit `Equ.mk` symbol )
-    (Equ.Cong := λ ... → Prop.id ?)
-    (Refl := λ (e0 : El) →
-        let (P0 : Prop := .P e0) (f00 : P0 → P0 := Prop.id P0) in
-        Equ.mk e0 e0 f00 f00 )
-    (Trans := λ (e1, e2, e3 : El) →
-        λ (equ12 : Equ e1 e2) → λ (equ23 : Equ e2 e3) →
-        let (P1 : Prop := .P e1) (P2 : Prop := .P e2) (P2 : Prop := .P e2) in
-        let (f12 : P1 → P2 := .forward equ12) (f21 : P2 → P1 := .backward equ12) in
-        let (f23 : P2 → P3 := .forward equ23) (f32 : P3 → P2 := .backward equ23) in
-        let (f13 : P1 → P3 := Prop.mul P1 P2 P3 f23 f12) in
-        let (f31 : P3 → P1 := Prop.mul P3 P2 P1 f21 f32) in
-        Equ.mk e1 e3 f13 f31 )
-    (Sym := λ (e1, e2 : El) →
-        λ (equ12 : Equ e1 e2) →
-        let (P1 : Prop := .P e1) (P2 : Prop := .P e2) in
-        let (f12 : P1 → P2 := .forward equ12) (f21 : P2 → P1 := .backward equ12) in
-        Equ.mk e2 e1 f21 f12 )
+    (El := Prop.{p})
+    (Equ := P1 → P2)
+    (Trans := λ (P1, P2, P3 : El) → λ (equ12 : Equ e1 e2) → λ (equ23 : Equ e2 e3) →
+        Prop.mul P1 P2 P3 equ23 equ12)
 
 --
 def PredicateSet.{u, p} (X : Setoid.Ob.{u, p}) : Setoid.Ob.{p, p} :=
     X ⥤ PropSet.{p};
 
+def Pred (X : Setoid.Ob) := [PredicateSet X]
+
 --
 def SmallSigmaSet.{u, p} (B : Setoid.Ob.{u, p}) (P : [PredicateSet.{u, p} B]) : Setoid.Ob.{u, p} :=
     Setoid.Ob.mk.{u, p}
-    ( El :=
-        packed (1 := base.1) (2 := church base.2 pred)
-        record
-            (base : [B])
-            (pred : P $ base) )
-    ( Equ := λ (e1, e2 : El) →
-        let (b1 : [B] := .base e1) (b2 : [B] := .base e2) in
-        (b1 ≡A≡ b2) )
-    ( Equ.Cong := λ ... → Prop.id ? )
-    ( Refl := λ (e0 : El) →
-        let (b0 : [B] := .base e0) in
-        .Refl B b0 )
-    ( Trans := λ (e1, e2, e3 : El) →
+    ( El := B.El )
+    ( Equ := λ (b1, b2 : El) → record
+        (pred1 : P.El b1)
+        (pred2 : P.El b2)
+        (equ : b1 ≡A≡ b2) )
+    ( Trans := λ (b1, b2, b3 : El) →
         λ (equ12 : Equ e1 e2) → λ (equ23 : Equ e2 e3) →
-        let (b1 : [B] := .base e1) (b2 : [B] := .base e2) (b3 : [B] := .base e3) in
-        .Trans B b1 b2 b3 equ12 equ23 )
-    ( Sym := λ (e1, e2 : El) →
-        λ (equ12 : Equ e1 e2) →
-        let (b1 : [B] := .base e1) (b2 : [B] := .base e2) in
-        .Sym B b1 b2 equ12 )
+        Equ.mk b1 b3
+            (pred1 := equ12.pred1)
+            (pred2 := equ23.pred2)
+            (equ := .Trans B b1 b2 b3 equ12.equ equ23.equ) )
 
 --
-def SubsetType.{u, p} (B : Setoid.Ob.{u, p}) : Type.{((u+1,p+1),p+1,p,p,p),(u,p),p} :=
+def SubsetType.{u, p} (B : Setoid.Ob.{u, p}) : Type.{(u+1,p+1,p),(u,p),p} :=
     record
         (A : Setoid.Ob.{u, p} )
         (i : [A ⥤ B] )
-        (uniq : ∀(a1, a2 : [A]) → ((i $ a1) ≡B≡ (i $ a2)) → (a1 ≡A≡ a2) )
+        (uniq : ∀(a1, a2 : [A]) → ((i.El a1.El) ≡B≡ (i.El a2.El)) → (a1.El ≡A≡ a2.El) )
 
 --
 def Pred2Sub.{u, p} (B : Setoid.Ob.{u, p}) (P : [PredicateSet.{u, p} B]) : SubsetType.{u,p} B :=
     SubsetType.mk.{u,p}
         ( A := SmallSigmaSet B P )
-        ( i :=
-            Setoid.Hom.El.mk
-                ( onEl := λ (a : [A]) → (.base a) )
-                ( onEqu := λ (a1, a2 : [A]) → λ (equ12 : a1 ≡A≡ a2) → equ12 ) )
-        ( uniq := λ (a1, a2 : [A]) → λ (equ12 : (i $ a1) ≡B≡ (i $ a2)) → equ12 )
+        ( i := Arrow.mk A B
+            ( El := λ (a : A.El) → a )
+            ( Ok := λ (a1, a2 : A.El) → λ (equ12 : a1 ≡A≡ a2) → equ12.equ)
+        ( uniq := λ (a1, a2 : [A]) → λ (equ12 : a1.El ≡B≡ a2.El) →
+            SmallSigmaSet.mk B P a1.El a2.El
+                ( pred1 := a1.Ok.pred1 )
+                ( pred2 := a1.Ok.pred2 )
+                ( equ := equ12) )
 
 --
-def Sub2Pred.{u, p} (B : Setoid.Ob.{u, p}) (S : SubsetType.{u, p} B) : PredicateSet.El.{u, p} B :=
-    Setoid.Hom.El.mk
-        ( onEl := λ (b : [B]) →
-            packed church.{p} -- ???
-            record
-                (a : .A S)
-                (equ : (.i S a) ≡B≡ b) )
-        ( onEqu := λ (b1 b2 : [B]) → λ (equ12 : b1 ≡B≡ b2) →
-            PropSet.Equ.mk (onEl b1) (onEl b2)
-                ( λ (pair : onEl b1) →
-                    let (a1 := .a pair) (equ1 := .equ pair) in
-                    onEl.mk b2
-                        ( a := a1 ).{u, p}
-                        ( equ := .Trans B (.i S a1) b1 b2 equ1 equ12) )
-                ( λ (pair : onEl b2) →
-                    let (a2 := .a pair) (equ2 := .equ pair) in
-                    let (equ21 := .Sym B b1 b2 equ12) in
-                    onEl.mk b1
-                        ( a := a2 )
-                        ( equ := .Trans B (.i S a2) b2 b1 equ2 equ21) ) )
+def Sub2Pred.{u, p} (B : Setoid.Ob.{u, p}) (S : SubsetType.{u, p} B) : [PredicateSet.{u, p} B] :=
+    Pred.mk
+        ( El := λ (b : B.El) → packed church.{p} record
+            (a : S.A.El)
+            (equ : (S.i $ a) ≡B≡ b) )
+        ( Ok := λ (b1, b2 : B.El) → λ (equ12 : b1 ≡B≡ b2) →
+            ( λ (pair : El b1) → El.mk b2
+                ( a := pair.1 )
+                ( equ := .Trans B (S.i $ a1) b1 b2 pair.equ equ12) )
 
 --
 def isSection.{u, p} (B : Setoid.Ob.{u, p}) (S : SubsetType.{u, p} B)

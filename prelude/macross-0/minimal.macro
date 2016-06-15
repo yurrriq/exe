@@ -113,14 +113,14 @@ namespace Setoid
         ( Equ.Cong := λ ... → B.Equ.Cong ? )
         ( Refl :=
             λ(f0 : El) →
-            λ(a : [A]) → (.Refl A (.onEl f0 a)))
+            λ(a : [A]) → (.Refl B (.onEl f0 a)))
         ( Trans :=
             λ(f1, f2, f3 : El) →
             λ(equ12 : Equ f1 f2) → λ(equ23 : Equ f2 f3) →
-            λ(a : [A]) → .Trans A (.onEl f1 a) (.onEl f2 a) (.onEl f3 a) (equ12 a) (equ23 a))
+            λ(a : [A]) → .Trans B (.onEl f1 a) (.onEl f2 a) (.onEl f3 a) (equ12 a) (equ23 a))
         ( Sym :=
             λ(f1, f2 : El) → λ(equ12 : Equ f1 f2) →
-            λ(a : [A]) → .Sym A (f1 a) (f2 a) (equ12 a))
+            λ(a : [A]) → .Sym B (.onEl f1 a) (.onEl f2 a) (equ12 a))
 
 --  sugar (A ⥤ B), (f $ x), (f $/ xEqu), (fEqu /$ x)
 
@@ -204,20 +204,19 @@ def SubsetType.{u, p} (B : Setoid.Ob.{u, p}) : Type.{((u+1,p+1),p+1,p,p,p),(u,p)
 def Pred2Sub.{u, p} (B : Setoid.Ob.{u, p}) (P : [PredicateSet.{u, p} B]) : SubsetType.{u,p} B :=
     SubsetType.mk.{u,p}
         ( A := SmallSigmaSet B P )
-        ( i :=
-            Setoid.Hom.El.mk
-                ( onEl := λ (a : [A]) → (.base a) )
-                ( onEqu := λ (a1, a2 : [A]) → λ (equ12 : a1 ≡A≡ a2) → equ12 ) )
+        ( i := Setoid.Hom.El.mk A B
+            ( onEl := λ (a : [A]) → (.base a) )
+            ( onEqu := λ (a1, a2 : [A]) → λ (equ12 : a1 ≡A≡ a2) → equ12 ) )
         ( uniq := λ (a1, a2 : [A]) → λ (equ12 : (i $ a1) ≡B≡ (i $ a2)) → equ12 )
 
 --
-def Sub2Pred.{u, p} (B : Setoid.Ob.{u, p}) (S : SubsetType.{u, p} B) : PredicateSet.El.{u, p} B :=
+def Sub2Pred.{u, p} (B : Setoid.Ob.{u, p}) (S : SubsetType.{u, p} B) : [PredicateSet.{u, p} B] :=
     Setoid.Hom.El.mk
         ( onEl := λ (b : [B]) →
             packed church.{p} -- ???
             record
-                (a : .A S)
-                (equ : (.i S a) ≡B≡ b) )
+                (a : [S.A])
+                (equ : (S.i $ a) ≡B≡ b) )
         ( onEqu := λ (b1 b2 : [B]) → λ (equ12 : b1 ≡B≡ b2) →
             PropSet.Equ.mk (onEl b1) (onEl b2)
                 ( λ (pair : onEl b1) →
