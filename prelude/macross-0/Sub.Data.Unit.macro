@@ -48,31 +48,17 @@ def Alg.Mul.onEl (A1, A2, A3 : Alg.Ob)
 
 def Init : Alg.Ob := Alg.Ob.mk
     ( Carrier := Setoid.Ob.mk.{u,p}
-        ( El := packed (...) record
-            (atOb :
-                ∀ (A : Alg.Ob) →
-                A.Carrier )
-            (atHom :
-                ∀ (A1, A2 : Alg.Ob) → ∀ (hom : [A1 ⟹ A2]) →
-                ((hom.hom $ (atOb A1)) =A2.Carrier= (atOb A2))) )
-        ( To :=
-            λ (e1, e2 : El) →
+        ( El :=
             ∀ (A : Alg.Ob) →
-            ((.atOb e1 A) =T= (.atOb e2 A)) )
-        ( Refl :=
-            λ (e0 : El) →
-            λ (A : Alg.Ob) →
-            (.Refl T (.atOb e0 A)) )
+            A.Carrier )
+        ( To := λ (e1, e2 : El) →
+            ∀ (A1, A2 : Alg.Ob) → ∀ (hom : [A1 ⟹ A2]) →
+            ((hom $ (e1 A1)) =A2.Carrier= (e2 A2)) )
         ( Trans :=
             λ (e1, e2, e3 : El) →
             λ (to12 : To e1 e2) → λ (to23 : To e2 e3) →
             λ (A : Alg.Ob) →
             (.Trans T (.atOb e1 A) (.atOb e2 A) (.atOb e3 A) (to12 A) (to23 A)) )
-        ( Sym :=
-            λ (e1, e2 : El) →
-            λ (to12 : To e1 e2) →
-            λ (A : Alg.Ob) →
-            (.Sym T (.atOb e1 A) (.atOb e2 A) (to12 A)) ))
     ( Mk := Carrier.El.mk
         ( atOb :=
             λ (A : Alg.Ob) →
