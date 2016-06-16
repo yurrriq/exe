@@ -46,7 +46,7 @@ def Init : Alg.Ob := Alg.Ob.mk
         ( El := packed (...) record
             (atOb :
                 ∀ (A : Alg.Ob) →
-                A.Carrier )
+                [A.Carrier] )
             (atHom :
                 ∀ (A1, A2 : Alg.Ob) → ∀ (hom : [A1 ⟹ A2]) →
                 ((hom.hom $ (atOb A1)) ≡A2.Carrier≡ (atOb A2))) )
