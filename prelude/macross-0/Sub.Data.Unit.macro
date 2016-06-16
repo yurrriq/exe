@@ -82,19 +82,23 @@ def recur.forId : (recur.forOb Init) =Endo= IId :=
 
 def Predicate : Poset.Ob.{p, p} := PredicateSet Init.Carrier
 
-----
-
-def Sigma (P : [Predicate]) (mk : P $ Init.Mk) : Alg.Ob :=
+def Sigma (P : [Predicate]) (mk : P $ Init.Mk.el) : Alg.Ob :=
     ( Carrier := SmallSigmaSet Init.Carrier P )
-    ( Mk := SmallSigmaSet.El.mk Init.Carrier P
-        ( base := Init.Mk )
-        ( pred := mk ) )
+    ( Mk := brackets.mk (SmallSigmaSet Init.Carrier P)
+        ( el := Init.Mk.el )
+        ( ok := SmallSigmaSet.To Init.Carrier P el el
+            (pred1 := mk)
+            (to := Init.Mk.ok) ) )
 
 def SInj (P : [Predicate]) (mk : P $ Init.Mk)
     : [ (Sigma P mk) ⟹ Init ] :=
-    Alg.Hom.mk (Sigma P mk) Init
-        ( hom := Pred2Sub.i Init.Carrier P )
-        ( homMk := .Refl Init.Carrier Init.Mk )
+    bracket.mk ((Sigma P mk) ⟹ Init)
+        ( el := Pred2Sub.i.el Init.Carrier P )
+        ( ok := Alg.Hom.To (Sigma P mk) Init
+            (mk1 := Init.Mk.ok)
+            (equ := Pred2Sub.i.ok Init.Carrier P) )
+
+----
 
 def recurP.forOb (P : [Predicate]) (mk : P $ Init.Mk)
     : [ Init ⟹ (Sigma P mk) ] :=
