@@ -174,4 +174,4 @@ def Forall.{u, p} (B : Poset.Ob.{u, p}) (P : [PredicateSet.{u, p} B]) : Prop.{p}
 def sec2all.{u, p} (B : Poset.Ob.{u, p}) (P : [PredicateSet.{u, p} B])
         (f : [B ⥤ SmallSigmaSet B P]) (sec : isSection B (Pred2Sub B P) f)
         : Forall.{u,p} B P :=
-    ∀ (b : [B]) → ((P $/ (sec /$ b)) (.ok.pred (f [$] b)))
+    λ (b : [B]) → ((P $/ (sec /$ b)) (.ok.pred (f [$] b)))
