@@ -129,9 +129,9 @@ def SmallSigmaSet.{u, p} (B : Poset.Ob.{u, p}) (P : [PredicateSet.{u, p} B]) : P
     ( To b1 b2 := record
         (pred1 : P $ b1)
         (to : b1 =A= b2) )
-    ( Trans b1 b2 b3 to12 to23 := To.mk b1 b3
-        (pred1 := to12.pred1)
-        (to := .Trans B b1 b2 b3 to12.to to23.to) )
+    ( Trans b1 b2 b3 bto12 bto23 := To.mk b1 b3
+        (pred1 := bto12.pred1)
+        (to := B.Trans b1 b2 b3 bto12.to bto23.to) )
 
 --
 def SubsetType.{u, p} (B : Poset.Ob.{u, p}) : Type.{(u+1,p+1,p),(u,p),p} := record
@@ -146,10 +146,10 @@ def Pred2Sub.{u, p} (B : Poset.Ob.{u, p}) (P : [PredicateSet.{u, p} B])
     ( A := SmallSigmaSet B P )
     ( i := brackets.mk (A ⥤ B)
         ( el a := a )
-        ( ok a1 a2 to12 := to12.to)
-    ( uniq a1 a2 to12 := SmallSigmaSet.To.mk B P a1.el a2.el
+        ( ok a1 a2 ato12 := ato12.to) )
+    ( uniq a1 a2 bto12 := SmallSigmaSet.To.mk B P a1.el a2.el
         ( pred1 := a1.ok.pred1 )
-        ( to := to12) )
+        ( to := bto12) )
 
 --
 def Sub2Pred.{u, p} (B : Poset.Ob.{u, p}) (S : SubsetType.{u, p} B)
@@ -157,14 +157,14 @@ def Sub2Pred.{u, p} (B : Poset.Ob.{u, p}) (S : SubsetType.{u, p} B)
     ( el b := packed church.{p} record
         (a : |S.A|)
         (to : (S.i $ a) =B= b) )
-    ( ok b1 b2 to12 (xa,xto) := el.mk b2
+    ( ok b1 b2 bto12 (xa,xto) := el.mk b2
         ( a := xa )
-        ( to := .Trans B (S.i $ a1) b1 b2 xto to12 )
+        ( to := B.Trans (S.i $ xa) b1 b2 xto bto12 )
 
 --
 def isSection.{u, p} (B : Poset.Ob.{u, p}) (S : SubsetType.{u, p} B)
         (f : [B ⥤ S.A]) : Prop.{p} :=
-    (Poset.Mul.onEl B S.A B S.i f) =B= (Poset.Id B)
+    (Poset.Mul.onEl B S.A B S.i f) =(B⥤B)= (Poset.Id B)
 
 --
 def Forall.{u, p} (B : Poset.Ob.{u, p}) (P : [PredicateSet.{u, p} B]) : Prop.{p} :=
@@ -174,4 +174,4 @@ def Forall.{u, p} (B : Poset.Ob.{u, p}) (P : [PredicateSet.{u, p} B]) : Prop.{p}
 def sec2all.{u, p} (B : Poset.Ob.{u, p}) (P : [PredicateSet.{u, p} B])
         (f : [B ⥤ SmallSigmaSet B P]) (sec : isSection B (Pred2Sub B P) f)
         : Forall.{u,p} B P :=
-    ∀ (b : [B]) → ((P $/ (sec /$ b)) (.pred (f [$] b)))
+    ∀ (b : [B]) → ((P $/ (sec /$ b)) (.ok.pred (f [$] b)))
