@@ -115,3 +115,42 @@ QUESTION: where to place anonymous record types in filesystem?
 module1 : module1
 
 */
+
+
+/*
+
+so... macro file is an expression
+
+simple function (translated to single OM file):
+
+```
+λ (x : X) -> a.b.c.d x
+```
+
+complex ("module"):
+
+
+```
+let
+    (local1 : lT1 := lV1) -- ??? abstract
+in
+new record
+    (T1 : *1 := record (f11 : f11T) (...))
+    (V1 := new (f11 := v11) (...) )
+```
+
+to be compiled into OM:
+
+```
+module1/@local1 := lT1
+module1/=local1 := #id #local1@ lV1 -- enforce type-check
+@module1/@T1 := *1
+@module1/=T1/@f11 := λ (local1 : #module1/@local1)-> f11T
+@module1/@V1 := @module1/=T1/@f11
+@module1/=V1/=f11 := λ (local1 : #module1/@local1)-> v11
+```
+
+QUESTION: should we start macro file from its identifier assignment?
+`name := expr` or just `expr` (like OM)?
+
+ */
