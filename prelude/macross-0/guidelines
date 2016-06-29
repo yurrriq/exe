@@ -77,3 +77,41 @@ By the contract, packed records have different physical and logical representati
 The *encoding instance* declared by `packed` is a way to define the relation of the both.
 
 */
+
+
+/*
+
+ADDED
+
+namespaces = records = modules
+
+any `def` in a namespace is a record field
+
+
+the shortcut syntax module `def`:
+
+
+```
+module1
+(...)
+( my := new record ( fA : tA := vA ) (fB : tB := vB) )
+(...)
+```
+
+is a sugar for a record value of an anonymous type
+
+
+```
+( module1 : record ... ( my : record (fA : tA) (fB : tB) ) )
+...
+( module1 := new ... ( my := new (fA := vA) (fB := vB) ) )
+
+```
+
+QUESTION: where to place anonymous record types in filesystem?
+??? to name it with `@` postfix or prefix
+
+@module1 : Type := record (...)
+module1 : module1
+
+*/
