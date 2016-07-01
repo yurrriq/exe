@@ -1,0 +1,54 @@
+Poset :=
+    let ( Prop := #Prop ) -- import from external parsed expression
+    in new record
+
+    -- type of objects of the Poset category
+    ( Ob.{u,p} : Type := record
+
+        -- stored fields, given by types
+        ( El : Type.{u} )
+        ( To (e1, e2 : El) : Prop.{p} )
+        ( Trans (e1, e2, e3 : El) : To e1 e2 → To e2 e3 → To e1 e3 )
+
+        -- evaluated fields, given by expressions
+        ( Ok (el : El) := To el el )
+        ( `@` := record (el : El) (ok : Ok el) ) -- [coercion]
+    )
+    ( `@` := Ob ) -- [coercion]
+
+-- syntax sugar for posets/setoids
+(sugar (e1:P.El) `=` (P:Poset) `=` (e2:P.El)     := P.To e1      e2)
+(sugar {P:Poset} (e1:P) `==` (e2:P)              := P.To e1.el   e2.el)
+
+    ( Hom.{u1, p1, u2, p2}
+            (A : Poset.{u1, p1}) (B : Poset.{u2, p2})
+            : Poset.{u2, p2}
+        := new
+            ( El := A.El → B.El )
+            ( To f1 f2 :=
+                ∀(a1, a2 : A) → (a1 == a2) →
+                ((f1 a1.el) =B= (f2 a2.el)) )
+            ( Trans f1 f2 f3 fto12 fto23 a1 a2 ato12 :=
+                B.Trans (f1 a1.el) (f2 a1.el) (f3 a2.el)
+                    (fto12 a1 a1 a1.ok) (fto23 a1 a2 ato12) )
+    )
+
+-- syntax sugar for mappings
+(sugar (A:Poset) `⥤` (B:Poset) := Poset.Hom A B)
+(sugar {A,B:Poset} (f:Poset.Hom A B) `$` (a:A) := new Poset.Ob.@
+        ( el := f.el a.el ) ( ok := f.ok a a a.ok ))
+(sugar {A,B:Poset} {a1,a2:A} (f:Poset.Hom A B) `$/` (ato12 : a1 == a2) :=
+        f.ok a1 a2 ato12 )
+(sugar {A,B:Poset} {f1,f2:Poset.Hom A B} (fto12: f1 == f2) `$/` (a:A) :=
+        fto12 a a a.ok )
+
+    ( Id.{u1, p1} (A : Poset.{u1, p1}) : A ⥤ A := new _
+        ( el a := a )
+        ( ok a1 a2 := Prop.id (a1 == a2)) )
+
+    ( Mul.{u1, p1, u2, p2, u3, p3}
+            (A : Poset.{u1, p1}) (B : Poset.{u2, p2}) (C : Poset.{u3, p3})
+            (f : B ⥤ C) (g : A ⥤ B) : A ⥤ C
+        := new _
+            ( el a := (f.el (g.el a)) )
+            ( ok a1 a2 ato12 := (f $/ (g $/ ato12)) ) )
