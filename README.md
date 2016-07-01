@@ -8,7 +8,7 @@ This research project is dedicated to formalization and implementation of Exe fu
 language with dependent types that compiles to untyped Erlang AST that can be compiled
 with regular Erlang `erlc` compiler and run under BEAM or LING virtual machines.
 
-<center><img src="http://5ht.co/exe.svg" width="600"></center>
+![](http://5ht.co/exe.svg)
 
 This language relies on pure Calculus of Construction with 1 axiom and four deduction rules,
 inductive `data` and coinductive `record` dependent definitions, and also impredicative
