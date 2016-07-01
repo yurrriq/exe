@@ -11,7 +11,7 @@ new record
     -- notion of relation between types
     (
         1To.0El (El1, El2 : 1El) : Type :=
-        ∀ (el1 : El1) → ∀ (el2 : El2) → Prop
+            ∀ (el1 : El1) → ∀ (el2 : El2) → Prop
     )
 
     -- shortcut

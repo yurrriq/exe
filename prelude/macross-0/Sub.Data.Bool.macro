@@ -69,6 +69,12 @@ def Init : Alg.Ob := Alg.Ob.mk
         ( el A := A.False.el )
         ( ok A1 A2 hom := hom.ok.false1 ) )
 
+def Endo : Poset.Ob := Init ⟹ Init
+
+def IId : [Endo] := Alg.Id Init
+
+def Predicate : Poset.Ob.{p, p} := PredicateSet Init.Carrier
+
 def recur.forOb (A : Alg.Ob) : [ Init ⟹ A ] :=
     brackets.mk (Init ⟹ A)
         ( el u := u A )
@@ -85,18 +91,12 @@ def recur.forHom (A1, A2 : Alg.Ob) (hom : [A1 ⟹ A2])
         (false1 := mulhomrec.ok.false1)
         (equ i1 i2 ito12 := ito12 A1 A2 hom)
 
-def Endo : Poset.Ob := Init ⟹ Init
-
-def IId : [Endo] := Alg.Id Init
-
 def recur.forId : (recur.forOb Init) =Endo= IId :=
     Alg.Hom.To.mk Init Init (recur.forOb.el Init) IId.el
         (True1 := recur.forOb.ok.true1 Init)
         (False1 := recur.forOb.ok.false1 Init)
         (equ a1 a2 ato12 A1 A2 hom :=
             ato12 Init A2 (Alg.Mul.onEl Init A1 A2 hom (recur.forOb A1)) )
-
-def Predicate : Poset.Ob.{p, p} := PredicateSet Init.Carrier
 
 def Sigma (P : [Predicate]) (true : P $ Init.Mk.el)(false : P $ Init.Mk.el) : Alg.Ob :=
     ( Carrier := SmallSigmaSet Init.Carrier P )
