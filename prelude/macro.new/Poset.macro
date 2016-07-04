@@ -24,31 +24,31 @@ Poset :=
             (A : Poset.{u1, p1}) (B : Poset.{u2, p2})
             : Poset.{u2, p2}
         := new
-            ( El := A.El → B.El )
-            ( To f1 f2 :=
-                ∀(a1, a2 : A) → (a1 == a2) →
-                ((f1 a1.el) =B= (f2 a2.el)) )
+            ( El := record ( onEl : A.El → B.El ) )
+            ( To f1 f2 := record
+                ( onTo : ∀(a1, a2 : A) → (a1 == a2) →
+                        ((f1.onEl a1.el) =B= (f2.onEl a2.el)) ) )
             ( Trans f1 f2 f3 fto12 fto23 a1 a2 ato12 :=
-                B.Trans (f1 a1.el) (f2 a1.el) (f3 a2.el)
-                    (fto12 a1 a1 a1.ok) (fto23 a1 a2 ato12) )
-    )
+                B.Trans (f1.onEl a1.el) (f2.onEl a1.el) (f3.onEl a2.el)
+                    (fto12.onTo a1 a1 a1.ok) (fto23.onTo a1 a2 ato12) ) )
 
 -- syntax sugar for mappings
 (sugar (A:Poset) `⥤` (B:Poset) := Poset.Hom A B)
-(sugar {A,B:Poset} (f:Poset.Hom A B) `$` (a:A) := new Poset.Ob.@
-        ( el := f.el a.el ) ( ok := f.ok a a a.ok ))
+(sugar {A,B:Poset} (f:Poset.Hom.El A B) `$` (a:A.El) := new
+        ( el := f.el.onEl a.el ) ( ok := f.ok.onTo a a a.ok ))
+(sugar {A,B:Poset} (f:Poset.Hom A B) `$` (a:A) := new
+        ( el := f.el.onEl a.el ) ( ok := f.ok.onTo a a a.ok ))
 (sugar {A,B:Poset} {a1,a2:A} (f:Poset.Hom A B) `$/` (ato12 : a1 == a2) :=
         f.ok a1 a2 ato12 )
 (sugar {A,B:Poset} {f1,f2:Poset.Hom A B} (fto12: f1 == f2) `$/` (a:A) :=
         fto12 a a a.ok )
 
-    ( Id.{u1, p1} (A : Poset.{u1, p1}) : A ⥤ A := new _
-        ( el a := a )
-        ( ok a1 a2 := Prop.id (a1 == a2)) )
-
+    ( Id.{u1, p1} (A : Poset.{u1, p1}) : A ⥤ A := new
+        ( el.onEl a := a  )
+        ( ok.onTo a1 a2 ato12 := ato12 ) )
     ( Mul.{u1, p1, u2, p2, u3, p3}
             (A : Poset.{u1, p1}) (B : Poset.{u2, p2}) (C : Poset.{u3, p3})
             (f : B ⥤ C) (g : A ⥤ B) : A ⥤ C
-        := new _
-            ( el a := (f.el (g.el a)) )
-            ( ok a1 a2 ato12 := (f $/ (g $/ ato12)) ) )
+        := new
+            ( el.onEl a := f.el $ (g.el $ a) )
+            ( ok.onTo a1 a2 ato12 := f $/ (g $/ ato12)) )

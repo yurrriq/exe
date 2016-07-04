@@ -1,0 +1,56 @@
+Mini.{u,p} :=
+
+    let ( Prop := #Prop )
+        ( Poset := #Poset )
+        ( Type.{t} : * := *.{t} )
+    in new record
+
+( PropSet : Poset := new
+    (El := Prop.{p})
+    (To := P1 → P2)
+    (Trans P1 P2 P3 to12 to23 p1 := to23 (to12 p1)) )
+
+( PredicateSet (X : Poset.{u, p}) : Poset := X ⥤ PropSet.{p} )
+
+( SmallSigmaSet (B : Poset.{u, p}) (P : PredicateSet B) : Poset := new
+    ( El := B.El )
+    ( To b1 b2 := packed record
+        (pred1 : P.el $ b1)
+        (to : b1 =A= b2) )
+    ( Trans b1 b2 b3 bto12 bto23 := new
+        (pred1 := bto12.pred1)
+        (to := B.Trans b1 b2 b3 bto12.to bto23.to) ) )
+
+( SubsetType (B : Poset.{u, p}) : Type := record
+    (A : Poset.{u, p} )
+    (i : A ⥤ B )
+    (uniq : ∀ (a1, a2 : A) → ((i $ a1) == (i $ a2)) → (a1 == a2) ) )
+
+( Pred2Sub (B : Poset.{u, p}) (P : PredicateSet B)
+    : SubsetType B := new
+    ( A := SmallSigmaSet B P )
+    ( i := new
+        ( el.onEl a := a )
+        ( ok.onTo a1 a2 ato12 := ato12.to) )
+    ( uniq a1 a2 bto12 := new
+        ( pred1 := a1.ok.pred1 )
+        ( to := bto12) ) )
+
+( Sub2Pred (B : Poset.{u, p}) (S : SubsetType B) : PredicateSet B := new
+    ( el b := packed (exists) record
+        (a : S.A)
+        (to : (S.i $ a) == b) )
+    ( ok b1 b2 bto12 (xa,xto) := new
+        ( a := xa )
+        ( to := B.Trans (S.i.el $ xa.el) b1 b2 xto bto12 ) )
+
+( isSection (B : Poset.{u, p}) (S : SubsetType B) (f : B ⥤ S.A) : Prop :=
+    (Poset.Mul B S.A B S.i f) == (Poset.Id B) )
+
+( Forall (B : Poset.{u, p}) (P : PredicateSet B) : Prop :=
+    ∀ (b : B) → (P.el $ b.el) )
+
+( sec2all (B : Poset.{u, p}) (P : PredicateSet B)
+        (f : B ⥤ SmallSigmaSet B P) (sec : isSection B (Pred2Sub B P) f)
+        : Forall B P :=
+    λ (b : B) → ((P $/ (sec /$ b)) (.ok.pred (f $ b))) )
