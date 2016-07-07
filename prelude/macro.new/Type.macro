@@ -1,0 +1,8 @@
+Type := new record
+    ( `@` : * := * )
+    ( Product0 : Type := record )
+    ( Product2 (Fst,Snd : Type) : Type := record (fst : Fst) (snd : Snd) )
+    ( sugar `1T` := Product0 )
+    ( sugar `!T` := new )
+    ( sugar (A) `*T` (B) := Product2 A B )
+    ( sugar `<` (a) `,` (b) `>T` := new (fst := a) (snd := b) )

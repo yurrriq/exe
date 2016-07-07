@@ -9,28 +9,39 @@ Data.Unit.{u,p} :=
 -- sugar (A1:Alg) ⟹ (A2:Alg) := Alg.Hom A1 A2
 
 ( Alg := new record
-    ( Ob : Type := record
-        ( extends Carrier : Poset )
-        ( True : Carrier )
-        ( False : Carrier ) )
-    ( `@` := Ob )
-    ( Hom (A1, A2 : Alg) : Poset :=
-        ( El := .El (A1 ⥤ A2) )
+    ( SemiOb : Type := Poset )
+    ( SemiHom (A1, A2 : SemiOb) : Poset := new
+        ( El := record
+            (extends map : .El (A1 ⥤ A2))
+            ( True : A2.El )
+            ( False : A2.El ) )
         ( To m1 m2 := record
-            ( true1 : (m1 A1.True.el) =A2= A2.True.el )
-            ( false1 : (m1 A1.False.el) =A2= A2.False.el )
+            ( true2 : m1.True =A2= m2.True )
+            ( false2 : m1.False =A2= m2.False )
             ( extends equ : m1 =(A1 ⥤ A2)= m2) )
         ( Trans m1 m2 m3 mto12 mto23 := new
-            ( true1 := mto12.true1 )
-            ( false1 := mto12.false1 )
-            ( equ := .Trans (A1 ⥤ A2) m1 m2 m3 mto12.equ mto23.equ) )
-    ( Id (A : Alg) : A ⟹ A :=
-        let (setid := Poset.Id A) in new
-        ( el := setid.el )
-        ( ok := new
-            ( true1 := A.True.ok )
-            ( false1 := A.False.ok )
-            ( equ := setid.ok) ) )
+            ( true2 := A2.Trans m1.True m2.True m3.True mto12.true2 mto23.true2 )
+            ( false2 := A2.Trans m1.False m2.False m3.False mto12.false2 mto23.false2 )
+            ( equ := .Trans (A1 ⥤ A2) m1.map m2.map m3.map mto12.equ mto23.equ) )
+    ( SemiMul (A1, A2, A3 : SemiOb)
+        (m23 : SemiHom A2 A3) (m12 : SemiHom A1 A2) : SemiHom A1 A3 := new
+            ( map := Poset.MapEl A1 A2 A3 m23 m12 )
+            ( True := m23.el $ m12.True )
+            ( False := m23.el $ m12.False ) )
+    ( Ob : Type := record
+        ( extends ob : SemiOb )
+        ( id : SemiHom ob ob )
+        ( idemp : (SemiMul ob ob ob id id) =(SemiHom ob ob)= id ) )
+    ( Hom (A1, A2 : Ob) : Poset := new
+        ( El := SemiHom.El A1 A2 )
+        ( To m1 m2 := record
+            ( extends equ : SemiHom.To m1 m2 )
+            ( left : (SemiMul A1 A1 A2 A1.id m1) =(SemiHom ob ob)= m2 )
+            ( right : (SemiMul A1 A2 A2 m1 A2.id) =(SemiHom ob ob)= m2 ) )
+        ( Trans m1 m2 m3 mto12 mto23 := new
+            ()
+            )
+        )
     ( Mul (A1, A2, A3 : Alg)
         (m23 : A2 ⟹ A3) (m12 : A1 ⟹ A2) : A1 ⟹ A3 :=
             let (setmul := Poset.Mul A1 A2 A3 m23.el m12.el)
@@ -38,18 +49,19 @@ Data.Unit.{u,p} :=
         ( el := setmul.el )
         ( ok := new
             ( true1 := A3.Trans
-                (m23.el $ (m12.el $ A1.True.el))
-                (m23.el $ A2.True.el)
+                (m23.el (m12.el A1.True.el))
+                (m23.el A2.True.el)
                 (A3.True.el)
                 (m23 $/ m12.ok.true1)
                 (m23.ok.true1) )
             ( false1 := A3.Trans
-                (m23.el $ (m12.el $ A1.False.el))
-                (m23.el $ A2.False.el)
+                (m23.el (m12.el A1.False.el))
+                (m23.el A2.False.el)
                 (A3.False.el)
                 (m23 $/ m12.ok.false1)
                 (m23.ok.false1) )
             ( equ := setmul.ok ) ) )
+    ( `@` := Ob )
 
 ( Init : Alg := new
     ( Carrier := new
@@ -77,21 +89,21 @@ Data.Unit.{u,p} :=
 
 ( recur := new record
     ( forOb (A : Alg) : Init ⟹ A := new
-        ( el.onEl u := u A )
+        ( el u := u A )
         ( ok := new
             ( true1 := A.True.ok )
             ( false1 := A.False.ok )
-            ( equ.onTo u1 u2 uto12 := uto12.onHom A A (Alg.Id A) ) ) )
+            ( equ u1 u2 uto12 := uto12.onHom A A (Alg.Id A) ) ) )
     ( forHom (A1, A2 : Alg) (hom : A1 ⟹ A2)
         :   let (mulhomrec := Alg.Mul Init A1 A2 hom (recur.forOb A1)) in
                 mulhomrec =(Init ⟹ A2)= (recur.forOb A2) := new
         ( true1 := mulhomrec.ok.true1 )
         ( false1 := mulhomrec.ok.false1 )
-        ( equ.onTo i1 i2 ito12 := ito12.onHom A1 A2 hom ) )
+        ( equ.onHom i1 i2 ito12 := ito12.onHom A1 A2 hom ) )
     ( forId : (recur.forOb Init) =Endo= IId := new
         ( true1 := recur.forOb.ok.true1 Init )
         ( false1 := recur.forOb.ok.false1 Init )
-        ( equ.onTo.onHom a1 a2 ato12 A1 A2 hom :=
+        ( equ.onHom a1 a2 ato12 A1 A2 hom :=
             ato12.onHom Init A2 (Alg.Mul Init A1 A2 hom (recur.forOb A1)) )
 
 ( Sigma (pr : PredicateRec) : Alg :=
