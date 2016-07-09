@@ -1,8 +1,10 @@
-Type := new record
+Type := new record -- might be built-in
     ( `@` : * := * )
     ( Product0 : Type := record )
-    ( Product2 (Fst,Snd : Type) : Type := record (fst : Fst) (snd : Snd) )
-    ( sugar `1T` := Product0 )
-    ( sugar `!T` := new )
-    ( sugar (A) `*T` (B) := Product2 A B )
-    ( sugar `<` (a) `,` (b) `>T` := new (fst := a) (snd := b) )
+    ( Product2 (T1,T2 : Type) : Type := record ( .1 : T1) ( .2 : T2) )
+    ( `1` := Product0 )
+    ( `{}` := new )
+    ( `*` := Product2 )
+    ( `{,}` (T1,T2:Type)(v1:T1)(v2:T2) := new (.1 := v1) (.2 := v2) )
+
+-- [a,b,c] => {a,{b,{c,{}}}}

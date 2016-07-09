@@ -1,29 +1,54 @@
 SemiCat :=
-    let (Poset := #Poset)
+    let (Type := #Type)
+        (Poset := #Poset)
     in new record
-(
-    Ob := record
 
-        -- stored fields
-        ( SOb : Type )
-        ( SHom (S1,S2 : SOb) : Poset )
-        ( SMul (S1,S2,S3 : SOb) : (SHom S2 S3) * (SHom S1 S2) ⥤ (SHom S1 S3) )
+( Ob := record
 
-        -- evaluated fields
-        ( Ob : Type := record
-            (ob : SOb)
-            (id : SHom S S)
-            (mul : SMul ob ob ob id id =(SHom ob ob)= id ) )
-        ( Hom (O1,O2 : Ob) : Poset :=
-            ( El := SHom.El O1.ob O2.ob )
-            ( To h1 h2 := record
-                (to : h1 =(SHom.To O1.ob O2.ob)= h2 )
-                (unitL : (SMul O1.ob O2.ob O2.ob $ (O2.id, h1)) =(SHom.To O1.ob O2.ob)= h2 )
-                (unitR : (SMul O1.ob O1.ob O2.ob $ (h1, O1.id)) =(SHom.To O1.ob O2.ob)= h2 ) )
-            ( Trans h1 h2 h3 hto12 hto23 := new
-                (to := SHom.To.Trans O1.ob O2.ob hto12.to hto23.to)
-                (unitL := SHom.To.Trans O1.ob O2.ob hto12.unitL hto23.to)
-                (unitR := SHom.To.Trans O1.ob O2.ob hto12.unitR hto23.to) ) )
-        ( Mul (O1,O2,O3 : Ob) : (Hom O2 O3) * (Hom O1 O2) ⥤ (Hom O1 O3) :=
-            )
+    -- stored fields
+    ( SOb : Type )
+    ( SHom (S1,S2 : SOb) : Poset )
+    ( SMul (S1,S2,S3 : SOb) : (SHom S2 S3) *P* (SHom S1 S2) ⥤ (SHom S1 S3) )
+    ( SAssocLR (S1,S2,S3,S4 : SOb)
+        (h34 : SHom S3 S4) (h23 : SHom S2 S3) (h12 : SHom S1 S2)
+        : SMul S1 S2 S4 (SMul S2 S3 S4 h34 h23) h12
+            =(SHom S1 S4)=
+          SMul S1 S3 S4 h34 (SMul S1 S2 S3 h23 h12) )
+    ( SAssocRL (S1,S2,S3,S4 : SOb)
+        (h34 : SHom S3 S4) (h23 : SHom S2 S3) (h12 : SHom S1 S2)
+        : SMul S1 S3 S4 h34 (SMul S1 S2 S3 h23 h12)
+            =(SHom S1 S4)=
+          SMul S1 S2 S4 (SMul S2 S3 S4 h34 h23) h12 )
+
+    -- evaluated fields
+    ( Ob : Type := record
+        (ob : SOb)
+        (id : SHom ob ob)
+        (mul : SMul ob ob ob id id =(SHom ob ob)= id ) )
+    ( Hom (O1,O2 : Ob) : Poset :=
+        ( El := SHom.El O1.ob O2.ob )
+        ( To h1 h2 := record
+            (to : h1 =(SHom.To O1.ob O2.ob)= h2 )
+            (actL : (SMul.el.onEl O1.ob O2.ob O2.ob <O2.id.el, h1>T)
+                    =(SHom.To O1.ob O2.ob)= h2 )
+            (actR : (SMul.el.onEl O1.ob O1.ob O2.ob <h1, O1.id.el>T)
+                    =(SHom.To O1.ob O2.ob)= h2 ) )
+        ( Trans h1 h2 h3 hto12 hto23 := new
+            (to := SHom.To.Trans O1.ob O2.ob h1 h2 h3
+                    <hto12.to,hto23.to>T)
+            (actL := SHom.To.Trans O1.ob O2.ob
+                    (SMul.el.onEl O1.ob O2.ob O2.ob <O2.id.el, h1>T) h2 h3
+                    <hto12.actL,hto23.to>T)
+            (actR := SHom.To.Trans O1.ob O2.ob
+                    (SMul.el.onEl O1.ob O1.ob O2.ob <h1, O1.id.el>T) h2 h3
+                    <hto12.actR,hto23.to>T) ) )
+    ( Id (O : Ob) := O.id )
+    ( Mul (O1,O2,O3 : Ob) : (Hom O2 O3) *P* (Hom O1 O2) ⥤ (Hom O1 O3) := new
+        ( el := SMul.el O1.ob O2.ob O3.ob )
+        ( ok.onTo (h23,h12) (h23',h12') (h23to,h12to) := new
+            (to := SMul.to O1.ob O2.ob O3.ob <h23,h12>T <h23',h12'>T
+                    <h23to.to,h12to.to>T )
+            (actL := SAssoc  )
+            (actR := ... ) ) )
+
 )

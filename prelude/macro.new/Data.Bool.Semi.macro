@@ -8,63 +8,19 @@ Data.Unit.{u,p} :=
 
 -- sugar (A1:Alg) ⟹ (A2:Alg) := Alg.Hom A1 A2
 
-( Alg := new record
-    ( SemiOb : Type := Poset )
-    ( SemiHom (A1, A2 : SemiOb) : Poset := new
-        ( El := record
-            (extends map : .El (A1 ⥤ A2))
-            ( True : A2.El )
-            ( False : A2.El ) )
-        ( To m1 m2 := record
-            ( true2 : m1.True =A2= m2.True )
-            ( false2 : m1.False =A2= m2.False )
-            ( extends equ : m1 =(A1 ⥤ A2)= m2) )
-        ( Trans m1 m2 m3 mto12 mto23 := new
-            ( true2 := A2.Trans m1.True m2.True m3.True mto12.true2 mto23.true2 )
-            ( false2 := A2.Trans m1.False m2.False m3.False mto12.false2 mto23.false2 )
-            ( equ := .Trans (A1 ⥤ A2) m1.map m2.map m3.map mto12.equ mto23.equ) )
-    ( SemiMul (A1, A2, A3 : SemiOb)
-        (m23 : SemiHom A2 A3) (m12 : SemiHom A1 A2) : SemiHom A1 A3 := new
-            ( map := Poset.MapEl A1 A2 A3 m23 m12 )
-            ( True := m23.el $ m12.True )
-            ( False := m23.el $ m12.False ) )
-    ( Ob : Type := record
-        ( extends ob : SemiOb )
-        ( id : SemiHom ob ob )
-        ( idemp : (SemiMul ob ob ob id id) =(SemiHom ob ob)= id ) )
-    ( Hom (A1, A2 : Ob) : Poset := new
-        ( El := SemiHom.El A1 A2 )
-        ( To m1 m2 := record
-            ( extends equ : SemiHom.To m1 m2 )
-            ( left : (SemiMul A1 A1 A2 A1.id m1) =(SemiHom ob ob)= m2 )
-            ( right : (SemiMul A1 A2 A2 m1 A2.id) =(SemiHom ob ob)= m2 ) )
-        ( Trans m1 m2 m3 mto12 mto23 := new
-            ()
-            )
-        )
-    ( Mul (A1, A2, A3 : Alg)
-        (m23 : A2 ⟹ A3) (m12 : A1 ⟹ A2) : A1 ⟹ A3 :=
-            let (setmul := Poset.Mul A1 A2 A3 m23.el m12.el)
-            in new
-        ( el := setmul.el )
-        ( ok := new
-            ( true1 := A3.Trans
-                (m23.el (m12.el A1.True.el))
-                (m23.el A2.True.el)
-                (A3.True.el)
-                (m23 $/ m12.ok.true1)
-                (m23.ok.true1) )
-            ( false1 := A3.Trans
-                (m23.el (m12.el A1.False.el))
-                (m23.el A2.False.el)
-                (A3.False.el)
-                (m23 $/ m12.ok.false1)
-                (m23.ok.false1) )
-            ( equ := setmul.ok ) ) )
-    ( `@` := Ob )
+( Alg : SemiCat := new
+    ( SemiOb := Poset )
+    ( SemiHom A1 A2 := Poset.record
+        (hom : A1 ⥤ A2)
+        (True : A2)
+        (False : A2) )
+    ( SemiMul A1 A2 A3 Poset.{h23,h12} := new
+        (hom := Poset.Mul.el A1 A2 A3 {h23.hom,h12.hom} ),
+        (True := h23.hom h12.True)
+        (False := h23.hom h12.False) ) )
 
 ( Init : Alg := new
-    ( Carrier := new
+    ( ob := new
         ( El := record (onOb : ∀ (A : Alg) → A.El) )
         ( To e1 e2 := record
             (onHom : ∀ (A1, A2 : Alg) → ∀ (hom : A1 ⟹ A2) →
@@ -73,12 +29,15 @@ Data.Unit.{u,p} :=
              A2.Trans
                 (hom.el $ (e1.onOb A1)) (e2.onOb A2) (e3.onOb A2)
                 (eto12.onHom A1 A2 hom) (eto23.onHom A2 A2 (Alg.Id A2)) ) )
-    ( True := new
-        ( el.onOb A := A.True.el )
-        ( ok.onHom A1 A2 hom := hom.ok.true1 ) )
-    ( False := new
-        ( el.onOb A := A.False.el )
-        ( ok.onHom A1 A2 hom := hom.ok.false1 ) ) )
+    ( id := Poset.new
+        ( hom := Poset.Id ob )
+        ( True := new
+            ( el.onOb A := A.True.el )
+            ( ok.onHom A1 A2 hom := hom.ok.true1 ) )
+        ( False := new
+            ( el.onOb A := A.False.el )
+            ( ok.onHom A1 A2 hom := hom.ok.false1 ) ) )
+    ( mul := new (hom:=Poset.IdId ob)(True := id.True.ok)(False := id.False.ok) )
 
 ( Endo : Poset := Init ⟹ Init )
 ( IId : Endo := Alg.Id Init )

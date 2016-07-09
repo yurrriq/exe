@@ -1,0 +1,23 @@
+-- empty records = terminal context
+
+( unit : record := new )
+( unit : 1 := {} )
+( elem : 1 -> T )
+
+-- dedicated syntax for unnamed tuples (Erlang-style)
+
+( pair : A * B := {a,b} )
+( func : A*B -> C )
+( func {a,b} := c a b )
+
+-- overload infix operation unsugared into fields (Scala-style)
+
+( Poset := ... ( `1` := Product0 )
+    ( `=>` := Hom ) ( `*` := Product2 )
+    ( `{}` := MkUnit ) ( `{,}` := MkPair ) )
+( unit : Poset.1 := Poset.{} )
+( pair : P1 * P2 := Poset.{p1,p2} )
+
+-- macro powered, "template EXE", here Poset provides macro
+( rec : Poset.record (a:A)(b:B) := Poset.new (a:=fa)(b:=fb) )
+( fun : P1*P2 => P3*P4 := Poset.lambda ({p1,p2} : P1*P2) -> {f3 p1 , f4 p2} )
