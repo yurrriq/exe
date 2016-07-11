@@ -50,6 +50,9 @@ Mini.{u,p} :=
 ( Forall (B : Poset.{u, p}) (P : PredicateSet B) : Prop :=
     ∀ (b : B) → (P.el $ b.el) )
 
+( Imply (B : Poset.{u, p}) (P1, P2 : PredicateSet B) : Prop :=
+    ∀ (b : B) → (P1.el $ b.el) → (P2.el $ b.el) )
+
 ( sec2all (B : Poset.{u, p}) (P : PredicateSet B)
         (f : B ⥤ SmallSigmaSet B P) (sec : isSection B (Pred2Sub B P) f)
         : Forall B P :=
