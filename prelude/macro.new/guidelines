@@ -22,3 +22,11 @@
 
 ( rec : Poset.record (a:A)(b:B) := Poset.new (a:=fa)(b:=fb) )
 ( fun : P1*P2 => P3*P4 := Poset.lambda ({p1,p2} : P1*P2) -> {f3 p1 , f4 p2} )
+
+-- also if we have record-valued function
+( f (x : X) : record (q : Q x) )
+-- then we can assign a value to it by syntax
+( f.q x := ... )
+-- ... as if `f` were of the following type
+( f : record (q (x : X) : Q x) )
+-- reason: both translate to the same OM code

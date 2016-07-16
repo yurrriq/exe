@@ -42,7 +42,8 @@ id-token, digits-token, etc-token.
     "record" <id-type-seq> <id-assign-seq> | -- record type
     "new" [ "record" ] <id-assign-seq>  | -- record value
     "{ <expr-seq> }"        | -- record value, Erlang-style short-cut
-    * [<univ-app>].         | universe
+    "packed" <encoding-instance> <expr> | !!!
+    * [<univ-app>].           -- universe
 <expr-seq> := [ <expr> <expr-seq> ].
 
 -- TODO "sugar", "macro"
