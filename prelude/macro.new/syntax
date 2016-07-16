@@ -1,0 +1,48 @@
+-- terminals
+
+id-token, digits-token, etc-token.
+
+-- top level non-terminal
+<source-file> ::= <field-def>.
+
+-- universes
+<univ-arg> ::=
+    digits-token |
+    id-token |
+    "(" [<univ-arg-seq>] ")".
+<univ-arg-seq> ::= <univ-arg> [ "," <univ-arg-seq> ].
+<univ-app> ::= ".{" <univ-arg-seq> "}".
+
+-- identifiers with namespaces
+<id-path> ::=
+    "`" etc-token "`" |
+    [ [<id-path>] "." ] id-token [ <univ-app> ].
+<id-path-seq> := <id-path> ["," <id-path-seq>].
+
+-- fields
+<id-type> ::= <id-path-seq> <id-type-seq> ':' <expr>.
+<id-assign> ::= <id-path-seq> <id-match-seq> [':' <expr>] ':=' <expr>.
+<id-match> ::= <id-path> | "{" [<id-path-seq>] "}".
+<id-type-seq> ::= [ "(" <id-type> ")" <id-type-seq> ].
+<id-assign-seq> ::= [ "(" <id-assign> ")" <id-assign-seq> ].
+<id-match-seq> ::=
+    [ <id-match> <id-match-seq> ] |
+    [ "(" <id-match> ")" <id-match-seq> ].
+
+-- expessions (w/o priority)
+<expr> :=
+    <id-path>               | -- identifier reference
+    "#" <id-path>           | -- external file reference
+    "(" <expr> ")"          | -- parenthesis
+    <expr> <expr>           | -- application (left-associative)
+    "let" <arg-assign-seq> "in" <expr>   | -- local identifier
+    "∀" <arg-type-seq> "→" <expr>       | -- function type, dependent
+    <expr> "→" <expr>                   | -- function type, non-dependent
+    "λ" <arg-match-seq> "→" <expr>      | -- function value
+    "record" <id-type-seq> <id-assign-seq> | -- record type
+    "new" [ "record" ] <id-assign-seq>  | -- record value
+    "{ <expr-seq> }"        | -- record value, Erlang-style short-cut
+    * [<univ-app>].         | universe
+<expr-seq> := [ <expr> <expr-seq> ].
+
+-- TODO "sugar", "macro"
