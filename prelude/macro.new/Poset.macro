@@ -25,7 +25,7 @@ Poset :=
     ( To f1 f2 := record
         ( onTo : ∀(a1, a2 : A) → (a1 == a2) →
                 ((f1.onEl a1.el) =B= (f2.onEl a2.el)) ) )
-    ( Trans f1 f2 f3 fto12 fto23 a1 a2 ato12 :=
+    ( Trans.onTo f1 f2 f3 fto12 fto23 a1 a2 ato12 :=
         B.Trans (f1.onEl a1.el) (f2.onEl a1.el) (f3.onEl a2.el)
             (fto12.onTo a1 a1 a1.ok) (fto23.onTo a1 a2 ato12) ) )
 
@@ -64,3 +64,13 @@ Poset :=
     ( el.onEl.onEl {mBC,mAB} a := mBC.onEl (mAB.onEl a) )
     ( ok.onTo.onTo {mBC1,mAB1} {mBC2,mAB2} {mBCto12,mABto12} a1 a2 ato12 :=
         mBCto12 (mAB $ a1) (mAB $ a2) (mABto12.onTo a1 a2 ato12)) )
+
+-- opposite poset
+( Opp := new record
+    (onOb (A : Poset) : Poset := new
+        (El := A.El)
+        (To e1 e2 := A.To e2 e1)
+        (Trans e1 e2 e3 eto12 eto23 := A.Trans e3 e2 e1 eto23 eto12))
+    (onHom (A,B : Poset) : Opp (A ⥤ B) ⥤ ((Opp A) ⥤ (Opp B)) := new
+        (el.onEl f := f)
+        (ok.onTo.onTo f1 f2 fto21 a1 a2 ato21 := fto21 /$/ ato21 ) ) )

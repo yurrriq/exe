@@ -12,7 +12,7 @@ with regular Erlang `erlc` compiler and run under BEAM or LING virtual machines.
 
 This language relies on pure Calculus of Construction with 1 axiom and four deduction rules,
 inductive `data` and coinductive `record` dependent definitions, and also impredicative
-indexed universes. Pure CoC and impredicative universes are included into the core language with reduced syntax -- [Om](https://github.com/5HT/om) -- that is able to typecheck and normalize terms.
+indexed universes. Pure CoC and impredicative universes are included into the core language with reduced syntax -- [Om](https://github.com/groupoid/om) -- that is able to typecheck and normalize terms.
 
 Features
 --------

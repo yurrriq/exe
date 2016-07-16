@@ -19,5 +19,6 @@
 ( pair : P1 * P2 := Poset.{p1,p2} )
 
 -- macro-powered "template EXE", e.g. Poset provides 3 macros here
+
 ( rec : Poset.record (a:A)(b:B) := Poset.new (a:=fa)(b:=fb) )
 ( fun : P1*P2 => P3*P4 := Poset.lambda ({p1,p2} : P1*P2) -> {f3 p1 , f4 p2} )
