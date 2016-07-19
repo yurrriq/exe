@@ -1,49 +1,64 @@
--- terminals
+-- current EXE grammar
+-- use grammar pseudocode
+--
 
-id-token, digits-token, etc-token.
+-- just a list of token classes
+Terminals ::= <id-token>, <digits-token>, <etc-token>, <literal>.
 
 -- top level non-terminal
-<@> ::= <id-assign>.
+@ ::= id-assign.
 
--- universes
-<level> ::=
-    digits-token |
-    id-token |
-    "(" [<level-seq>] ")".
-<level-seq> ::= <level> [ "," <Level-seq> ].
+-- universe levels
+level ::=
+    <digits-token> |
+    <id-token> |
+    "(" [level-seq] ")".
+level-seq ::= level [ "," level-seq ].
 
 -- identifiers with namespaces
-<id-path> ::=
-    "`" etc-token "`" |
-    [ [<id-path>] "." ] id-token [ ".{" <level-seq> "}" ].
-<id-path-seq> := <id-path> ["," <id-path-seq>].
+id-path ::=
+    "`" <etc-token> "`" |
+    <digit-token> |
+    [ [id-path] "." ] <id-token> [ ".{" level-seq "}" ].
+id-path-seq := id-path ["," id-path-seq].
 
 -- fields of records, parameters of functions
-<id-type> ::= <id-path-seq> <id-type-seq> ':' <expr>.
-<id-assign> ::= <id-path-seq> <id-match-seq> [':' <expr>] ':=' <expr>.
-<id-match> ::= <id-path> | "{" [<id-match-comma-seq>] "}".
-<id-type-seq> ::= [ "(" <id-type> ")" <id-type-seq> ].
-<id-assign-seq> ::= [ "(" <id-assign> ")" <id-assign-seq> ].
-<id-match-comma-seq> ::= <id-match> ["," <id-match-comma-seq>].
-<id-match-seq> ::=
-    [ <id-match> <id-match-seq> ] |
-    [ "(" <id-match> ")" <id-match-seq> ].
+id-type ::= id-path-seq id-type-seq ':' expr.
+id-type-seq ::= [ "(" id-type ")" id-type-seq ].
+id-assign ::= id-path-seq id-match-seq [':' expr] ':=' expr.
+id-assign-seq ::= [ "(" id-assign ")" id-assign-seq ].
+
+-- pattern matching
+id-match ::=
+    id-path |
+    "{" [id-match-comma-seq] "}" |
+    "[" [id-match-comma-seq] [ "|" id-path ] "]".
+id-match-seq ::=
+    [ id-match id-match-seq ] |
+    [ "(" id-match ")" id-match-seq ].
+id-match-comma-seq ::= id-match ["," id-match-comma-seq].
+
+clause ::= id-match-comma-seq "→" expr.
+clause-seq ::= [ "(" clause ")" clause-seq ]
 
 -- expessions (w/o priority)
-<expr> ::=
-    <id-path>               | -- identifier reference
-    "#" <id-path>           | -- external file reference
-    "(" <expr> ")"          | -- parenthesis
-    <expr> <expr>           | -- application (left-associative)
-    "let" <id-assign-seq> "in" <expr>   | -- local identifiers
-    "∀" <id-type-seq> "→" <expr>       | -- function type, dependent
-    <expr> "→" <expr>                   | -- function type, non-dependent
-    "λ" <id-match-seq> "→" <expr>      | -- function value
-    "record" <id-type-seq> <id-assign-seq> | -- record type
-    "new" [ "record" ] <id-assign-seq>  | -- record value
-    "{ <expr-seq> }"        | -- record value, Erlang-style tuple
-    * [<univ-app>]          | -- universe constant
-    "packed" <encoding-instance> <expr>. -- TODO call encoding instance
+expr ::=
+    id-path               | -- identifier reference
+    "#" id-path           | -- external file reference
+    <id-token> <literal>  | -- typed literal
+    "(" expr ")"          | -- parenthesis
+    expr expr           | -- application (left-associative)
+    "let" id-assign-seq "in" expr   | -- local identifiers
+    "∀" id-type-seq "→" expr       | -- function type, dependent
+    expr "→" expr                   | -- function type, non-dependent
+    "λ" id-match-seq "→" expr      | -- function value
+    "record" id-type-seq id-assign-seq | -- record type
+    "new" [ "record" ] id-assign-seq  | -- record value
+    "{" expr-seq "}"        | -- record value, Erlang-style tuple
+    "[" expr-seq [ "|" expr ] "]"   | -- list value
+    "*" [univ-app]          | -- universe constant
+    "case" expr "of" clause-seq     | -- pattern matching (eliminator call)
+    "packed" encoding-instance expr. -- TODO call encoding instance
     -- TODO "sugar", "macro"
 
-<expr-seq> ::= [ <expr> ["," <expr-seq>] ].
+expr-seq ::= [ expr ["," expr-seq] ].

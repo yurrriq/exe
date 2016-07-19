@@ -4,7 +4,9 @@ Syntax.Abstract
         (id : *)
         (digits : *)
         (etc : *) )
-:= new record
+
+:= new
+
 ( `@` : * := IdsAssign )
 
 ( Level : * := data
@@ -29,7 +31,10 @@ Syntax.Abstract
 
 ( IdsMatch : * := List data
     ( MkMatchId (id : Id) : IdsMatch)
-    ( MkMatchRecord (ids : Tree Id) : IdsMatch) )
+    ( MkMatchList (heads : IdsMatch) (tail : Maybe Id) : IdsMatch )
+    ( MkMatchRecord (fields : IdsMatch) : IdsMatch) )
+
+( Clauses : * := List record (matches : IdsMatch) (expr : Expr) )
 
 ( Expr : * := data
     ( MkExprId (id : Id) : Expr )               -- identifier reference
@@ -43,6 +48,8 @@ Syntax.Abstract
                    (computedFileds : IdsAssign) : Expr)     -- record type
     ( MkExprNew (fieldAssigns : IdsAssign) : Expr )         -- record value
     ( MkExprTuple (fieldValues : List Expr) : Expr )        -- record value, Erlang-style tuple
+    ( MkExprList (heads : List Expr) (tail : Maybe Expr) )  -- list value
     ( MkExprUniverse (level : Level) : Expr )               -- universe
+    ( MkExprCase (expr : Expr) (cl : Clauses) : Expr)       -- pattern matching (eliminator call)
     ( MkExprPacked (encoding : Encoding) (expr : Expr) : Expr ) -- TODO call encoding instance
     ( MkExprMacro (???) : Expr )
