@@ -3,47 +3,47 @@
 id-token, digits-token, etc-token.
 
 -- top level non-terminal
-<source-file> ::= <field-def>.
+<@> ::= <id-assign>.
 
 -- universes
-<univ-arg> ::=
+<level> ::=
     digits-token |
     id-token |
-    "(" [<univ-arg-seq>] ")".
-<univ-arg-seq> ::= <univ-arg> [ "," <univ-arg-seq> ].
-<univ-app> ::= ".{" <univ-arg-seq> "}".
+    "(" [<level-seq>] ")".
+<level-seq> ::= <level> [ "," <Level-seq> ].
 
 -- identifiers with namespaces
 <id-path> ::=
     "`" etc-token "`" |
-    [ [<id-path>] "." ] id-token [ <univ-app> ].
+    [ [<id-path>] "." ] id-token [ ".{" <level-seq> "}" ].
 <id-path-seq> := <id-path> ["," <id-path-seq>].
 
--- fields
+-- fields of records, parameters of functions
 <id-type> ::= <id-path-seq> <id-type-seq> ':' <expr>.
 <id-assign> ::= <id-path-seq> <id-match-seq> [':' <expr>] ':=' <expr>.
-<id-match> ::= <id-path> | "{" [<id-path-seq>] "}".
+<id-match> ::= <id-path> | "{" [<id-match-comma-seq>] "}".
 <id-type-seq> ::= [ "(" <id-type> ")" <id-type-seq> ].
 <id-assign-seq> ::= [ "(" <id-assign> ")" <id-assign-seq> ].
+<id-match-comma-seq> ::= <id-match> ["," <id-match-comma-seq>].
 <id-match-seq> ::=
     [ <id-match> <id-match-seq> ] |
     [ "(" <id-match> ")" <id-match-seq> ].
 
 -- expessions (w/o priority)
-<expr> :=
+<expr> ::=
     <id-path>               | -- identifier reference
     "#" <id-path>           | -- external file reference
     "(" <expr> ")"          | -- parenthesis
     <expr> <expr>           | -- application (left-associative)
-    "let" <arg-assign-seq> "in" <expr>   | -- local identifier
-    "∀" <arg-type-seq> "→" <expr>       | -- function type, dependent
+    "let" <id-assign-seq> "in" <expr>   | -- local identifiers
+    "∀" <id-type-seq> "→" <expr>       | -- function type, dependent
     <expr> "→" <expr>                   | -- function type, non-dependent
-    "λ" <arg-match-seq> "→" <expr>      | -- function value
+    "λ" <id-match-seq> "→" <expr>      | -- function value
     "record" <id-type-seq> <id-assign-seq> | -- record type
     "new" [ "record" ] <id-assign-seq>  | -- record value
-    "{ <expr-seq> }"        | -- record value, Erlang-style short-cut
-    "packed" <encoding-instance> <expr> | !!!
-    * [<univ-app>].           -- universe
-<expr-seq> := [ <expr> <expr-seq> ].
+    "{ <expr-seq> }"        | -- record value, Erlang-style tuple
+    * [<univ-app>]          | -- universe constant
+    "packed" <encoding-instance> <expr>. -- TODO call encoding instance
+    -- TODO "sugar", "macro"
 
--- TODO "sugar", "macro"
+<expr-seq> ::= [ <expr> ["," <expr-seq>] ].
