@@ -1,4 +1,4 @@
-Data.Copy.{u,p} (T : Poset) :=
+Data.Pack.{u,p} (T : Poset) :=
 
     -- import is just a reference to a named expression in the file-system
     let (Prop := #Prop)

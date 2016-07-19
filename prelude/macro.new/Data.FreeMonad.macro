@@ -67,16 +67,15 @@ Data.FreeMonad.{u,p} (F : Functor Poset Poset) (T : Poset) :=
     ( MkPure := new
         ( el.onEl.onOb t A := A.MkPure.el $ t )
         ( ok.onTo.onHom t1 t2 tto12 A1 A2 hom := hom.ok.mkpure1 /$ tto12 ) )
-    ( MkFree :=
-        let ( recursor (A : Alg) : Init.Carrier ⥤ A.Carrier := new
-                (el.onEl u := u A)
-                (ok.onTo f1 f2 fto12 := fto12.onHom A A (Alg.Id A) ) )
-            ( Frec (A : Alg) := F $$/ (recursor A) )
-        in new
-            ( el.onEl.onOb ff A :=
-                A.MkFree.el $ ((Frec A) $ ff) )
-            ( ok.onTo.onHom ff1 ff2 ffto12 A1 A2 hom :=
-                hom.ok.mkfree1 /$/ ((Frec A1) $/ ffto12) ) ) )
+    ( recursor (A : Alg) : Init.Carrier ⥤ A.Carrier := new
+        (el.onEl u := u A)
+        (ok.onTo f1 f2 fto12 := fto12.onHom A A (Alg.Id A) ) )
+    ( Frec (A : Alg) := F $$/ (recursor A) )
+    ( MkFree := new
+        ( el.onEl.onOb ff A :=
+            A.MkFree.el $ ((Frec A) $ ff) )
+        ( ok.onTo.onHom ff1 ff2 ffto12 A1 A2 hom :=
+            hom.ok.mkfree1 /$/ ((Frec A1) $/ ffto12) ) ) )
 
 ( Endo : Poset := Init ⟹ Init )
 ( IId : Endo := Alg.Id Init )
@@ -85,14 +84,18 @@ Data.FreeMonad.{u,p} (F : Functor Poset Poset) (T : Poset) :=
     ( forOb (A : Alg) : Init ⟹ A := new
         ( el.onEl u := u A )
         ( ok := new
-            ( mkcopy1.onTo t1 t2 tto12 := A.MkCopy.ok.onTo t1 t2 tto12 )
+            ( mkpure1.onTo t1 t2 tto12 := A.MkPure.ok /$/ tto12 )
+            ( mkfree1.onTo ff1 ff2 ffto12 :=
+                A.MkFree.ok /$/ ((Frec A1) $/ ffto12) )
             ( equ.onTo u1 u2 uto12 := uto12.onHom A A (Alg.Id A) ) ) )
     ( forHom (A1, A2 : Alg) (hom : A1 ⟹ A2)
         :   let (mulhomrec := Alg.Mul Init A1 A2 hom (recur.forOb A1)) in
                 mulhomrec =(Init ⟹ A2)= (recur.forOb A2) := new
-        ( mkcopy1 := mulhomrec.ok.mkcopy1 )
+        ( mkpure1 := mulhomrec.ok.mkpure1 )
+        ( mkfree1 := mulhomrec.ok.mkfree1 )
         ( equ.onTo i1 i2 ito12 := ito12.onHom A1 A2 hom ) )
     ( forId : (recur.forOb Init) =Endo= IId := new
-        ( mkcopy1 := recur.forOb.ok.mkcopy1 Init )
+        ( mkpure1 := recur.forOb.ok.mkpure1 Init )
+        ( mkfree1 := recur.forOb.ok.mkfree1 Init )
         ( equ.onTo.onHom a1 a2 ato12 A1 A2 hom :=
             ato12.onHom Init A2 (Alg.Mul Init A1 A2 hom (recur.forOb A1)) ) ) )

@@ -74,3 +74,10 @@ Poset :=
     (onHom (A,B : Poset) : Opp (A ⥤ B) ⥤ ((Opp A) ⥤ (Opp B)) := new
         (el.onEl f := f)
         (ok.onTo.onTo f1 f2 fto21 a1 a2 ato21 := fto21 /$/ ato21 ) ) )
+
+( P2P (P : Prop) : Poset := new
+    (El := P)
+    (To e1 e2 := Prop.1)
+    (Trans e1 e2 e3 eto12 eto23 := Prop.{}) )
+
+( PropHom (A : Prop) (B : Poset) : Poset := (P2P A) ⥤ B )
