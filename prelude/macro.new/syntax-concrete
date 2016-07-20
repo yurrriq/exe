@@ -20,7 +20,7 @@ id-path ::=
     "`" <etc-token> "`" |
     <digit-token> |
     [ [id-path] "." ] <id-token> [ ".{" level-seq "}" ].
-id-path-seq := id-path ["," id-path-seq].
+id-path-seq ::= id-path ["," id-path-seq].
 
 -- fields of records, parameters of functions
 id-type ::= id-path-seq id-type-seq ':' expr.
@@ -53,10 +53,11 @@ expr ::=
     expr "→" expr                   | -- function type, non-dependent
     "λ" id-match-seq "→" expr      | -- function value
     "record" id-type-seq id-assign-seq | -- record type
-    "new" [ "record" ] id-assign-seq  | -- record value
+    "new" id-assign-seq  | -- record value
+    "data" id-type-seq      | -- inductive type
     "{" expr-seq "}"        | -- record value, Erlang-style tuple
     "[" expr-seq [ "|" expr ] "]"   | -- list value
-    "*" [univ-app]          | -- universe constant
+    "*" [ "." "{" level-seq "}" ]   | -- universe constant
     "case" expr "of" clause-seq     | -- pattern matching (eliminator call)
     "packed" encoding-instance expr. -- TODO call encoding instance
     -- TODO "sugar", "macro"
