@@ -33,6 +33,7 @@ Parens  = [\(\)]
 Square  = [\[\]]
 Colon   = \:
 Define  = \:\=
+Tick    = \`
 
 Rules.
 
@@ -48,18 +49,21 @@ Rules.
 {ForAll}        : {token,{ token_forall,    TokenLine}}.
 {LamBda}        : {token,{ token_lambda,    TokenLine}}.
 
-"(\\.|[^"])*" : {token,{token_quoted_literal,TokenLine,unquote(TokenChars)}}.
-% '(\\.|[^'])*' : {token,{str1,TokenLine,unquote(TokenChars)}}.
+"(\\.|[^"])*" : {token,{ token_quoted_literal,  TokenLine,unquote(TokenChars)}}.
+`(\\.|[^`])*` : {token,{ token_id_etc,          TokenLine,unquote(TokenChars)}}.
+'(\\.|[^'])*' : {token,{ token_atom,            TokenLine,unquote(TokenChars)}}.
 
 ({S}+|.) : skip_token.
 
 Erlang code.
 
 unquote([$'|Cs]) -> unquote(Cs, []);
-unquote([$"|Cs]) -> unquote(Cs, []).
+unquote([$"|Cs]) -> unquote(Cs, []);
+unquote([$`|Cs]) -> unquote(Cs, []).
 
 unquote([$"], Acc)         -> lists:reverse(Acc);
 unquote([$'], Acc)         -> lists:reverse(Acc);
+unquote([$`], Acc)         -> lists:reverse(Acc);
 unquote([$\\,$0|Cs], Acc)  -> unquote(Cs, [0|Acc]);
 unquote([$\\,$a|Cs], Acc)  -> unquote(Cs, [7|Acc]);
 unquote([$\\,$b|Cs], Acc)  -> unquote(Cs, [8|Acc]);
