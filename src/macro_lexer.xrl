@@ -43,7 +43,7 @@ Rules.
 ({Curly}|{Parens}|{Angle}|{Square})     : {token,{list_to_atom(TokenChars),TokenLine}}.
 ({Dot}|{Comma}|{Star}|{Define}|{Colon}) : {token,{list_to_atom(TokenChars),TokenLine}}.
 
-{D}+            : {token,{ token_digits,    TokenLine,TokenChars}}.
+{D}+            : {token,{ token_digits,    TokenLine,list_to_integer(TokenChars)}}.
 {A}+            : {token,{ token_id,        TokenLine,TokenChars}}.
 {Arrow}         : {token,{ token_arrow,     TokenLine}}.
 {ForAll}        : {token,{ token_forall,    TokenLine}}.
