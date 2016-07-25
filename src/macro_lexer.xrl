@@ -33,7 +33,7 @@ Parens  = [\(\)]
 Square  = [\[\]]
 Colon   = \:
 Define  = \:\=
-Tick    = \`
+Oper    = [\*\+\-\/]
 
 Rules.
 
@@ -41,7 +41,8 @@ Rules.
 (case|of||let|in)                       : {token,{list_to_atom(TokenChars),TokenLine}}.
 (spawn|send|receive|try|do|raise)       : {token,{list_to_atom(TokenChars),TokenLine}}.
 ({Curly}|{Parens}|{Angle}|{Square})     : {token,{list_to_atom(TokenChars),TokenLine}}.
-({Dot}|{Comma}|{Star}|{Define}|{Colon}) : {token,{list_to_atom(TokenChars),TokenLine}}.
+({Dot}|{Comma}|{Define}|{Colon})        : {token,{list_to_atom(TokenChars),TokenLine}}.
+{Oper}+                                 : {token,{list_to_atom(TokenChars),TokenLine}}.
 
 {D}+            : {token,{ token_digits,    TokenLine,list_to_integer(TokenChars)}}.
 {A}+            : {token,{ token_id,        TokenLine,TokenChars}}.

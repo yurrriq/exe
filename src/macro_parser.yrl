@@ -4,18 +4,18 @@
 
 Nonterminals
     level level_seq
-    id id_path id_path_seq
+    id id_seq id_path id_path_seq
     id_type id_type_seq id_assign id_assign_seq
     id_match id_match_seq id_match_comma_seq
     clause clause_seq
     expr expr_ expr_seq
-    encoding_instance
+    encoding
     root
 .
 Terminals
     token_id token_digits token_id_etc token_quoted_literal
     '(' ')' '[' ']' '{' '}' '<' '>'
-    '.' ',' ':' '*' ':=' '#' '|'
+    '.' ',' ':' ':=' '#' '|'
     token_arrow token_forall token_lambda
     'packed' 'record' 'new' 'data' 'default'
     'let' 'in' 'case' 'of'
@@ -54,7 +54,7 @@ id_seq ->  id                               : ['$1'] .
 id_seq ->  '.' id_seq                       : [mk_dot('$1')|'$2'] .
 id_seq ->  id '.' id_seq                    : ['$1'|'$3'] .
 
-id_path ->  id_seq                          : '$1'
+id_path ->  id_seq                          : '$1' .
 id_path ->  id_seq '.' '{' level_seq '}'    : ['$4'|'$1'] .
 
 id_path_seq -> id_path                      : ['$1'] .
@@ -89,7 +89,7 @@ id_match ->    '[' id_match_comma_seq ']'               : id_match_list('$1','$2
 id_match ->    '[' id_match_comma_seq '|' id_path ']'   : id_match_listt('$1','$2','$4').
 
 id_match_seq ->     id_match                            : ['$1'] .
-id_match_seq ->     id_match id_match_seq               : ['$1'|'$3'] .
+id_match_seq ->     id_match id_match_seq               : ['$1'|'$2'] .
 
 id_match_comma_seq ->   '$empty'                        : [] .
 id_match_comma_seq ->   id_match                        : ['$1'] .
@@ -103,23 +103,23 @@ clause_seq -> '(' clause ')' clause_seq                 : ['$2'|'$4'] .
 
 %% expessions (w/o priority)
 
-expr ->     expr_                                       : '$1' .
-expr ->     expr_ expr                                  : mk_expr_apply('$1','$1','$2') .
-expr ->     'let' id_assign_seq 'in' expr               : mk_expr_let('$1','$2','$4') .
-expr ->     expr token_arrow expr                       : mk_expr_arrow('$1','$1','$3') .
-expr ->     token_forall id_type_seq token_arrow expr   : mk_expr_forall('$1','$2','$4').
-expr ->     token_lambda id_type_seq token_arrow expr   : mk_expr_lambda_type('$1','$2','$4') .
-expr ->     token_lambda id_match_seq token_arrow expr  : mk_expr_lambda_match('$1','$2','$4') .
-expr ->     'record' '(' ')'                            : mk_expr_record('$1',[],[]) .
-expr ->     'record' id_type_seq                        : mk_expr_record('$1','$2',[]) .
-expr ->     'record' id_assign_seq                      : mk_expr_record('$1',[],'$2') .
-expr ->     'record' id_type_seq id_assign_seq          : mk_expr_record('$1','$2','$3') .
-expr ->     'new' '(' ')'                               : mk_expr_new('$1',[]) .
-expr ->     'new' id_assign_seq                         : mk_expr_new('$1','$2') .
-expr ->     'data' id_type_seq                          : mk_expr_data('$1','$2') .
-expr ->     'case' expr 'of' clause_seq                 : mk_expr_case('$1','$2','$4') .
-expr ->     'packed' encoding expr                      : mk_expr_packed('$1','$2','$3') .
+expr ->     expr_                                       : ['$1'] .
+expr ->     expr_ expr                                  : ['$1'|'$2'] .
 
+expr_ ->    'let' id_assign_seq 'in' expr               : mk_expr_let('$1','$2','$4') .
+expr_ ->    expr token_arrow expr                       : mk_expr_arrow('$1','$1','$3') .
+expr_ ->    token_forall id_type_seq token_arrow expr   : mk_expr_forall('$1','$2','$4').
+expr_ ->    token_lambda id_type_seq token_arrow expr   : mk_expr_lambda_type('$1','$2','$4') .
+expr_ ->    token_lambda id_match_seq token_arrow expr  : mk_expr_lambda_match('$1','$2','$4') .
+expr_ ->    'record' '(' ')'                            : mk_expr_record('$1',[],[]) .
+expr_ ->    'record' id_type_seq                        : mk_expr_record('$1','$2',[]) .
+expr_ ->    'record' id_assign_seq                      : mk_expr_record('$1',[],'$2') .
+expr_ ->    'record' id_type_seq id_assign_seq          : mk_expr_record('$1','$2','$3') .
+expr_ ->    'new' '(' ')'                               : mk_expr_new('$1',[]) .
+expr_ ->    'new' id_assign_seq                         : mk_expr_new('$1','$2') .
+expr_ ->    'data' id_type_seq                          : mk_expr_data('$1','$2') .
+expr_ ->    'case' expr 'of' clause_seq                 : mk_expr_case('$1','$2','$4') .
+expr_ ->    'packed' encoding expr                      : mk_expr_packed('$1','$2','$3') .
 expr_ ->    id_path                                     : mk_expr_id('$1','$1') .
 expr_ ->    '#' id_path                                 : mk_expr_external('$1','$2') .
 expr_ ->    token_id token_quoted_literal               : mk_expr_literal('$1','$1','$2') .
@@ -165,20 +165,20 @@ get_data(T) when is_tuple(T) -> element(3, T).
 % Attrs - proplist of extended attributes (currently just 'line')
 %
 
-exe_ast(T,L,Args) -> {T,Args,get_line(X)}.
+exe_ast(T,L,Args) -> {T,get_line(L),Args}.
 
 % actual AST creation
 
-mk_level_int(L,X)           ->  exe_ast(level, L, {int,X}}.
+mk_level_int(L,X)           ->  exe_ast(level, L, {int,X}).
 mk_level_var(L,X)           ->  exe_ast(level, L, {var,X}).
 mk_level_empty(L)           ->  exe_ast(level, L, {seq,[]}).
-mk_level_seq(L,X)           ->  exe_ast(level, L, {seq,X}}.
+mk_level_seq(L,X)           ->  exe_ast(level, L, {seq,X}).
 
-mk_id_int(L,X)              ->  exe_ast(id, L, {int,X}}.
-mk_id_var(L,X)              ->  exe_ast(id, L, {var,X}}.
-mk_id_etc(L,X)              ->  exe_ast(id, L, {etc,X}}.
+mk_id_int(L,X)              ->  exe_ast(id, L, {int,X}).
+mk_id_var(L,X)              ->  exe_ast(id, L, {var,X}).
+mk_id_etc(L,X)              ->  exe_ast(id, L, {etc,X}).
 
-mk_dot(L)                   ->  exe_ast(id, L, {dot}}. % dummy id
+mk_dot(L)                   ->  exe_ast(id, L, {dot}). % dummy id
 
 mk_id_type_default(L,X)     ->  exe_ast(id_type, L, {default,X}). % or add custom attribute?
 mk_id_type_mk(L,X,Y,Z)      ->  exe_ast(id_type, L, {mk,X,Y,Z}).
@@ -194,7 +194,6 @@ id_match_listt(L,X,Y)       -> exe_ast(id_match, L, {mk_listt,X,Y}).
 
 mk_clause(L,X,Y)            -> exe_ast(clause, L, {mk,X,Y}).
 
-mk_expr_apply(L,X,Y)        -> exe_ast(expr, L, {mk_apply,X,Y}).
 mk_expr_let(L,X,Y)          -> exe_ast(expr, L, {mk_let,X,Y}).
 mk_expr_arrow(L,X,Y)        -> exe_ast(expr, L, {mk_arrow,X,Y}).
 mk_expr_forall(L,X,Y)       -> exe_ast(expr, L, {mk_forall,X,Y}).
