@@ -52,10 +52,10 @@ id ->   token_id_etc                        : mk_id_etc('$1',get_data('$1')) .
 
 id_seq ->  id                               : ['$1'] .
 id_seq ->  '.' id_seq                       : [mk_dot('$1')|'$2'] .
+id_seq ->  id '.' '{' level_seq '}'         : ['$1'|'$4'] .
 id_seq ->  id '.' id_seq                    : ['$1'|'$3'] .
 
 id_path ->  id_seq                          : '$1' .
-id_path ->  id_seq '.' '{' level_seq '}'    : ['$4'|'$1'] .
 
 id_path_seq -> id_path                      : ['$1'] .
 id_path_seq -> id_path ',' id_path_seq      : ['$1'|'$3'] .

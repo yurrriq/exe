@@ -1,1 +1,6 @@
-Data.Copy := a b c
+namespace.file :=
+    let (wow := #import.module)
+        (other : t := #that)
+    in new
+(a.{u} : ta.{v} := fa xa.{1})
+(a.b.c := x.y.z)

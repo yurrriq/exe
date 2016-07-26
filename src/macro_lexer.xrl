@@ -25,13 +25,14 @@ Slash   = \\
 Dot     = \.
 Comma   = \,
 Arrow   = (\->|\→)
-ForAll  = (forall|\∀)
-LamBda  = (lambda|\λ)
+ForAll  = (\\/|\∀)
+LamBda  = (\\|\λ)
 Curly   = [\{\}]
 Angle   = [\<\>]
 Parens  = [\(\)]
 Square  = [\[\]]
 Colon   = \:
+Hash    = \#
 Define  = \:\=
 Oper    = [\*\+\-\/]
 
@@ -41,20 +42,21 @@ Rules.
 (case|of||let|in)                       : {token,{list_to_atom(TokenChars),TokenLine}}.
 (spawn|send|receive|try|do|raise)       : {token,{list_to_atom(TokenChars),TokenLine}}.
 ({Curly}|{Parens}|{Angle}|{Square})     : {token,{list_to_atom(TokenChars),TokenLine}}.
-({Dot}|{Comma}|{Define}|{Colon})        : {token,{list_to_atom(TokenChars),TokenLine}}.
-{Oper}+                                 : {token,{list_to_atom(TokenChars),TokenLine}}.
+({Dot}|{Comma}|{Define}|{Colon}|{Hash}) : {token,{list_to_atom(TokenChars),TokenLine}}.
 
 {D}+            : {token,{ token_digits,    TokenLine,list_to_integer(TokenChars)}}.
 {A}+            : {token,{ token_id,        TokenLine,TokenChars}}.
 {Arrow}         : {token,{ token_arrow,     TokenLine}}.
 {ForAll}        : {token,{ token_forall,    TokenLine}}.
 {LamBda}        : {token,{ token_lambda,    TokenLine}}.
+{Oper}+         : {token,{ token_oper,      TokenLine,TokenChars}}.
 
-"(\\.|[^"])*" : {token,{ token_quoted_literal,  TokenLine,unquote(TokenChars)}}.
-`(\\.|[^`])*` : {token,{ token_id_etc,          TokenLine,unquote(TokenChars)}}.
-'(\\.|[^'])*' : {token,{ token_atom,            TokenLine,unquote(TokenChars)}}.
+"(\\.|[^"])*"   : {token,{ token_quoted_literal,  TokenLine,unquote(TokenChars)}}.
+`(\\.|[^`])*`   : {token,{ token_id_etc,          TokenLine,unquote(TokenChars)}}.
+'(\\.|[^'])*'   : {token,{ token_atom,            TokenLine,unquote(TokenChars)}}.
 
-({S}+|.) : skip_token.
+({S}+)          : skip_token.
+.               : {error,TokenChars}.
 
 Erlang code.
 
