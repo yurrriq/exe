@@ -2,6 +2,11 @@ namespace.file :=
     let (wow := #import.module)
         (other : t := #that)
     in new
+(default a,'@' : T)
+(a,'@' := v)
+(x := dec_32bit"1024")
+(y := hex_64bit"ffff")
+(s := str_utf8"“якщо”")
 (a.{u} : ta.{(v|w),(x+1)} := fa xa.{1,[[[]]],[a,b,c]})
 (a.b.c := new (u := x.y.z))
 (q : Type := record
