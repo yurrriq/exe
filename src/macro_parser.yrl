@@ -203,16 +203,26 @@ mk_id_etc(L,X)              ->  exe_ast(id, L, {etc,X}).
 
 mk_dot(L)                   ->  exe_ast(id, L, {dot}). % dummy id
 
-mk_id_type_default(L,X)     ->  exe_ast(id_type, L, {default,X}). % or add custom attribute?
-mk_id_type_mk(L,X,Y,Z)      ->  exe_ast(id_type, L, {mk,X,Y,Z}).
+mk_pretype_default(L,X)     -> exe_ast(pretype, L, {default,X}). % or add custom attribute?
+mk_pretype_mk(L,X,Y,Z)      -> exe_ast(pretype, L, {mk,X,Y,Z}).
 
-mk_assign_type(L,X,Y)       -> exe_ast(id_assign, L, {mk_type,X,Y}).
-mk_assign_match(L,X,Y,Z)    -> exe_ast(id_assign, L, {mk_match,X,Y,Z}).
+mk_type(L,X,Y)              -> exe_ast(type, L, {mk,X,Y}).
 
-id_match_var(L,X)           -> exe_ast(id_match, L, {mk_var,X}).
-id_match_tuple(L,X)         -> exe_ast(id_match, L, {mk_tuple,X}).
-id_match_list(L,X)          -> exe_ast(id_match, L, {mk_list,X}).
-id_match_listt(L,X,Y)       -> exe_ast(id_match, L, {mk_listt,X,Y}).
+mk_preassign_type(L,X,Y)    -> exe_ast(preassign, L, {mk_type,X,Y}).
+mk_preassign_match(L,X,Y,Z) -> exe_ast(preassign, L, {mk_match,X,Y,Z}).
+
+mk_assign(L,X,Y)            -> exe_ast(assign, L, {mk,X,Y}).
+
+match_var(L,X)              -> exe_ast(match, L, {mk_var,X}).
+match_tuple(L,X)            -> exe_ast(match, L, {mk_tuple,X}).
+match_list(L,X)             -> exe_ast(match, L, {mk_list,X}).
+match_listt(L,X,Y)          -> exe_ast(match, L, {mk_listt,X,Y}).
+
+mk_pattern_constr(L,X)      -> exe_ast(pattern, L, {mk_constr,X}).
+mk_pattern_path(L,X)        -> exe_ast(pattern, L, {mk_path,X}).
+mk_pattern_tuple(L,X)       -> exe_ast(pattern, L, {mk_tuple,X}).
+mk_pattern_list(L,X)        -> exe_ast(pattern, L, {mk_list,X}).
+mk_pattern_listt(L,X,Y)     -> exe_ast(pattern, L, {mk_listt,X,Y}).
 
 mk_clause(L,X,Y)            -> exe_ast(clause, L, {mk,X,Y}).
 
