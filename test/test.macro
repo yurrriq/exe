@@ -2,7 +2,7 @@ namespace.file :=
     let (wow := #import.module)
         (other : t := #that)
     in new
-(a.{u} : ta.{v} := fa xa.{1,((())),(a,b,c)})
+(a.{u} : ta.{(v|w),(x+1)} := fa xa.{1,[[[]]],[a,b,c]})
 (a.b.c := new (u := x.y.z))
 (q : Type := record
     (a : A -> B)

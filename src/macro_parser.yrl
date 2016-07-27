@@ -40,8 +40,8 @@ Rootsymbol      assign .
 
 level ->    token_digits                        : mk_level_int('$1',('$1')) .
 level ->    token_id                            : mk_level_var('$1',('$1')) .
-level ->    '(' ')'                             : mk_level_seq('$1',[]) .
-level ->    '(' level_comma_seq ')'             : mk_level_seq('$1','$2') .
+level ->    '[' ']'                             : mk_level_seq('$1',[]) .
+level ->    '[' level_comma_seq ']'             : mk_level_seq('$1','$2') .
 level ->    '(' level '+' level ')'             : mk_level_sum('$1','$2','$4') .
 level ->    '(' level '|' level ')'             : mk_level_max('$1','$2','$4') .
 
@@ -202,8 +202,8 @@ exe_ast(T,L,Args) -> {T,get_line(L),Args}.
 mk_level_int(L,X)           -> exe_ast(level, L, {int,get_data(X)}).
 mk_level_var(L,X)           -> exe_ast(level, L, {var,get_data(X)}).
 mk_level_seq(L,X)           -> exe_ast(level, L, {seq,X}).
-mk_level_sum(L,X,Y)         -> exe_ast(level, L, {seq,X,Y}).
-mk_level_max(L,X,Y)         -> exe_ast(level, L, {seq,X,Y}).
+mk_level_sum(L,X,Y)         -> exe_ast(level, L, {sum,X,Y}).
+mk_level_max(L,X,Y)         -> exe_ast(level, L, {max,X,Y}).
 
 mk_id_int(L,X)              -> exe_ast(id, L, {int,get_data(X)}).
 mk_id_var(L,X)              -> exe_ast(id, L, {var,get_data(X)}).
