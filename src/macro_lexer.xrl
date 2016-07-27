@@ -35,6 +35,7 @@ Colon   = \:
 Hash    = \#
 Define  = \:\=
 Oper    = [\*\+\-\/]
+VBar    = \|
 
 Rules.
 
@@ -42,7 +43,8 @@ Rules.
 (case|of||let|in)                       : {token,{list_to_atom(TokenChars),TokenLine}}.
 (spawn|send|receive|try|do|raise)       : {token,{list_to_atom(TokenChars),TokenLine}}.
 ({Curly}|{Parens}|{Angle}|{Square})     : {token,{list_to_atom(TokenChars),TokenLine}}.
-({Dot}|{Comma}|{Define}|{Colon}|{Hash}) : {token,{list_to_atom(TokenChars),TokenLine}}.
+({Dot}|{Comma}|{Define}|{Colon})        : {token,{list_to_atom(TokenChars),TokenLine}}.
+({Hash}|{VBar})                         : {token,{list_to_atom(TokenChars),TokenLine}}.
 
 {D}+            : {token,{ token_digits,    TokenLine,list_to_integer(TokenChars)}}.
 {A}+            : {token,{ token_id,        TokenLine,TokenChars}}.
@@ -52,7 +54,6 @@ Rules.
 {Oper}+         : {token,{ token_oper,      TokenLine,TokenChars}}.
 
 "(\\.|[^"])*"   : {token,{ token_quoted_literal,  TokenLine,unquote(TokenChars)}}.
-`(\\.|[^`])*`   : {token,{ token_id_etc,          TokenLine,unquote(TokenChars)}}.
 '(\\.|[^'])*'   : {token,{ token_atom,            TokenLine,unquote(TokenChars)}}.
 
 ({S}+)          : skip_token.

@@ -15,9 +15,10 @@ Nonterminals
     encoding
 .
 Terminals
-    token_id token_digits token_id_etc token_quoted_literal
+    token_id token_digits token_atom token_quoted_literal
     '(' ')' '[' ']' '{' '}'
     '.' ',' ':' ':=' '#' '|'
+    '+' '-' '*' '/'
     token_arrow token_forall token_lambda
     'packed' 'record' 'new' 'data' 'default'
     'let' 'in' 'case' 'of'
@@ -37,10 +38,12 @@ Rootsymbol      assign .
 
 %% universe levels
 
-level ->    token_digits                        : mk_level_int('$1',get_data('$1')) .
-level ->    token_id                            : mk_level_var('$1',get_data('$1')) .
-level ->    '(' ')'                             : mk_level_empty('$1') .
+level ->    token_digits                        : mk_level_int('$1',('$1')) .
+level ->    token_id                            : mk_level_var('$1',('$1')) .
+level ->    '(' ')'                             : mk_level_seq('$1',[]) .
 level ->    '(' level_comma_seq ')'             : mk_level_seq('$1','$2') .
+level ->    '(' level '+' level ')'             : mk_level_sum('$1','$2','$4') .
+level ->    '(' level '|' level ')'             : mk_level_max('$1','$2','$4') .
 
 level_comma_seq -> level                        : ['$1'] .
 level_comma_seq -> level ',' level_comma_seq    : ['$1'|'$3'] .
@@ -48,12 +51,12 @@ level_comma_seq -> level ',' level_comma_seq    : ['$1'|'$3'] .
 
 %% identifiers with namespaces
 
-id ->   token_digits                            : mk_id_int('$1',get_data('$1')) .
-id ->   token_id                                : mk_id_var('$1',get_data('$1')) .
-id ->   token_id_etc                            : mk_id_etc('$1',get_data('$1')) .
+id ->   token_digits                            : mk_id_int('$1',('$1')) .
+id ->   token_id                                : mk_id_var('$1',('$1')) .
+id ->   token_atom                              : mk_id_etc('$1',('$1')) .
 
 id_dot_seq ->  id                               : ['$1'] .
-id_dot_seq ->  '.' id_dot_seq                   : [mk_dot('$1')|'$2'] .
+id_dot_seq ->  '.' id_dot_seq                   : [mk_id_dot('$1')|'$2'] .
 id_dot_seq ->  id '.' '{' level_comma_seq '}'   : ['$1'|'$4'] .
 id_dot_seq ->  id '.' id_dot_seq                : ['$1'|'$3'] .
 
@@ -93,14 +96,15 @@ id_ta_par_seq -> '(' id_ta ')' id_ta_par_seq    : ['$2'|'$4'] .
 %% simple pattern matching (in function definition)
 
 match ->    path                                    : mk_match_var('$1','$1') .
+match ->    '{'  '}'                                : mk_match_tuple('$1',[]).
 match ->    '{' match_comma_seq '}'                 : mk_match_tuple('$1','$2').
+match ->    '['  ']'                                : mk_match_list('$1',[]).
 match ->    '[' match_comma_seq ']'                 : mk_match_list('$1','$2').
 match ->    '[' match_comma_seq '|' path ']'        : mk_match_listt('$1','$2','$4').
 
 match_seq ->     match                              : ['$1'] .
 match_seq ->     match match_seq                    : ['$1'|'$2'] .
 
-match_comma_seq ->   '$empty'                       : [] .
 match_comma_seq ->   match                          : ['$1'] .
 match_comma_seq ->   match ',' match_comma_seq      : ['$1'|'$3'] .
 
@@ -114,7 +118,9 @@ pattern_comma_seq -> pattern ',' pattern_comma_seq      : ['$1'|'$3'] .
 
 pattern_arg -> path                                     : mk_pattern_path('$1','$1') .
 pattern_arg -> '(' pattern ')'                          : '$2' .
+pattern_arg -> '{' '}'                                  : mk_pattern_tuple('$1',[]) .
 pattern_arg -> '{' pattern_comma_seq '}'                : mk_pattern_tuple('$1','$2') .
+pattern_arg -> '[' ']'                                  : mk_pattern_list('$1',[]) .
 pattern_arg -> '[' pattern_comma_seq ']'                : mk_pattern_list('$1','$2') .
 pattern_arg -> '[' pattern_comma_seq '|' path ']'       : mk_pattern_listt('$1','$2','$4') .
 
@@ -149,18 +155,19 @@ expr_ ->    path                                        : mk_expr_id('$1','$1') 
 expr_ ->    '#' path                                    : mk_expr_external('$1','$2') .
 expr_ ->    token_id token_quoted_literal               : mk_expr_literal('$1','$1','$2') .
 expr_ ->    '(' expr ')'                                : '$2' .
+expr_ ->    '{' '}'                                     : mk_expr_tuple('$1',[]) .
 expr_ ->    '{' expr_comma_seq '}'                      : mk_expr_tuple('$1','$2') .
+expr_ ->    '[' ']'                                     : mk_expr_list('$1',[]) .
 expr_ ->    '[' expr_comma_seq ']'                      : mk_expr_list('$1','$2') .
 expr_ ->    '[' expr_comma_seq '|' expr ']'             : mk_expr_listt('$1','$2','$3') .
 
-expr_comma_seq ->     '$empty'                      : [] .
 expr_comma_seq ->     expr                          : ['$1'] .
 expr_comma_seq ->     expr ',' expr_comma_seq       : ['$1'|'$3'] .
 
 
 %
 
-encoding -> '(' ')' : mk_encding('$1') . %TODO
+encoding -> '(' ')' : mk_encoding('$1') . %TODO
 
 %TODO sugar/notation
 
@@ -192,16 +199,16 @@ exe_ast(T,L,Args) -> {T,get_line(L),Args}.
 
 % actual AST creation
 
-mk_level_int(L,X)           ->  exe_ast(level, L, {int,X}).
-mk_level_var(L,X)           ->  exe_ast(level, L, {var,X}).
-mk_level_empty(L)           ->  exe_ast(level, L, {seq,[]}).
-mk_level_seq(L,X)           ->  exe_ast(level, L, {seq,X}).
+mk_level_int(L,X)           -> exe_ast(level, L, {int,get_data(X)}).
+mk_level_var(L,X)           -> exe_ast(level, L, {var,get_data(X)}).
+mk_level_seq(L,X)           -> exe_ast(level, L, {seq,X}).
+mk_level_sum(L,X,Y)         -> exe_ast(level, L, {seq,X,Y}).
+mk_level_max(L,X,Y)         -> exe_ast(level, L, {seq,X,Y}).
 
-mk_id_int(L,X)              ->  exe_ast(id, L, {int,X}).
-mk_id_var(L,X)              ->  exe_ast(id, L, {var,X}).
-mk_id_etc(L,X)              ->  exe_ast(id, L, {etc,X}).
-
-mk_dot(L)                   ->  exe_ast(id, L, {dot}). % dummy id
+mk_id_int(L,X)              -> exe_ast(id, L, {int,get_data(X)}).
+mk_id_var(L,X)              -> exe_ast(id, L, {var,get_data(X)}).
+mk_id_etc(L,X)              -> exe_ast(id, L, {etc,get_data(X)}).
+mk_id_dot(L)                -> exe_ast(id, L, {dot}). % dummy id
 
 mk_pretype_default(L,X)     -> exe_ast(pretype, L, {default,X}). % or add custom attribute?
 mk_pretype_mk(L,X,Y)        -> exe_ast(pretype, L, {mk,X,Y}).
@@ -238,9 +245,9 @@ mk_expr_case(L,X,Y)         -> exe_ast(expr, L, {mk_case,X,Y}).
 mk_expr_packed(L,X,Y)       -> exe_ast(expr, L, {mk_packed,X,Y}).
 mk_expr_id(L,X)             -> exe_ast(expr, L, {mk_id,X}).
 mk_expr_external(L,X)       -> exe_ast(expr, L, {mk_external,X}).
-mk_expr_literal(L,X,Y)      -> exe_ast(expr, L, {mk_literal,X,Y}).
+mk_expr_literal(L,X,Y)      -> exe_ast(expr, L, {mk_literal,get_data(X),get_data(Y)}).
 mk_expr_tuple(L,X)          -> exe_ast(expr, L, {mk_tuple,X}).
 mk_expr_list(L,X)           -> exe_ast(expr, L, {mk_list,X}).
 mk_expr_listt(L,X,Y)        -> exe_ast(expr, L, {mk_listt,X,Y}).
 
-mk_encding(L)               -> exe_ast(encoding, L, {mk}).
+mk_encoding(L)               -> exe_ast(encoding, L, {mk}).
