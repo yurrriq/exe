@@ -3,15 +3,15 @@
 %%
 
 Nonterminals
-    level level_seq
-    id id_dot_seq path path_seq
-    id_type id_type_seq
-    id_assign id_assign_seq
-    id_ta id_ta_seq
-    id_match id_match_seq id_match_comma_seq
-    pattern pattern_arg
-    clause clause_seq
-    expr expr_ expr_seq
+    level level_comma_seq
+    id id_dot_seq path path_comma_seq
+    pretype type type_par_seq
+    preassign assign assign_par_seq
+    id_ta id_ta_par_seq
+    match match_seq match_comma_seq
+    pattern pattern_comma_seq pattern_arg pattern_arg_seq
+    clause clause_par_seq
+    expr expr_ expr_comma_seq
     encoding
 .
 Terminals
@@ -40,7 +40,7 @@ Rootsymbol      assign .
 level ->    token_digits                    : mk_level_int('$1',get_data('$1')) .
 level ->    token_id                        : mk_level_var('$1',get_data('$1')) .
 level ->    '(' ')'                         : mk_level_empty('$1') .
-level ->    '(' level_seq ')'               : mk_level_seq('$1','$2') .
+level ->    '(' level_comma_seq ')'         : mk_level_seq('$1','$2') .
 
 level_comma_seq -> level                    : ['$1'] .
 level_comma_seq -> level ',' level_seq      : ['$1'|'$3'] .
@@ -69,7 +69,7 @@ pretype -> 'default' pretype                : mk_pretype_default('$1','$2') .
 pretype -> path_comma_seq                   : mk_pretype_mk('$1','$1','$3',[]) .
 pretype -> path_comma_seq type_par_seq      : mk_pretype_mk('$1','$1','$2','$4').
 
-type -> pretype ':' expr                    : mk_type().
+type -> pretype ':' expr                    : mk_type('$1','$1','$3').
 
 type_par_seq ->  '(' type ')'               : ['$2'] .
 type_par_seq ->  '(' type ')' type_seq      : ['$2'|'$4'] .
@@ -78,7 +78,7 @@ preassign   ->  path_comma_seq              : mk_preassign_match('$1','$1',[],'$
 preassign   ->  path match_seq              : mk_preassign_match('$1','$1','$2','$4') .
 preassign   ->  type                        : mk_preassign_type('$1','$1','$3') .
 
-assign  -> preassign ':=' expr              : mk_assign() .
+assign  -> preassign ':=' expr              : mk_assign('$1','$1','$3') .
 
 assign_par_seq   ->  '(' assign ')'                  : ['$2'] .
 assign_par_seq   ->  '(' assign ')' assign_seq       : ['$2'|'$4'] .
@@ -106,29 +106,30 @@ match_comma_seq ->   match ',' match_comma_seq      : ['$1'|'$3'] .
 
 %% full pattern matching (in case statement)
 
-pattern -> pattern_arg                                  : mk_('$1',) .
-pattern -> id_path pattern_arg_seq                      : mk_('$1',) .
-
-pattern_arg -> id_path                                  : mk_('$1',) .
-pattern_arg -> '(' pattern ')'                          : mk_('$1',) .
-pattern_arg -> '{' pattern_comma_seq '}'                : mk_('$1',) .
-pattern_arg -> '[' pattern_comma_seq ']'                : mk_('$1',) .
-pattern_arg -> '[' pattern_comma_seq '|' id_path ']'    : mk_('$1',) .
-
-pattern_arg_seq -> pattern_arg                          : ['$1'].
-pattern_arg_seq -> pattern_arg pattern_arg_seq          : ['$1'|'$2'].
+pattern -> pattern_arg                                  : '$1' .
+pattern -> id_path pattern_arg_seq                      : mk_pattern_constr('$1','$2') .
 
 pattern_comma_seq -> pattern                            : ['$1'] .
 pattern_comma_seq -> pattern ',' pattern_comma_seq      : ['$1'|'$3'] .
 
-clause -> pattern_comma_seq token_arrow expr            : mk_('$1',) .
+pattern_arg -> id_path                                  : mk_pattern_path('$1','$1') .
+pattern_arg -> '(' pattern ')'                          : '$2' .
+pattern_arg -> '{' pattern_comma_seq '}'                : mk_pattern_tuple('$1','$2') .
+pattern_arg -> '[' pattern_comma_seq ']'                : mk_pattern_list('$1','$2') .
+pattern_arg -> '[' pattern_comma_seq '|' id_path ']'    : mk_pattern_listt('$1','$2','$4') .
 
-clause_par_seq -> '(' clause ')'                            : ['$2'] .
-clause_par_seq -> '(' clause ')' clause_par_seq                 : ['$2'|'$4'] .
+pattern_arg_seq -> pattern_arg                          : ['$1'].
+pattern_arg_seq -> pattern_arg pattern_arg_seq          : ['$1'|'$2'].
+
+clause -> pattern_comma_seq token_arrow expr            : mk_clause('$1','$1','$3') .
+
+clause_par_seq -> '(' clause ')'                        : ['$2'] .
+clause_par_seq -> '(' clause ')' clause_par_seq         : ['$2'|'$4'] .
 
 
 %% expessions (w/o priority)
 
+% sequence of application (FIXME priority)
 expr ->     expr_                                       : ['$1'] .
 expr ->     expr_ expr                                  : ['$1'|'$2'] .
 
@@ -137,12 +138,12 @@ expr_ ->    expr token_arrow expr                       : mk_expr_arrow('$1','$1
 expr_ ->    token_forall id_ta_seq token_arrow expr     : mk_expr_forall('$1','$2','$4').
 expr_ ->    token_lambda id_ta_seq token_arrow expr     : mk_expr_lambda_type('$1','$2','$4') .
 expr_ ->    token_lambda id_match_seq token_arrow expr  : mk_expr_lambda_match('$1','$2','$4') .
-expr_ ->    'record' '(' ')'                            : mk_expr_record('$1',[],[]) .
-expr_ ->    'record' id_ta_seq                          : mk_expr_record('$1',[],'$2') .
+expr_ ->    'record' '(' ')'                            : mk_expr_record('$1',[]) .
+expr_ ->    'record' id_ta_seq                          : mk_expr_record('$1','$2') .
 expr_ ->    'new' '(' ')'                               : mk_expr_new('$1',[]) .
 expr_ ->    'new' id_assign_seq                         : mk_expr_new('$1','$2') .
 expr_ ->    'data' id_type_seq                          : mk_expr_data('$1','$2') .
-expr_ ->    'case' expr 'of' clause_seq                 : mk_expr_case('$1','$2','$4') .
+expr_ ->    'case' expr 'of' clause_par_seq             : mk_expr_case('$1','$2','$4') .
 expr_ ->    'packed' encoding expr                      : mk_expr_packed('$1','$2','$3') .
 expr_ ->    id_path                                     : mk_expr_id('$1','$1') .
 expr_ ->    '#' id_path                                 : mk_expr_external('$1','$2') .
