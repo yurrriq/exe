@@ -9,8 +9,7 @@ file(F) -> case file:read_file(F) of
             {error,file}
     end.
 
-lexer({error,E}) -> {error,E};
-lexer({ok,S}) -> case macro_lexer:string(S) of
+lexer(S) -> case macro_lexer:string(S) of
         {ok,T,_} -> {ok,T};
         {error,{L,A,X},_} ->
             io:format(lists:concat(["Line ", L, " ", A, " : ", element(2,X)])),
@@ -18,8 +17,7 @@ lexer({ok,S}) -> case macro_lexer:string(S) of
             {error,lexer}
     end.
 
-parser({error,E}) -> {error,E};
-parser({ok,T}) -> case macro_parser:parse(T) of
+parser(T) -> case macro_parser:parse(T) of
         {ok,AST} -> {ok,AST};
         {error,{L,A,S}} ->
             io:format(lists:concat(["Line ", L, " ", A, " : "| S])),
@@ -27,7 +25,11 @@ parser({ok,T}) -> case macro_parser:parse(T) of
             {error,parser}
     end.
 
+%
+maybe_bind(F,{ok,Y}) -> F(Y);
+maybe_bind(F,E)      -> E.
+
 % helpers
-file2str(F) -> file(F++".macro").
-file2lex(F) -> lexer(file2str(F)).
-file2ast(F) -> parser(file2lex(F)).
+file2str(F) -> file(lists:concat(["test","/",F,".","macro"])).
+file2lex(F) -> maybe_bind(fun lexer/1, file2str(F)).
+file2ast(F) -> maybe_bind(fun parser/1, file2lex(F)).

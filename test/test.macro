@@ -1,0 +1,12 @@
+namespace.file :=
+    let (wow := #import.module)
+        (other : t := #that)
+    in new
+(a.{u} : ta.{v} := fa xa.{1})
+(a.b.c := new (u := x.y.z))
+(q : Type := record
+    (a : A)
+    (b : B)
+    (x := fx))
+(f (p:P) : \/ (q:Q) -> Z)
+(f p := \ q -> z)
