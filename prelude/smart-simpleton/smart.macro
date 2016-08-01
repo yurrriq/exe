@@ -1,0 +1,33 @@
+Data := new
+    ( El : Type :=
+            ∀ (N : Type) →
+            ∀ (Z : N) →
+            ∀ (S : N → N) →
+            N )
+    ( ZeroEl : El :=
+            λ (N : Type) →
+            λ (Z : N) →
+            λ (S : N → N) →
+            Z )
+    ( SuccEl (n : El) : El :=
+            λ (N : Type) →
+            λ (Z : N) →
+            λ (S : N → N) →
+            S (n N Z S) )
+    ( Rec : Type := record
+        ( Ok : El → Prop )
+        ( ZeroOk : Ok ZeroEl )
+        ( SuccOk (el : El) (ok : Ok el) : Ok el → Ok (SuccEl el) ) )
+    ( Next (r : Rec) : Rec := new
+        ( Ok n.el :=
+            ∀ (n.ok : r.Ok n.el) →
+            ∀ (P (m.el : El) (m.ok : r.Ok m.el) : Prop) →
+            ∀ (z : P (ZeroEl) (r.ZeroOk)) →
+            ∀ (s (m.el : El) (m.ok : r.Ok m.el) :
+                P (m.el) (m.ok) →
+                P (SuccEl m.el) (r.SuccOk m.el m.ok)) →
+            P (n.el) (n.ok) )
+        ( ZeroOk := )
+        ( SuccOk := ) )
+    ( NatRec := MinFix Rec Next )
+    ( MinFix := TODO )
