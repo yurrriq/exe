@@ -77,7 +77,7 @@ Note: all these folders (modules) are encoded in plain CoC in OM repository to d
 you the basic principles how things works. Later all these should be written in EXE languages and translated to OM
 automatically. You may think of OM as low level typed assembler of type theory.
 
-#### Paradox Preludes
+### Paradox Preludes
 
 [girard](https://github.com/groupoid/om/tree/master/priv/girard),
 [hurkens](https://github.com/groupoid/om/tree/master/priv/hurkens),
