@@ -41,7 +41,7 @@ in Lean model.
 OM — Compact Core of CoC
 ------------------------
 
-In repository OM you may found following parts of OM:
+In repository OM you may found following parts of core:
 * [Parser](https://github.com/groupoid/om/blob/master/src/om_parse.erl)
 * [Typechecker](https://github.com/groupoid/om/blob/master/src/om_type.erl)
 * [Eraser](https://github.com/groupoid/om/blob/master/src/om_erase.erl) (could be improved)
