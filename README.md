@@ -1,5 +1,5 @@
-EXE — Language with Dependent Types
-===================================
+EXE — DepTypes Language with Encodings
+======================================
 
 This document should drop you to EXE/OM immediately. Groupoid Infinity creates
 a new programming language with dependent types called EXE with small provable dependent core called OM.
