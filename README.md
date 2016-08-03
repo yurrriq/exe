@@ -106,7 +106,7 @@ However our EXE encodings are a bit different encodings with categorical semanti
 encoding macros. In the future with inductive-inductive types and HITs.
 Likely Top Language would be a superset of the Internal Core sharing most of the parser.
 
-### EXE macros
+### Macrosystems
 
 #### [macro.new](https://github.com/groupoid/exe/blob/master/prelude/macro.new)
 
