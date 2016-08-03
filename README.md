@@ -131,35 +131,35 @@ How it works?
 
 There is a belief that recursor (non-dependent eliminator) in Type Theory
 is a weaker property than induction principle (dependent eliminator). At the same time
-from category theory we know that Universal Property defines the object uniquely.
-In the case of initial object in the category of algebras, the initiality could be defined by recursor.
+from category theory, we know that Universal Property defines the object uniquely.
+In the case of an initial object in the category of algebras, the initiality could be defined by recursor.
 That means that all properties of algebra follow from its initiality,
-as a case it is possible to get the recursor from induction. There is a sensitive moment here,
+as a case, it is possible to get the recursor from induction. There is a sensitive moment here,
 all categorical constructions are being formulated with defined equality on morphisms,
-in type theory the equality is built-in type that could have extended properties. Simplify we could say
-that we can get recursor from induction without equality, and with proper equality we could get induction from recursor.
+in type theory the equality is the built-in type that could have extended properties. Simplify we could say
+that we can get recursor from induction without equality, and with proper equality, we could get induction from recursor.
 
-#### Fibrations
+### Fibrations
 
 Mechanism of getting induction principle from equality is based on the presentation
 of dependent types through fibrations. Hereby dependent type `(D: B → Type)` is defined as `(p: Sigma B P → B)`
-which projects dependent pair to the first field. In topology such approach is called fibration.
+which projects dependent pair to the first field. In topology, such approach is called fibration.
 To the other direction for a given morphism `(p: E → B)` which we understands as fibration with projection p,
 we could get its dependent type as `(D: B → Type)` by calculation in every point `(b: B)` its image of
-projection p by using equality on elements of `B`. In type theory besides depndent pair `Sigma` also
-used the dependent product `Pi`. In encoding of dependent types with fibrations there is a correspondance
+projection p by using equality on elements of `B`. In type theory besides dependent pair `Sigma` also
+used the dependent product `Pi`. In encoding of dependent types with fibrations there is a correspondence
 between elements of dependent and morphism-fibrations for projection `p`: such `(s: B → E)` that `s * p = I`.
-The example of this implementaion could be seen in
+The example of this implementation could be seen in
 * EXE as [Macro](https://github.com/groupoid/exe/blob/master/prelude/macro.new/Mini.macro#L71)
 * OM as expanded term [Sectioning](https://github.com/groupoid/om/blob/master/priv/posets/sec2all)
 
-#### Induction
+### Induction
 
 The input for induction is a predicate — dependent type encoded with `(p: E → B)`.
-Induction needed additional information for predicate. The type of induction is defined
+Induction needed additional information for the predicate. The type of induction is defined
 by set of inductive constructors. Induction is just a statement that on E we have the
-structure of F-algebra of inductive type. Now we could apply recursor to E
-getting the map `(I → E)` from initial object which in fact the section (fibre bundle) of fibration
+structure of F-algebra of the inductive type. Now we could apply recursor to E
+getting the map `(I → E)` from the initial object which in fact the section (fiber bundle) of fibration
 and thus defines the dependent function which is a proved value of induction principle.
 The example for `Bool` could be found in
 * EXE [Bool](https://github.com/groupoid/exe/blob/master/prelude/macro.new/Data.Bool.macro#L128)
@@ -167,6 +167,6 @@ The example for `Bool` could be found in
 
 Summarizing we encode types of source lambda calculus with objects of selected category,
 dependent types with fibrations, dependent function as fibrations, inductive types as
-limits of identity functors on category of F-algebras.
+limits of identity functors on the category of F-algebras.
 
 OM A HUM
