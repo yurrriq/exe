@@ -11,25 +11,25 @@ You may think of EXE as operational transformation of higher language (with HITs
 Why new Dependent Language?
 ---------------------------
 
-*No Fixpoint and Induction in Core*. We came up with pure CoC core having predicative
+**No Fixpoint and Induction in Core**. We came up with pure CoC core having predicative
 and impredicative universe hierachies and macro extensions. Other MLTT cores has additional
 axioms like Fixpoint and Induction (and even more) — something we strive to escape,
 because it leads to clean and understandable core. No, we don't have Fixpoint, and yes,
 we implemented Induction principle in pure CoC.
 
-*Extensible Language Design*. Encoding of inductive types is based on categorical semantic
+**Extensible Language Design**. Encoding of inductive types is based on categorical semantic
 of compilation to CoC. All other syntax constructions are inductive definitions, plugged
 into the stream parser. AST of the CoC language is also defined in terms of inductive
 constructions and thus allowed in the macros. The language of polynomial functors (data
 and record) and core language of the process calculus (spawn, receive and send) are just
 macrosystem over CoC language, its syntax extensions.
 
-*Changable Encodings*. In pure CoC we have only arrows, so all inductive type encodings
+**Changable Encodings**. In pure CoC we have only arrows, so all inductive type encodings
 would be Church-encoding variations. Most extended nowadays is Church-Boehm-Berrarducci
 encoding, which dedicated to inductive types. Another well known are Scott (lazyness),
 Parigot (lazyness and constant-time iterators) and CPS (continuations) encodings.
 
-*Proved Categorical Semantic*. There was modeled a math model (using higher-order
+**Proved Categorical Semantic**. There was modeled a math model (using higher-order
 categorical logic) of encoding, which calculates (co)limits in a cathegory of (co)algebras
 built with given set of (de)constructors. We call such encoding in honour of Lambek lemma
 that leeds us to the equality of (co)initial object and (co)limit in the categories
