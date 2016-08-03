@@ -1,5 +1,5 @@
-EXE Language with Dependent Types
-=================================
+EXE — Language with Dependent Types
+===================================
 
 This document should drop you to EXE/OM immediately. Groupoid Infinity creates
 a new programming language with dependent types called EXE with small provable dependent core called OM.
@@ -8,16 +8,44 @@ It can be compiled (code extraction) to bytecode of Erlang virtual machines BEAM
 EXE is an implementation of Calculus of Inductive Constructions (CiC) that lives on top of CoC OM model.
 You may think of EXE as operational transformation of higher language (with HITs) to OM.
 
+Why new Dependent Language?
+---------------------------
+
+*No Fixpoint and Induction in Core*. We came up with pure CoC core having predicative
+and impredicative universe hierachies and macro extensions. Other MLTT cores has additional
+axioms like Fixpoint and Induction (and even more) — something we strive to escape,
+because it leads to clean and understandable core. No, we don't have Fixpoint, and yes,
+we implemented Induction principle in pure CoC.
+
+*Extensible Language Design*. Encoding of inductive types is based on categorical semantic
+of compilation to CoC. All other syntax constructions are inductive definitions, plugged
+into the stream parser. AST of the CoC language is also defined in terms of inductive
+constructions and thus allowed in the macros. The language of polynomial functors (data
+and record) and core language of the process calculus (spawn, receive and send) are just
+macrosystem over CoC language, its syntax extensions.
+
+*Changable Encodings*. In pure CoC we have only arrows, so all inductive type encodings
+would be Church-encoding variations. Most extended nowadays is Church-Boehm-Berrarducci
+encoding, which dedicated to inductive types. Another well known are Scott (lazyness),
+Parigot (lazyness and constant-time iterators) and CPS (continuations) encodings.
+
+*Proved Categorical Semantic*. There was modeled a math model (using higher-order
+categorical logic) of encoding, which calculates (co)limits in a cathegory of (co)algebras
+built with given set of (de)constructors. We call such encoding in honour of Lambek lemma
+that leeds us to the equality of (co)initial object and (co)limit in the categories
+of (co)algebras. Such encoding works with dependent types and its consistency is proved
+in Lean model.
+
 <img src="http://5ht.co/exe.svg" width="600">
 
 OM — Compact Core of CoC
 ------------------------
 
 In repository OM you may found following parts of OM:
-* Parser https://github.com/groupoid/om/blob/master/src/om_parse.erl
-* Typechecker https://github.com/groupoid/om/blob/master/src/om_type.erl
-* Eraser https://github.com/groupoid/om/blob/master/src/om_erase.erl
-* Code Extractor https://github.com/groupoid/om/blob/master/src/om_extract.erl
+* [Parser](https://github.com/groupoid/om/blob/master/src/om_parse.erl)
+* [Typechecker](https://github.com/groupoid/om/blob/master/src/om_type.erl)
+* [Eraser](https://github.com/groupoid/om/blob/master/src/om_erase.erl)
+* [Code Extractor](https://github.com/groupoid/om/blob/master/src/om_extract.erl)
 Also code erasor should be improved.
 
 OM ships with different `modes` (spaces of types with own encodings), or `preludes`
