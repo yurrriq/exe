@@ -14,13 +14,17 @@ Data := new
             λ (Z : N) →
             λ (S : N → N) →
             S (n N Z S) )
+    ( LEQ (n1, n2 : El) := -- less or equal
+        TODO ) -- try (1) Prop func (2) inductive encoding
     ( Rec : Type := record
             ( Ok : El → Prop )
             ( ZeroOk : Ok ZeroEl )
             ( SuccOk (el : El) (ok : Ok el) : Ok (SuccEl el) )
             ( PredOk (el : El) (ok : Ok (SuccEl el)) : Ok el ) )
     ( Next (r : Rec) : Rec := new
-        ( Ok n.el :=
+        ( Ok i.el :=
+            ∀ (n.el : El) →
+            ∀ (leq : LEQ n.el i.el) →
             ∀ (n.ok : r.Ok n.el) →
             ∀ (P (m.el : El) (m.ok : r.Ok m.el) : Prop) →
             ∀ (Q (m.el : El) (m.ok1, m.ok2 : r.Ok m.el) :
@@ -31,7 +35,9 @@ Data := new
                 P (SuccEl m.el) (r.SuccOk m.el m.ok)) →
             P (n.el) (n.ok) )
         ( ZeroOk :=
-            λ (n.ok : r.Ok ZeroEl) →
+            λ (n.el : El) →
+            λ (leq : LEQ n.el ZeroEl) →
+            λ (n.ok : r.Ok n.el) →
             λ (P (m.el : El) (m.ok : r.Ok m.el) : Prop) →
             λ (Q (m.el : El) (m.ok1, m.ok2 : r.Ok m.el) :
                 P m.el m.ok1 → P m.el m.ok2 ) →
@@ -39,20 +45,22 @@ Data := new
             λ (s (m.el : El) (m.ok : r.Ok m.el) :
                 P (m.el) (m.ok) →
                 P (SuccEl m.el) (r.SuccOk m.el m.ok)) →
-            Q ZeroEl r.ZeroOk n.ok z )
+            ... )
         ( SuccOk n.el n.ok.new :=
-            λ (n'.ok.old : r.Ok (SuccEl n.el)) →
-            λ (P (m.el : El) (m.ok : r.Ok m.el) : Prop) →
-            λ (Q (m.el : El) (m.ok1, m.ok2 : r.Ok m.el) :
-                P m.el m.ok1 → P m.el m.ok2 ) →
-            λ (z : P (ZeroEl) (r.ZeroOk)) →
-            λ (s (m.el : El) (m.ok : r.Ok m.el) :
-                P (m.el) (m.ok) →
-                P (SuccEl m.el) (r.SuccOk m.el m.ok)) →
-            let (n.ok.old := r.PredOk n.el n'.ok.old) in
-            -- : P (SuccEl n.el) n'.ok.old
-            Q (SuccEl n.el) (r.SuccOk n.el n.ok.old) n'.ok.old
-                (s n.el n.ok.old (n.ok.new n.ok.old P Q z s)) )
+            (   λ (n'.ok.old : r.Ok (SuccEl n.el)) →
+                λ (P (m.el : El) (m.ok : r.Ok m.el) : Prop) →
+                λ (Q (m.el : El) (m.ok1, m.ok2 : r.Ok m.el) :
+                    P m.el m.ok1 → P m.el m.ok2 ) →
+                λ (z : P (ZeroEl) (r.ZeroOk)) →
+                λ (s (m.el : El) (m.ok : r.Ok m.el) :
+                    P (m.el) (m.ok) →
+                    P (SuccEl m.el) (r.SuccOk m.el m.ok)) →
+                let (n.ok.old := r.PredOk n.el n'.ok.old) in
+                -- : P (SuccEl n.el) n'.ok.old
+                ...
+                Q (SuccEl n.el) (r.SuccOk n.el n.ok.old) n'.ok.old
+                    (s n.el n.ok.old (n.ok.new n.ok.old P Q z s)) )
+            )
         ( PredOk n.el n'.ok.new :=
             λ (n.ok.old : r.Ok n.el) →
             λ (P (m.el : El) (m.ok : r.Ok m.el) : Prop) →
@@ -63,7 +71,14 @@ Data := new
                 P (m.el) (m.ok) →
                 P (SuccEl m.el) (r.SuccOk m.el m.ok)) →
             let (n'.ok.old := r.SuccOk n.el n.ok.old) in
-            Q n.el (r.SuccOk m.el m.ok) n'.ok.old (s n.el n.ok.old (n.ok.new n.ok.old P Q z s)) )
+            -- : P n.el n.ok.old
+            Q n.el (r.SuccOk m.el m.ok) n'.ok.old
+                (s n.el n.ok.old (n.ok.new n.ok.old P Q z s)) )
         )
-    ( NatRec := MinFix Rec Next )
-    ( MinFix := TODO )
+    ( NatRec : Rec := MinFix Rec Next )
+    ( MinFix (F : Rec → Rec ) (Fmap : ... ) : Rec := TODO )
+    ( Nat := record
+        ( el : El )
+        ( ok : NatRec.Ok el ) )
+    ( ZeroNat := new (el := ZeroEl) (ok := NatRec.ZeroOk) )
+    ( SuccNat := new (el := ZeroEl) (ok := NatRec.ZeroOk) )
