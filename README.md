@@ -44,9 +44,9 @@ OM — Compact Core of CoC
 In repository OM you may found following parts of OM:
 * [Parser](https://github.com/groupoid/om/blob/master/src/om_parse.erl)
 * [Typechecker](https://github.com/groupoid/om/blob/master/src/om_type.erl)
-* [Eraser](https://github.com/groupoid/om/blob/master/src/om_erase.erl)
+* [Eraser](https://github.com/groupoid/om/blob/master/src/om_erase.erl) (could be improved)
 * [Code Extractor](https://github.com/groupoid/om/blob/master/src/om_extract.erl)
-Also code erasor should be improved.
+
 
 OM ships with different `modes` (spaces of types with own encodings), or `preludes`
 you may found in `priv` directory. We swith with `om:mode("normal")` for example.
