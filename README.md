@@ -8,7 +8,7 @@ It can be compiled (code extraction) to bytecode of Erlang virtual machines BEAM
 EXE is an implementation of Calculus of Inductive Constructions (CiC) that lives on top of CoC OM model.
 You may think of EXE as operational transformation of higher language (with HITs) to OM.
 
-![](http://5ht.co/exe.svg =600)
+<img src="http://5ht.co/exe.svg" width="600">
 
 OM — Compact Core of CoC
 ------------------------
