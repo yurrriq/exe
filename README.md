@@ -6,7 +6,7 @@ a new programming language with dependent types called EXE with small provable d
 OM is an implementation of Calculus of Constructions (CoC), the pure lambda calculus with dependent types.
 It can be compiled (code extraction) to bytecode of Erlang virtual machines BEAM and LING.
 EXE is an implementation of Calculus of Inductive Constructions (CiC) that lives on top of CoC OM model.
-You may think of EXE as operational transformation of higher language (with HITs) to OM.
+You may think of EXE as AST transformation of higher language (with HITs) to OM.
 
 Why new Dependent Language?
 ---------------------------
