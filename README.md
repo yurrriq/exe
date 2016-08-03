@@ -49,7 +49,7 @@ In repository OM you may found following parts of core:
 
 
 OM ships with different `modes` (spaces of types with own encodings), or `preludes`
-you may found in `priv` directory. We swith with `om:mode("normal")` for example.
+you may find in `priv` directory. They are selectable with `om:mode("normal")`, e.g.
 
 ### General Preludes
 
