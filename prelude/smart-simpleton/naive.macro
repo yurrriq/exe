@@ -37,5 +37,9 @@ Data := new
             λ (z : P (ZeroEl)) →
             λ (s (m : El) : P (m) → P (SuccEl m) ) →
             s n.el (n.ok P z s) )
-    ( ZeroNat := new (el := ZeroEl) (ok := ZeroOk) )
-    ( SuccNat := new (el := SuccEl) (ok := SuccOk) )
+    ( ZeroNat := new
+            ( el := ZeroEl )
+            ( ok := ZeroOk ) )
+    ( SuccNat (n : Nat) := new
+            ( el := SuccEl n.el )
+            ( ok := SuccOk n.el n.ok ) )
