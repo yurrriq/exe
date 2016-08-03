@@ -127,7 +127,7 @@ Most compact, final model of encodings with recursor and induction, the result o
 How it works?
 -------------
 
-#### Recursor
+### Recursor
 
 There is a belief that recursor (non-dependent eliminator) in Type Theory
 is a weaker property than induction principle (dependent eliminator). At the same time
