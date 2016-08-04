@@ -1,0 +1,34 @@
+Data := new
+    ( El : Type :=
+        ∀ (N : Type) →
+        ∀ (Z : N) →
+        ∀ (S : N → N) →
+        N )
+    ( ZeroEl : El :=
+        λ (N : Type) →
+        λ (Z : N) →
+        λ (S : N → N) →
+        Z )
+    ( SuccEl (n : El) : El :=
+        λ (N : Type) →
+        λ (Z : N) →
+        λ (S : N → N) →
+        S (n N Z S) )
+    ( OkRec : Type := record
+        ( Ok : El → Prop )
+        ( ZeroOk : Ok ZeroEl )
+        ( SuccOk (el : El) (ok : Ok el) : Ok (SuccEl el) ) )
+    ( NatAlg : Type := record
+        ( Carrier : Type )
+        ( Zero : Carrier )
+        ( Succ : Carrier → Carrier ) )
+    ( Ok2Nat (r : OkRec) : NatAlg := new
+        ( Nat := record
+            ( el : El )
+            ( ok : r.Ok el ) )
+        ( Zero := new
+            (el := ZeroEl)
+            (ok := r.ZeroOk) )
+        ( Succ n := new
+            ( el := SuccEl n.el )
+            ( ok := r.SuccOk n.el n.ok ) ) )
