@@ -1,7 +1,10 @@
 EXE — DepTypes Language with Encodings
 ======================================
 
-This document should drop you to EXE/OM immediately. Groupoid Infinity creates
+[![Gitter Chat](https://img.shields.io/gitter/room/badges/shields.svg)](https://gitter.im/groupoid/exe)
+
+
+This document should drop you to EXE/OM stack immediately. Groupoid Infinity creates
 a new programming language with dependent types called EXE with small provable dependent core called OM.
 OM is an implementation of Calculus of Constructions (CoC), the pure lambda calculus with dependent types.
 It can be compiled (code extraction) to bytecode of Erlang virtual machines BEAM and LING.
@@ -73,7 +76,7 @@ has more compact representation than setoids for our needs.
 It has only `Bool`, `Empty` and `Unit` encoded just to show the general idea.
 Dependent eliminator of `Bool` you can found here https://github.com/groupoid/om/tree/master/priv/posets/Data/Bool/
 
-Note: all these folders (modules) are encoded in plain CoC in OM repository to demonstrate 
+Note: all these folders (modules) are encoded in plain CoC in OM repository to demonstrate
 you the basic principles how things work. Later all these should be written in EXE languages and translated to OM
 automatically. You may think of OM as the low-level typed assembler of type theory.
 
