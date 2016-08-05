@@ -1,8 +1,8 @@
 Nat.Base := new
     ( Alg.Ob : Type := record
-        ( @default Carrier : Type )
-        ( Z : Carrier )
-        ( S : Carrier → Carrier ) )
+        ( @default A : Type )
+        ( Z : A )
+        ( S : A → A ) )
     ( Alg.P (A : Alg.Ob) : Type := record
         ( @default Ok : A → Prop )
         ( Z' : Ok A.Zero )
@@ -11,13 +11,13 @@ Nat.Base := new
         ( Carrier := record (rec (A : Alg.Ob) : A) )
         ( Z.rec   A := A.Z )
         ( S.rec n A := A.S (n A) ) )
-    ( SmallSigma (A : Alg.Ob) (p : Alg.P A) : Alg.Ob := new
-        ( Carrier := record (el : A) (ok : p el) )
-        ( Zero   := new (el := A.Z) (ok := p.Z') )
-        ( Succ n := new (el := A.S n.el) (ok := p.S' n.el n.ok) ) )
+    ( SmallSigma (A : Alg.Ob) (Ok : Alg.P A) : Alg.Ob := new
+        ( Carrier := record (el : A) (ok : Ok el) )
+        ( Zero   := new (el := A.Z) (ok := Ok.Z') )
+        ( Succ n := new (el := A.S n.el) (ok := Ok.S' n.el n.ok) ) )
     ( Alg.P' (A : Alg.Ob) : Type := record extend (Alg.P A)
         ( coS' (a : A) : Ok (A.S a) → Ok a ) )
-    ( Free (A : Alg.Ob) (p : Alg.P A) : Alg.P' A := new
+    ( Free (A : Alg.Ob) (Ok : Alg.P A) : Alg.P' A := new
         ( Ok a := record (free (it : Alg.P' A) : it a) )
         (   Z'.free      it := it.  Z' )
         (   S'.free a ok it := it.  S' a (ok it) )

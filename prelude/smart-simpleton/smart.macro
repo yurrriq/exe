@@ -1,30 +1,14 @@
 with (#Nat.Base) in
-Nat.Smart :=
-new
-    ( LEQ (n1, n2 : El) := -- less or equal
-        TODO ) -- try (1) Prop func (2) inductive encoding
-    ( Rec : Type := record
-            ( Ok : El → Prop )
-            ( ZeroOk : Ok ZeroEl )
-            ( SuccOk (el : El) (ok : Ok el) : Ok (SuccEl el) )
-            ( PredOk (el : El) (ok : Ok (SuccEl el)) : Ok el ) )
-    ( Next (r : Rec) : Rec := new
-        ( Ok i.el :=
-            ∀ (n.el : El) →
-            ∀ (leq : LEQ n.el i.el) →
-            ∀ (n.ok : r.Ok n.el) →
-            ∀ (P (m.el : El) (m.ok : r.Ok m.el) : Prop) →
-            ∀ (Q (m.el : El) (m.ok1, m.ok2 : r.Ok m.el) :
-                P m.el m.ok1 → P m.el m.ok2 ) →
-            ∀ (z : P (ZeroEl) (r.ZeroOk)) →
-            ∀ (s (m.el : El) (m.ok : r.Ok m.el) :
-                P (m.el) (m.ok) →
-                P (SuccEl m.el) (r.SuccOk m.el m.ok)) →
-            P (n.el) (n.ok) )
-        ( ZeroOk :=
-            λ (n.el : El) →
-            λ (leq : LEQ n.el ZeroEl) →
-            λ (n.ok : r.Ok n.el) →
+Nat.Smart (A : Alg.Ob) :=
+new ( Next (it : Alg.P' A) : Alg.P A := new
+        ( Ok a0 := record
+            ( next (ok0 : it a)
+                (P (a : A) : it a → Prop)
+                (Q (a : A) (ok1, ok2 : it a) : P a ok1 → P a ok2)
+                (z : P A.Z it.Z')
+                (s (a : A) (ok : it a) : P a ok → P (A.S a) (it.S' a ok))
+                : P a0 ok0) )
+        ( Z' ok0 P Q z s :=
             λ (P (m.el : El) (m.ok : r.Ok m.el) : Prop) →
             λ (Q (m.el : El) (m.ok1, m.ok2 : r.Ok m.el) :
                 P m.el m.ok1 → P m.el m.ok2 ) →
