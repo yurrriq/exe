@@ -1,19 +1,6 @@
-Data := new
-    ( El : Type :=
-            ∀ (N : Type) →
-            ∀ (Z : N) →
-            ∀ (S : N → N) →
-            N )
-    ( ZeroEl : El :=
-            λ (N : Type) →
-            λ (Z : N) →
-            λ (S : N → N) →
-            Z )
-    ( SuccEl (n : El) : El :=
-            λ (N : Type) →
-            λ (Z : N) →
-            λ (S : N → N) →
-            S (n N Z S) )
+with (#Nat.Base) in
+Nat.Smart :=
+new
     ( LEQ (n1, n2 : El) := -- less or equal
         TODO ) -- try (1) Prop func (2) inductive encoding
     ( Rec : Type := record

@@ -1,9 +1,8 @@
 with (#Nat.Base) in
-Nat.Naive (alg : Alg.Ob) :=
-new ( naiveP : Alg.Predicate alg := new
-        ( Ok el := record ( induc (p : Alg.Predicate alg) : p.Ok el ) )
-        ( ZeroOk.induc       p := p.ZeroOk )
-        ( SuccOk.induc el ok p := p.SuccOk el (ok p) ) )
-    ( minimal : Alg.Ob := SmallSigma alg naiveP )
-    ( induc (p : Alg.Predicate alg) (n : minimal.Carrier)
-        : P (n.el) := n.ok p )
+Nat.Naive (A : Alg.Ob) :=
+new ( minP : Alg.P A := new
+        ( Ok a := record (ind (p : Alg.P A) : p.Ok a) )
+        ( Z'.ind       p := p.Z' )
+        ( S'.ind el ok p := p.S' el (ok p) ) )
+    ( minA : Alg.Ob := SmallSigma A minP )
+    ( induc (p : Alg.P A) (n : minA) : P (n.el) := n.ok p )

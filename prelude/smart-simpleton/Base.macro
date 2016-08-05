@@ -1,17 +1,24 @@
 Nat.Base := new
     ( Alg.Ob : Type := record
-        ( Carrier : Type )
-        ( Zero : Carrier )
-        ( Succ : Carrier → Carrier ) )
-    ( Alg.Predicate (alg : Alg.Ob) : Type := record
-        ( Ok : alg.Carrier → Prop )
-        ( ZeroOk : Ok alg.Zero )
-        ( SuccOk (el : alg.Carrier) : Ok el → Ok (alg.Succ el) ) )
+        ( @default Carrier : Type )
+        ( Z : Carrier )
+        ( S : Carrier → Carrier ) )
+    ( Alg.P (A : Alg.Ob) : Type := record
+        ( @default Ok : A → Prop )
+        ( Z' : Ok A.Zero )
+        ( S' (a : A) : Ok a → Ok (A.S a) ) )
     ( Church : Alg.Ob := new
-        ( Carrier := record (recur (N : Type) (Z : N) (S : N → N) : N) )
-        ( Zero.recur   N Z S := Z )
-        ( Succ.recur n N Z S := S (n N Z S) ) )
-    ( SmallSigma (alg : Alg.Ob) (p : Alg.Predicate alg) : Alg.Ob := new
-        ( Carrier := record (el : alg.Carrier) (ok : p.Ok el) )
-        ( Zero   := new (el := alg.Zero) (ok := p.ZeroOk) )
-        ( Succ n := new (el := alg.Succ n.el) (ok := p.SuccOk n.el n.ok) ) )
+        ( Carrier := record (rec (A : Alg.Ob) : A) )
+        ( Z.rec   A := A.Z )
+        ( S.rec n A := A.S (n A) ) )
+    ( SmallSigma (A : Alg.Ob) (p : Alg.P A) : Alg.Ob := new
+        ( Carrier := record (el : A) (ok : p el) )
+        ( Zero   := new (el := A.Z) (ok := p.Z') )
+        ( Succ n := new (el := A.S n.el) (ok := p.S' n.el n.ok) ) )
+    ( Alg.P' (A : Alg.Ob) : Type := record extend (Alg.P A)
+        ( coS' (a : A) : Ok (A.S a) → Ok a ) )
+    ( Free (A : Alg.Ob) (p : Alg.P A) : Alg.P' A := new
+        ( Ok a := record (free (it : Alg.P' A) : it a) )
+        (   Z'.free      it := it.  Z' )
+        (   S'.free a ok it := it.  S' a (ok it) )
+        ( coS'.free a ok it := it.coS' a (ok it) ) )
