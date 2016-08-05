@@ -6,7 +6,7 @@ Nat.Base := new
     ( Alg.Predicate (alg : Alg.Ob) : Type := record
         ( Ok : alg.Carrier → Prop )
         ( ZeroOk : Ok alg.Zero )
-        ( SuccOk (n : alg.Carrier) : Ok n → Ok (alg.Succ n) ) )
+        ( SuccOk (el : alg.Carrier) : Ok el → Ok (alg.Succ el) ) )
     ( Church : Alg.Ob := new
         ( Carrier := record (recur (N : Type) (Z : N) (S : N → N) : N) )
         ( Zero.recur   N Z S := Z )

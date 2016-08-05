@@ -1,18 +1,9 @@
 with (#Nat.Base) in
-Nat.Naive := new
-    ( naive (alg : Alg.Ob) : Alg.Predicate alg := new
-        ( Ok n := record
-            ( induc
-                ( P : alg.Carrier → Prop )
-                ( z : P alg.Zero )
-                ( s (m : alg.Carrier) : P (m) → P (alg.Succ m) )
-                : P (n) ) )
-        ( ZeroOk.induc           P z s := z )
-        ( SuccOk.induc n.el n.ok P z s := s n.el (n.ok P z s) ) )
-    ( WOW  := SmallSigma Church naive )
-    ( induc (P : El → Prop)
-            (z : P (Zero))
-            (s (m : El) : P (m) → P (SuccEl m) )
-            (n : Init.Carrier)
-        : P (n.el) :=
-            n.ok P z s )
+Nat.Naive (alg : Alg.Ob) :=
+new ( naiveP : Alg.Predicate alg := new
+        ( Ok el := record ( induc (p : Alg.Predicate alg) : p.Ok el ) )
+        ( ZeroOk.induc       p := p.ZeroOk )
+        ( SuccOk.induc el ok p := p.SuccOk el (ok p) ) )
+    ( minimal : Alg.Ob := SmallSigma alg naiveP )
+    ( induc (p : Alg.Predicate alg) (n : minimal.Carrier)
+        : P (n.el) := n.ok p )
