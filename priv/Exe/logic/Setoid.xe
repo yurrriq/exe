@@ -1,4 +1,7 @@
 
-  record Setoid: * :=
-         (ob: *)
-         (hom: ∀ (X Y: ob) → Hom X Y)
+ record Setoid: Type :=
+        (Carrier: Type)
+        (Equ: Carrier → Carrier → Prop)
+        (Refl: ∀ (e0: Carrier) → Equ e0 e0)
+        (Trans: ∀ (e1,e2,e3: Carrier) → Equ e1 e2 → Equ e2 e3 → Equ e1 e3)
+        (Sym: ∀ (e1 e2: Carrier) → Equ e1 e2 → Equ e2 e1)

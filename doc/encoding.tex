@@ -131,18 +131,6 @@ in Lean model.
 \paragraph{}
 
 \begin{lstlisting}[mathescape=true]
-define Respect (A,B: Type) (C: A $\rightarrow$ Type) (D: B $\rightarrow$ Type) (R: A $\rightarrow$ B $\rightarrow$ Prop)
-       (R': $\forall$ (x: A) (y: B) $\rightarrow$ C x $\rightarrow$ D y $\rightarrow$ Prop) :
-       ($\forall$ (x: A) $\rightarrow$ C x) $\rightarrow$ ($\forall$ (x: B) $\rightarrow$ D x) $\rightarrow$ Prop :=
-       $\lambda$ (f g: Type $\rightarrow$ Type) $\rightarrow$ ($\forall$ (x y) $\rightarrow$ R x y) $\rightarrow$ R' x y (f x) (g y).
-\end{lstlisting}
-
-\begin{lstlisting}[mathescape=true]
-record Proper (A: Type) (R: A $\rightarrow$ A $\rightarrow$ Prop) (m: A): Prop :=
-       (Proof: R m m)
-\end{lstlisting}
-
-\begin{lstlisting}[mathescape=true]
 record Setoid: Type :=
        (Carrier: Type)
        (Equ: Carrier $\rightarrow$ Carrier $\rightarrow$ Prop)
@@ -159,7 +147,6 @@ record Cat: Type :=
        (Comp: $\forall$ (x,y,z: Ob) $\rightarrow$ Hom x y $\rightarrow$ Hom y z $\rightarrow$ Hom x z)
        (Dom$_{1\circ}$: $\forall$ (x,y: Ob) (f: Hom x y) $\rightarrow$ (Hom.Equ x y (Comp x x y id f) f))
        (Cod$_{1\circ}$: $\forall$ (x,y: Ob) (f: Hom x y) $\rightarrow$ (Hom.Equ x y (Comp x y y f id) f))
-       (Subst$_{\circ}$: $\forall$ (x,y,z: Ob) $\rightarrow$ Proper (Respect Equ (Respect Equ Equ)) (Comp x y z))
        (Subst$_{\circ}$: $\forall$ (x,y,z: Ob)
             (f$_1$, f$_2$: Hom x y) (Hom.Equ x y f$_1$ f$_2$)
             (g$_1$, g$_2$: Hom y z) (Hom.Equ y z g$_1$ g$_2$) $\rightarrow$
