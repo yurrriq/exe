@@ -1,45 +1,8 @@
-Data := new
-    ( El : Type :=
-            ∀ (N : Type) →
-            ∀ (Z : N) →
-            ∀ (S : N → N) →
-            N )
-    ( ZeroEl : El :=
-            λ (N : Type) →
-            λ (Z : N) →
-            λ (S : N → N) →
-            Z )
-    ( SuccEl (n : El) : El :=
-            λ (N : Type) →
-            λ (Z : N) →
-            λ (S : N → N) →
-            S (n N Z S) )
-    ( Ok (n : El) : Prop :=
-            ∀ (P : El → Prop) →
-            ∀ (z : P (ZeroEl)) →
-            ∀ (s (m : El) : P (m) → P (SuccEl m) ) →
-            P (n) )
-    ( Nat : Type := record
-            ( el : El )
-            ( ok : Ok el ) )
-    ( induc (P : El → Prop)
-            (z : P (Zero))
-            (s (m : El) : P (m) → P (SuccEl m) )
-                : ∀ (n : Nat) → P (n) :=
-            λ n → n.ok P z s )
-    ( ZeroOk : Ok ZeroEl :=
-            λ (P : El → Prop) →
-            λ (z : P (ZeroEl)) →
-            λ (s (m : El) : P (m) → P (SuccEl m) ) →
-            z )
-    ( SuccOk (n : Nat) : Ok (SuccEl n.el) :=
-            λ (P : El → Prop) →
-            λ (z : P (ZeroEl)) →
-            λ (s (m : El) : P (m) → P (SuccEl m) ) →
-            s n.el (n.ok P z s) )
-    ( ZeroNat := new
-            ( el := ZeroEl )
-            ( ok := ZeroOk ) )
-    ( SuccNat (n : Nat) := new
-            ( el := SuccEl n.el )
-            ( ok := SuccOk n.el n.ok ) )
+with (#Nat.Base) in
+Nat.Naive (A : Alg.Ob) :=
+new ( minP : Alg.P A := new
+        ( Ok a := record (ind (Ok : Alg.P A) : Ok a) )
+        ( Z'.ind       Ok := Ok.Z' )
+        ( S'.ind el ok Ok := Ok.S' el (ok Ok) ) )
+    ( minOb : Alg.Ob := SmallSigma A minP )
+    ( induc (Ok : Alg.P A) (n : minOb) : Ok n.el := n.ok Ok )

@@ -1,37 +1,14 @@
-Data := new
-    ( El : Type :=
-            ∀ (N : Type) →
-            ∀ (Z : N) →
-            ∀ (S : N → N) →
-            N )
-    ( ZeroEl : El :=
-            λ (N : Type) →
-            λ (Z : N) →
-            λ (S : N → N) →
-            Z )
-    ( SuccEl (n : El) : El :=
-            λ (N : Type) →
-            λ (Z : N) →
-            λ (S : N → N) →
-            S (n N Z S) )
-    ( Rec : Type := record
-            ( Ok : El → Prop )
-            ( ZeroOk : Ok ZeroEl )
-            ( SuccOk (el : El) (ok : Ok el) : Ok (SuccEl el) )
-            ( PredOk (el : El) (ok : Ok (SuccEl el)) : Ok el ) )
-    ( Next (r : Rec) : Rec := new
-        ( Ok n.el :=
-            ∀ (n.ok : r.Ok n.el) →
-            ∀ (P (m.el : El) (m.ok : r.Ok m.el) : Prop) →
-            ∀ (Q (m.el : El) (m.ok1, m.ok2 : r.Ok m.el) :
-                P m.el m.ok1 → P m.el m.ok2 ) →
-            ∀ (z : P (ZeroEl) (r.ZeroOk)) →
-            ∀ (s (m.el : El) (m.ok : r.Ok m.el) :
-                P (m.el) (m.ok) →
-                P (SuccEl m.el) (r.SuccOk m.el m.ok)) →
-            P (n.el) (n.ok) )
-        ( ZeroOk :=
-            λ (n.ok : r.Ok ZeroEl) →
+with (#Nat.Base) in
+Nat.Smart (A : Alg.Ob) :=
+new ( Next (it : Alg.P' A) : Alg.P A := new
+        ( Ok a0 := record
+            ( next (ok0 : it a)
+                (P (a : A) : it a → Prop)
+                (Q (a : A) (ok1, ok2 : it a) : P a ok1 → P a ok2)
+                (z : P A.Z it.Z')
+                (s (a : A) (ok : it a) : P a ok → P (A.S a) (it.S' a ok))
+                : P a0 ok0) )
+        ( Z' ok0 P Q z s :=
             λ (P (m.el : El) (m.ok : r.Ok m.el) : Prop) →
             λ (Q (m.el : El) (m.ok1, m.ok2 : r.Ok m.el) :
                 P m.el m.ok1 → P m.el m.ok2 ) →
@@ -39,20 +16,22 @@ Data := new
             λ (s (m.el : El) (m.ok : r.Ok m.el) :
                 P (m.el) (m.ok) →
                 P (SuccEl m.el) (r.SuccOk m.el m.ok)) →
-            Q ZeroEl r.ZeroOk n.ok z )
+            ... )
         ( SuccOk n.el n.ok.new :=
-            λ (n'.ok.old : r.Ok (SuccEl n.el)) →
-            λ (P (m.el : El) (m.ok : r.Ok m.el) : Prop) →
-            λ (Q (m.el : El) (m.ok1, m.ok2 : r.Ok m.el) :
-                P m.el m.ok1 → P m.el m.ok2 ) →
-            λ (z : P (ZeroEl) (r.ZeroOk)) →
-            λ (s (m.el : El) (m.ok : r.Ok m.el) :
-                P (m.el) (m.ok) →
-                P (SuccEl m.el) (r.SuccOk m.el m.ok)) →
-            let (n.ok.old := r.PredOk n.el n'.ok.old) in
-            -- : P (SuccEl n.el) n'.ok.old
-            Q (SuccEl n.el) (r.SuccOk n.el n.ok.old) n'.ok.old
-                (s n.el n.ok.old (n.ok.new n.ok.old P Q z s)) )
+            (   λ (n'.ok.old : r.Ok (SuccEl n.el)) →
+                λ (P (m.el : El) (m.ok : r.Ok m.el) : Prop) →
+                λ (Q (m.el : El) (m.ok1, m.ok2 : r.Ok m.el) :
+                    P m.el m.ok1 → P m.el m.ok2 ) →
+                λ (z : P (ZeroEl) (r.ZeroOk)) →
+                λ (s (m.el : El) (m.ok : r.Ok m.el) :
+                    P (m.el) (m.ok) →
+                    P (SuccEl m.el) (r.SuccOk m.el m.ok)) →
+                let (n.ok.old := r.PredOk n.el n'.ok.old) in
+                -- : P (SuccEl n.el) n'.ok.old
+                ...
+                Q (SuccEl n.el) (r.SuccOk n.el n.ok.old) n'.ok.old
+                    (s n.el n.ok.old (n.ok.new n.ok.old P Q z s)) )
+            )
         ( PredOk n.el n'.ok.new :=
             λ (n.ok.old : r.Ok n.el) →
             λ (P (m.el : El) (m.ok : r.Ok m.el) : Prop) →
@@ -63,7 +42,14 @@ Data := new
                 P (m.el) (m.ok) →
                 P (SuccEl m.el) (r.SuccOk m.el m.ok)) →
             let (n'.ok.old := r.SuccOk n.el n.ok.old) in
-            Q n.el (r.SuccOk m.el m.ok) n'.ok.old (s n.el n.ok.old (n.ok.new n.ok.old P Q z s)) )
+            -- : P n.el n.ok.old
+            Q n.el (r.SuccOk m.el m.ok) n'.ok.old
+                (s n.el n.ok.old (n.ok.new n.ok.old P Q z s)) )
         )
-    ( NatRec := MinFix Rec Next )
-    ( MinFix := TODO )
+    ( NatRec : Rec := MinFix Rec Next )
+    ( MinFix (F : Rec → Rec ) (Fmap : ... ) : Rec := TODO )
+    ( Nat := record
+        ( el : El )
+        ( ok : NatRec.Ok el ) )
+    ( ZeroNat := new (el := ZeroEl) (ok := NatRec.ZeroOk) )
+    ( SuccNat := new (el := ZeroEl) (ok := NatRec.ZeroOk) )
