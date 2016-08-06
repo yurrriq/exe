@@ -95,16 +95,16 @@ in Lean model.
 \parbox[t][][l]{0.60\textwidth}{
 
 \begin{prooftree}
-\AxiomC{$\Gamma\ \vdash f: A \rightarrow B$ }
-\AxiomC{$\Gamma\ \vdash g: B \rightarrow C$ }
-\BinaryInfC{$\Gamma \vdash g \circ f : A \rightarrow C $}
+\AxiomC{$f: A \rightarrow B$ }
+\AxiomC{$g: B \rightarrow C$ }
+\BinaryInfC{$g \circ f : A \rightarrow C $}
 \end{prooftree}
 
 \begin{prooftree}
-\AxiomC{$\Gamma \vdash f : B \rightarrow A$ }
-\AxiomC{$\Gamma \vdash g : C \rightarrow B$ }
-\AxiomC{$\Gamma \vdash h : D \rightarrow C$ }
-\TrinaryInfC{$\Gamma \vdash (f \circ g) \circ h = f \circ (g \circ h) : D \rightarrow A $}
+\AxiomC{$f : B \rightarrow A$ }
+\AxiomC{$g : C \rightarrow B$ }
+\AxiomC{$h : D \rightarrow C$ }
+\TrinaryInfC{$(f \circ g) \circ h = f \circ (g \circ h) : D \rightarrow A $}
 \end{prooftree}
 
 }
@@ -113,17 +113,17 @@ in Lean model.
 
 \begin{prooftree}
 \AxiomC{$$ }
-\UnaryInfC{$\Gamma \vdash id_A : A \rightarrow A $}
+\UnaryInfC{$id_A : A \rightarrow A $}
 \end{prooftree}
 
 \begin{prooftree}
-\AxiomC{$\Gamma\ \vdash f: A \rightarrow B$ }
-\UnaryInfC{$\Gamma \vdash f \circ id_A = f : A \rightarrow B$}
+\AxiomC{$f: A \rightarrow B$ }
+\UnaryInfC{$f \circ id_A = f : A \rightarrow B$}
 \end{prooftree}
 
 \begin{prooftree}
-\AxiomC{$\Gamma\ \vdash f: A \rightarrow B$ }
-\UnaryInfC{$\Gamma \vdash id_B \circ f = f : A \rightarrow B $}
+\AxiomC{$f: A \rightarrow B$ }
+\UnaryInfC{$id_B \circ f = f : A \rightarrow B $}
 \end{prooftree}
 
 }
@@ -167,20 +167,20 @@ Note that eliminators $\pi$ and $i$ are isomorphic, that is $\pi \circ \sigma = 
 \parbox[t][][l]{0.40\textwidth}{
 
 \begin{prooftree}
-\AxiomC{$\Gamma\ x: A \times B$ }
-\UnaryInfC{$\Gamma \vdash \pi_1\ : A \times B \rightarrow A$;
-           $\Gamma \vdash \pi_2\ : A \times B \rightarrow B$}
+\AxiomC{$x: A \times B$ }
+\UnaryInfC{$\pi_1\ : A \times B \rightarrow A$;
+           $\pi_2\ : A \times B \rightarrow B$}
 \end{prooftree}
 
 \begin{prooftree}
-\AxiomC{$\Gamma \vdash\  a:A$ }
-\AxiomC{$\Gamma \vdash\  b:B$ }
-\BinaryInfC{$\Gamma \vdash\ (a,b) : A \times B$ }
+\AxiomC{$a:A$ }
+\AxiomC{$b:B$ }
+\BinaryInfC{$(a,b) : A \times B$ }
 \end{prooftree}
 
 \begin{prooftree}
 \AxiomC{}
-\UnaryInfC{$\Gamma \vdash\ \top$ }
+\UnaryInfC{$\top$ }
 \end{prooftree}
 
 }
@@ -189,19 +189,19 @@ Note that eliminators $\pi$ and $i$ are isomorphic, that is $\pi \circ \sigma = 
 
 \begin{prooftree}
 \AxiomC{}
-\UnaryInfC{$\Gamma \vdash\ \bot$ }
+\UnaryInfC{$\bot$ }
 \end{prooftree}
 
 \begin{prooftree}
-\AxiomC{$\Gamma \vdash\  a:A$ }
-\AxiomC{$\Gamma \vdash\  b:B$ }
-\BinaryInfC{$\Gamma\vdash a\ |\ b : A \otimes B$}
+\AxiomC{$a:A$ }
+\AxiomC{$b:B$ }
+\BinaryInfC{$a\ |\ b : A \otimes B$}
 \end{prooftree}
 
 \begin{prooftree}
-\AxiomC{$\Gamma\ x: A \otimes B$ }
-\UnaryInfC{$\Gamma \vdash \i_1: A \rightarrow A \otimes B$;
-           $\Gamma \vdash \i_2: B \rightarrow A \otimes B$}
+\AxiomC{$x: A \otimes B$ }
+\UnaryInfC{$\i_1: A \rightarrow A \otimes B$;
+           $\i_2: B \rightarrow A \otimes B$}
 \end{prooftree}
 
 }
@@ -219,10 +219,10 @@ Note that eliminators $\pi$ and $i$ are isomorphic, that is $\pi \circ \sigma = 
    axiom for $[f,g]: B+C \rightarrow A$ morphism sums.
 
 \begin{prooftree}
-\AxiomC{$\Gamma \vdash\ f:A \rightarrow B$ }
-\AxiomC{$\Gamma \vdash\ g:A \rightarrow C$ }
-\AxiomC{$\Gamma \vdash\ B \times C$ }
-\TrinaryInfC{$\Gamma \vdash\ \langle f,g \rangle : A \rightarrow B \times C$ }
+\AxiomC{$f:A \rightarrow B$ }
+\AxiomC{$g:A \rightarrow C$ }
+\AxiomC{$B \times C$ }
+\TrinaryInfC{$\langle f,g \rangle : A \rightarrow B \times C$ }
 \end{prooftree}
 
 \begin{center}
@@ -253,19 +253,19 @@ $\langle \pi_1, \pi_2 \rangle = id$\\
 \parbox[t][][l]{0.40\textwidth}{
 
 \begin{prooftree}
-\AxiomC{$\Gamma  x:A \vdash M : B$}
-\UnaryInfC{$\Gamma \vdash \lambda\ x\ .\ M : A \rightarrow B$}
+\AxiomC{$x:A \vdash M : B$}
+\UnaryInfC{$\lambda\ x\ .\ M : A \rightarrow B$}
 \end{prooftree}
 
 \begin{prooftree}
-\AxiomC{$\Gamma\ f:A \rightarrow B$ }
-\AxiomC{$\Gamma\ a:A$ }
-\BinaryInfC{$\Gamma \vdash apply\ f\ a\ : (A \rightarrow B) \times A \rightarrow B$}
+\AxiomC{$f:A \rightarrow B$ }
+\AxiomC{$a:A$ }
+\BinaryInfC{$apply\ f\ a\ : (A \rightarrow B) \times A \rightarrow B$}
 \end{prooftree}
 
 \begin{prooftree}
-\AxiomC{$\Gamma \vdash f: A \times B \rightarrow C$ }
-\UnaryInfC{$\Gamma \vdash curry\ f : A \rightarrow (B \rightarrow C)$}
+\AxiomC{$f: A \times B \rightarrow C$ }
+\UnaryInfC{$curry\ f : A \rightarrow (B \rightarrow C)$}
 \end{prooftree}
 
 }
@@ -300,18 +300,18 @@ Morphisms : $id\ |\ f \circ g\ |\ \langle f, g \rangle\ |\ apply\ |\ \lambda\ |\
   only functor definition which is needed as general type declarations.
 
 \begin{prooftree}
-\AxiomC{$\Gamma \vdash f\ :\ A \rightarrow B$}
-\UnaryInfC{$\Gamma \vdash F\ f\ :\ (A \rightarrow B) \rightarrow (F\ a \rightarrow F\ b)$}
+\AxiomC{$f\ :\ A \rightarrow B$}
+\UnaryInfC{$F\ f\ :\ (A \rightarrow B) \rightarrow (F\ a \rightarrow F\ b)$}
 \end{prooftree}
 
 \begin{prooftree}
-\AxiomC{$\Gamma \vdash id_A\ :A \rightarrow A$}
-\UnaryInfC{$\Gamma \vdash F\ id_A\ =\ id_{F A}\ :\ F\ A \rightarrow F\ A$}
+\AxiomC{$id_A\ :A \rightarrow A$}
+\UnaryInfC{$F\ id_A\ =\ id_{F A}\ :\ F\ A \rightarrow F\ A$}
 \end{prooftree}
 
 \begin{prooftree}
-\AxiomC{$\Gamma \vdash f\ :B \rightarrow C,\ g : A \rightarrow B$}
-\UnaryInfC{$\Gamma \vdash F\ f \circ F\ g\ =\ F (f \circ g)\ :\ F\ A \rightarrow F\ C$}
+\AxiomC{$f\ :B \rightarrow C,\ g : A \rightarrow B$}
+\UnaryInfC{$F\ f \circ F\ g\ =\ F (f \circ g)\ :\ F\ A \rightarrow F\ C$}
 \end{prooftree}
 
    We start thinking of functors on dealing with typed theories, because functors usually
@@ -380,13 +380,13 @@ Morphisms : $id\ |\ f \circ g\ |\ \langle f, g \rangle\ |\ apply\ |\ \lambda\ |\
 \parbox[t][][l]{0.40\textwidth}{
 
 \begin{prooftree}
-\AxiomC{$\Gamma  \vdash M : F\ (\mu\ F)$}
-\UnaryInfC{$\Gamma \vdash in_{\mu F}\ M : \mu\ F$}
+\AxiomC{$M : F\ (\mu\ F)$}
+\UnaryInfC{$in_{\mu F}\ M : \mu\ F$}
 \end{prooftree}
 
 \begin{prooftree}
-\AxiomC{$\Gamma  \vdash M : \mu F$}
-\UnaryInfC{$\Gamma \vdash out_{\mu F}\ M : F\ (\mu\ F)$}
+\AxiomC{$M : \mu F$}
+\UnaryInfC{$out_{\mu F}\ M : F\ (\mu\ F)$}
 \end{prooftree}
 
 }
@@ -395,8 +395,8 @@ Morphisms : $id\ |\ f \circ g\ |\ \langle f, g \rangle\ |\ apply\ |\ \lambda\ |\
 
 
 \begin{prooftree}
-\AxiomC{$\Gamma  \vdash M : A \rightarrow A$}
-\UnaryInfC{$\Gamma \vdash fix\ M : A$}
+\AxiomC{$M : A \rightarrow A$}
+\UnaryInfC{$fix\ M : A$}
 \end{prooftree}
 
 }
@@ -863,6 +863,7 @@ limits of identity functors on category of F-algebras.
 % \bibitem{pointfree}  A.Cuhna,J.Pinto,J.Proenca \textit{A Framework for Point-Free Program Transformation}
 %\bibitem{kaes}       S.Kaes \textit{http://tuprints.ulb.tu-darmstadt.de/epda/000544/diss.pdf} 2005
 \bibitem{cpo}        NA.Danielsson,J.Hughes,J.Gibbons \textit{Fast and Loose Reasoning is Morally Correct} 2006
+\bibitem{lambek}     Lambek, J. and Scott, P.  \textit{Introduction to Higher Order Categorial Logic} 1986
 \end{thebibliography}
 
 \end{document}
