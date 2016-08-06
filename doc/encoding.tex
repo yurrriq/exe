@@ -136,7 +136,7 @@ define Respect (A,B: Type) (C: A $\rightarrow$ Type) (D: B $\rightarrow$ Type) (
        ($\forall$ (x: A) $\rightarrow$ C x) $\rightarrow$ ($\forall$ (x: B) $\rightarrow$ D x) $\rightarrow$ Prop :=
        $\lambda$ (f g: Type $\rightarrow$ Type) $\rightarrow$ ($\forall$ (x y) $\rightarrow$ R x y) $\rightarrow$ R' x y (f x) (g y).
 \end{lstlisting}
-    
+
 \begin{lstlisting}[mathescape=true]
 record Proper (A: Type) (R: A $\rightarrow$ A $\rightarrow$ Prop) (m: A): Prop :=
        (Proof: R m m)
@@ -152,16 +152,21 @@ record Setoid: Type :=
 \end{lstlisting}
 
 \begin{lstlisting}[mathescape=true]
-record Cat: Type := 
+record Cat: Type :=
        (Ob: Type)
        (Hom: $\forall$ (dom,cod: Ob) $\rightarrow$ Setoid)
        (Id: $\forall$ (x: Ob) $\rightarrow$ Hom x x)
        (Comp: $\forall$ (x,y,z: Ob) $\rightarrow$ Hom x y $\rightarrow$ Hom y z $\rightarrow$ Hom x z)
-       (Dom$_{1\circ}$: $\forall$ (x,y: Ob) (f: Hom x y) $\rightarrow$ Equ (Comp id f) f)
-       (Cod$_{1\circ}$: $\forall$ (x,y: Ob) (f: Hom x y) $\rightarrow$ Equ f (Comp id f))
+       (Dom$_{1\circ}$: $\forall$ (x,y: Ob) (f: Hom x y) $\rightarrow$ (Hom.Equ x y (Comp x x y id f) f))
+       (Cod$_{1\circ}$: $\forall$ (x,y: Ob) (f: Hom x y) $\rightarrow$ (Hom.Equ x y (Comp x y y f id) f))
        (Subst$_{\circ}$: $\forall$ (x,y,z: Ob) $\rightarrow$ Proper (Respect Equ (Respect Equ Equ)) (Comp x y z))
-       (Assoc$_{\circ}$: $\forall$ (x,y,z,w: Ob) (f: Hom x y) (g: Hom y z) (h: Hom z w) 
-               $\rightarrow$ Comp f (Comp g h) = Comp (Comp f g) h)
+       (Subst$_{\circ}$: $\forall$ (x,y,z: Ob)
+            (f$_1$, f$_2$: Hom x y) (Hom.Equ x y f$_1$ f$_2$)
+            (g$_1$, g$_2$: Hom y z) (Hom.Equ y z g$_1$ g$_2$) $\rightarrow$
+                (Hom.Equ x z (Comp x y z f$_1$ g$_1$) (Comp x y z f$_2$ g$_2$)) )
+       (Assoc$_{\circ}$: $\forall$ (x,y,z,w: Ob) (f: Hom x y) (g: Hom y z) (h: Hom z w)
+            $\rightarrow$ (Hom.Equ x w (Comp x y w f (Comp y z w g h))
+                    (Comp x z w (Comp x y z f g) h)))
 \end{lstlisting}
 
 \newpage
@@ -370,7 +375,7 @@ Morphisms : $id\ |\ f \circ g\ |\ \langle f, g \rangle\ |\ apply\ |\ \lambda\ |\
   there exists a unique arrow $\llparenthesis \varphi \rrparenthesis : \mu F \rightarrow C$ where $f = \llparenthesis \varphi \rrparenthesis$
   and is called catamorphism. Similar a F-coalgebra $(\nu F, out)$ is the terminal
   F-coalgebra if for any F-coalgebra $(C, \varphi)$ there exists unique arrow
-  $\llbracket \varphi \rrbracket : C \rightarrow \nu F$ where $f = 
+  $\llbracket \varphi \rrbracket : C \rightarrow \nu F$ where $f =
   \llbracket \varphi \rrbracket$
 
 \begin{center}
@@ -630,18 +635,18 @@ is completly compatible with Erlang records which are used to model KVS and N2O 
 $$
 \begin{tikzcd}
   lim\ U \arrow{d}[left]{\pi_i} \\
-  X_i 
+  X_i
 \end{tikzcd}
 \Longrightarrow
 \begin{tikzcd}
   F\ lim\ U \arrow{d}[left]{F\ \pi_i} \\
-  F\ X_i 
+  F\ X_i
 \end{tikzcd}
 \Longrightarrow
 lim\left\{
 \begin{tikzcd}
   F\ lim\ U \arrow{d}[left]{F\ \pi_i} \\
-  F\ X_i 
+  F\ X_i
 \end{tikzcd}
 \right\}
 $$
@@ -738,7 +743,7 @@ $$
 $$
 
   \paragraph{Lists in Exe language}
-  
+
   We encode List as usually we do in $\Pi,\Sigma$-provers.
 
 \begin{lstlisting}[mathescape=true]
