@@ -3,12 +3,12 @@ rule CLEAN
   description = Cleaning all built files...
 rule LEAN
   depfile = ${DLEAN_FILE}
-  command = "/usr/local/Cellar/lean/0.2.0.20151115213912.gitdb59c6829c9f56cb88357d97de7807496c07e7c0/bin/lean" --flycheck -c "/Users/5HT/depot/groupoid/exe/prelude/lean/Functor.clean" -Dpp.width=143 $in -o "${OLEAN_FILE}" -c "${CLEAN_FILE}" -i "${ILEAN_FILE}" 
+  command = "/usr/local/Cellar/lean/0.2.0.20151115213912.gitdb59c6829c9f56cb88357d97de7807496c07e7c0/bin/lean" --flycheck -c "/Users/5HT/depot/groupoid/exe/prelude/lean/Setoid.clean" -Dpp.width=134 $in -o "${OLEAN_FILE}" -c "${CLEAN_FILE}" -i "${ILEAN_FILE}" 
 rule LEANTAGS
   command =  "/usr/local/Cellar/lean/0.2.0.20151115213912.gitdb59c6829c9f56cb88357d97de7807496c07e7c0/bin/leantags" --relative -- $in 
-build all: phony  /Users/5HT/depot/groupoid/exe/prelude/lean/Adjunction.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/BiCat.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/Pi.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/Over.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/SetoidLim.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/Mor.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/Setoid.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/TypeEqu.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/flycheck_Functor.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/Initial.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/Functor.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/Cat.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/DepSet.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/BigSigma.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/Under.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/Completion.olean 
+build all: phony  /Users/5HT/depot/groupoid/exe/prelude/lean/Adjunction.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/BiCat.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/Pi.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/Over.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/SetoidLim.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/Mor.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/Setoid.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/TypeEqu.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/PackSet.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/Initial.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/Functor.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/Cat.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/DepSet.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/BigSigma.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/Under.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/Completion.olean  /Users/5HT/depot/groupoid/exe/prelude/lean/flycheck_Setoid.olean 
 build tags: phony TAGS
-build TAGS: LEANTAGS  /Users/5HT/depot/groupoid/exe/prelude/lean/Adjunction.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/BiCat.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/Pi.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/Over.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/SetoidLim.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/Mor.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/Setoid.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/TypeEqu.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/flycheck_Functor.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/Initial.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/Functor.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/Cat.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/DepSet.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/BigSigma.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/Under.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/Completion.ilean 
+build TAGS: LEANTAGS  /Users/5HT/depot/groupoid/exe/prelude/lean/Adjunction.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/BiCat.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/Pi.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/Over.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/SetoidLim.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/Mor.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/Setoid.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/TypeEqu.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/PackSet.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/Initial.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/Functor.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/Cat.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/DepSet.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/BigSigma.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/Under.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/Completion.ilean  /Users/5HT/depot/groupoid/exe/prelude/lean/flycheck_Setoid.ilean 
 build clean: CLEAN
 build /Users/5HT/depot/groupoid/exe/prelude/lean/Adjunction.olean /Users/5HT/depot/groupoid/exe/prelude/lean/Adjunction.ilean /Users/5HT/depot/groupoid/exe/prelude/lean/Adjunction.clean: LEAN /Users/5HT/depot/groupoid/exe/prelude/lean/Adjunction.lean | /Users/5HT/depot/groupoid/exe/prelude/lean/Adjunction.d /usr/local/Cellar/lean/0.2.0.20151115213912.gitdb59c6829c9f56cb88357d97de7807496c07e7c0/bin/lean
   DLEAN_FILE=/Users/5HT/depot/groupoid/exe/prelude/lean/Adjunction.d
@@ -58,11 +58,11 @@ build /Users/5HT/depot/groupoid/exe/prelude/lean/TypeEqu.olean /Users/5HT/depot/
   CLEAN_FILE=/Users/5HT/depot/groupoid/exe/prelude/lean/TypeEqu.clean
   ILEAN_FILE=/Users/5HT/depot/groupoid/exe/prelude/lean/TypeEqu.ilean
 
-build /Users/5HT/depot/groupoid/exe/prelude/lean/flycheck_Functor.olean /Users/5HT/depot/groupoid/exe/prelude/lean/flycheck_Functor.ilean: LEAN /Users/5HT/depot/groupoid/exe/prelude/lean/flycheck_Functor.lean | /Users/5HT/depot/groupoid/exe/prelude/lean/flycheck_Functor.d /usr/local/Cellar/lean/0.2.0.20151115213912.gitdb59c6829c9f56cb88357d97de7807496c07e7c0/bin/lean
-  DLEAN_FILE=/Users/5HT/depot/groupoid/exe/prelude/lean/flycheck_Functor.d
-  OLEAN_FILE=/Users/5HT/depot/groupoid/exe/prelude/lean/flycheck_Functor.olean
-  CLEAN_FILE=/Users/5HT/depot/groupoid/exe/prelude/lean/Functor.clean
-  ILEAN_FILE=/Users/5HT/depot/groupoid/exe/prelude/lean/flycheck_Functor.ilean
+build /Users/5HT/depot/groupoid/exe/prelude/lean/PackSet.olean /Users/5HT/depot/groupoid/exe/prelude/lean/PackSet.ilean /Users/5HT/depot/groupoid/exe/prelude/lean/PackSet.clean: LEAN /Users/5HT/depot/groupoid/exe/prelude/lean/PackSet.lean | /Users/5HT/depot/groupoid/exe/prelude/lean/PackSet.d /usr/local/Cellar/lean/0.2.0.20151115213912.gitdb59c6829c9f56cb88357d97de7807496c07e7c0/bin/lean
+  DLEAN_FILE=/Users/5HT/depot/groupoid/exe/prelude/lean/PackSet.d
+  OLEAN_FILE=/Users/5HT/depot/groupoid/exe/prelude/lean/PackSet.olean
+  CLEAN_FILE=/Users/5HT/depot/groupoid/exe/prelude/lean/PackSet.clean
+  ILEAN_FILE=/Users/5HT/depot/groupoid/exe/prelude/lean/PackSet.ilean
 
 build /Users/5HT/depot/groupoid/exe/prelude/lean/Initial.olean /Users/5HT/depot/groupoid/exe/prelude/lean/Initial.ilean /Users/5HT/depot/groupoid/exe/prelude/lean/Initial.clean: LEAN /Users/5HT/depot/groupoid/exe/prelude/lean/Initial.lean | /Users/5HT/depot/groupoid/exe/prelude/lean/Initial.d /usr/local/Cellar/lean/0.2.0.20151115213912.gitdb59c6829c9f56cb88357d97de7807496c07e7c0/bin/lean
   DLEAN_FILE=/Users/5HT/depot/groupoid/exe/prelude/lean/Initial.d
@@ -105,5 +105,11 @@ build /Users/5HT/depot/groupoid/exe/prelude/lean/Completion.olean /Users/5HT/dep
   OLEAN_FILE=/Users/5HT/depot/groupoid/exe/prelude/lean/Completion.olean
   CLEAN_FILE=/Users/5HT/depot/groupoid/exe/prelude/lean/Completion.clean
   ILEAN_FILE=/Users/5HT/depot/groupoid/exe/prelude/lean/Completion.ilean
+
+build /Users/5HT/depot/groupoid/exe/prelude/lean/flycheck_Setoid.olean /Users/5HT/depot/groupoid/exe/prelude/lean/flycheck_Setoid.ilean: LEAN /Users/5HT/depot/groupoid/exe/prelude/lean/flycheck_Setoid.lean | /Users/5HT/depot/groupoid/exe/prelude/lean/flycheck_Setoid.d /usr/local/Cellar/lean/0.2.0.20151115213912.gitdb59c6829c9f56cb88357d97de7807496c07e7c0/bin/lean
+  DLEAN_FILE=/Users/5HT/depot/groupoid/exe/prelude/lean/flycheck_Setoid.d
+  OLEAN_FILE=/Users/5HT/depot/groupoid/exe/prelude/lean/flycheck_Setoid.olean
+  CLEAN_FILE=/Users/5HT/depot/groupoid/exe/prelude/lean/Setoid.clean
+  ILEAN_FILE=/Users/5HT/depot/groupoid/exe/prelude/lean/flycheck_Setoid.ilean
 
 default all

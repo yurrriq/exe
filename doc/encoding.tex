@@ -78,18 +78,18 @@ in Lean model.
    Category theory is widely used as an instrument for mathematicians for software analisys.
    Category theory could be treated as an abstract algebra of functions. Let's define an Category
    formally: {\bf Category} consists of: morphisms (arrows) and objects (domains and codomains of arrows)
-   along with assoociative operation of composition and unit morphism that exists for all objects in category.
+   along with associative operation of composition and unit morphism that exists for all objects in category.
 
-   \paragraph{}
-   The formation axoims of objects and arrows are not given here and autopostulating yet. Formation axoims
-   will be introduced during exponential definition. Objects $A$ and $B$ of an arrow $f: A \rightarrow B$
-   are called {\bf domain} and {\bf codomain} respectively.
+%   \paragraph{}
+%   The formation axoims of objects and arrows are not given here and autopostulating yet. Formation axoims
+%   will be introduced during exponential definition. Objects $A$ and $B$ of an arrow $f: A \rightarrow B$
+%   are called {\bf domain} and {\bf codomain} respectively.
 
-   \paragraph{}
-   Intro axioms -- associativity of composition and left/right unit arrow compisitions show that
-   categories are actually typed monoids, which consist of morphisms and operation of composition.
-   There are many languages to show the semantic of categories such as commutative diagrams and string diagrams
-   however here we define here in proof-theoretic manner:
+%   \paragraph{}
+%   Intro axioms -- associativity of composition and left/right unit arrow compisitions show that
+%   categories are actually typed monoids, which consist of morphisms and operation of composition.
+%   There are many languages to show the semantic of categories such as commutative diagrams and string diagrams
+%   however here we define here in proof-theoretic manner:
 
 \begingroup
 \parbox[t][][l]{0.60\textwidth}{
@@ -131,26 +131,40 @@ in Lean model.
 \paragraph{}
 
 \begin{lstlisting}[mathescape=true]
-        record Setoid: Type :=
-               (Carrier: Type)
-               (Equ: Carrier $\rightarrow$ Carrier $\rightarrow$ Prop)
-               (Refl: $\forall$ (e$_0$: Carrier) $\rightarrow$ Equ e$_0$ e$_0$)
-               (Trans: $\forall$ (e$_1$,e$_2$,e$_3$: Carrier) $\rightarrow$ Equ e$_1$ e$_2$ $\rightarrow$ Equ e$_2$ e$_3$ $\rightarrow$ Equ e$_1$ e$_3$)
-               (Sym: $\forall$ (e$_1$ e$_2$: Carrier) $\rightarrow$ Equ e$_1$ e$_2$ $\rightarrow$ Equ e$_2$ e$_1$)
+define Respect (A,B: Type) (C: A $\rightarrow$ Type) (D: B $\rightarrow$ Type) (R: A $\rightarrow$ B $\rightarrow$ Prop)
+       (R': $\forall$ (x: A) (y: B) $\rightarrow$ C x $\rightarrow$ D y $\rightarrow$ Prop) :
+       ($\forall$ (x: A) $\rightarrow$ C x) $\rightarrow$ ($\forall$ (x: B) $\rightarrow$ D x) $\rightarrow$ Prop :=
+       $\lambda$ (f g: Type $\rightarrow$ Type) $\rightarrow$ ($\forall$ (x y) $\rightarrow$ R x y) $\rightarrow$ R' x y (f x) (g y).
+\end{lstlisting}
+    
+\begin{lstlisting}[mathescape=true]
+record Proper (A: Type) (R: A $\rightarrow$ A $\rightarrow$ Prop) (m: A): Prop :=
+       (Proof: R m m)
 \end{lstlisting}
 
 \begin{lstlisting}[mathescape=true]
-        record Cat: Type := 
-               (Ob: Type)
-               (Hom: $\forall$ (a,b: Ob) $\rightarrow$ Setoid)
-               (id: $\forall$ (o$_0$: Ob) $\rightarrow$ Hom o$_0$ o$_0$)
-               ($\circ$: $\forall$ (o$_1$,o$_2$,o$_3$: Ob) $\rightarrow$ Hom o$_2$ o$_3$ $\rightarrow$ Hom o$_1$ o$_2$ $\rightarrow$ Hom o$_1$ o$_3$)
-               (1$_L$: $\forall$ (x,y: Ob) $\rightarrow$ $\forall$ (f: hom x y) $\rightarrow$ id $\circ$ f = f)
-               (1$_R$: $\forall$ (x,y: Ob) (f: hom x y) $\rightarrow$ f = id $\circ$ f)
-               (Assoc: $\forall$ (x,y,z,w: Ob) (f: Hom z w) (g: Hom y z) (h: Hom x y) 
-                       $\rightarrow$ (f $\circ$ g) $\circ$ h = f $\circ$ (g $\circ$ h))
+record Setoid: Type :=
+       (Carrier: Type)
+       (Equ: Carrier $\rightarrow$ Carrier $\rightarrow$ Prop)
+       (Refl: $\forall$ (e$_0$: Carrier) $\rightarrow$ Equ e$_0$ e$_0$)
+       (Trans: $\forall$ (e$_1$,e$_2$,e$_3$: Carrier) $\rightarrow$ Equ e$_1$ e$_2$ $\rightarrow$ Equ e$_2$ e$_3$ $\rightarrow$ Equ e$_1$ e$_3$)
+       (Sym: $\forall$ (e$_1$ e$_2$: Carrier) $\rightarrow$ Equ e$_1$ e$_2$ $\rightarrow$ Equ e$_2$ e$_1$)
 \end{lstlisting}
 
+\begin{lstlisting}[mathescape=true]
+record Cat: Type := 
+       (Ob: Type)
+       (Hom: $\forall$ (dom,cod: Ob) $\rightarrow$ Setoid)
+       (Id: $\forall$ (x: Ob) $\rightarrow$ Hom x x)
+       (Comp: $\forall$ (x,y,z: Ob) $\rightarrow$ Hom x y $\rightarrow$ Hom y z $\rightarrow$ Hom x z)
+       (Dom$_{1\circ}$: $\forall$ (x,y: Ob) (f: Hom x y) $\rightarrow$ Equ (Comp id f) f)
+       (Cod$_{1\circ}$: $\forall$ (x,y: Ob) (f: Hom x y) $\rightarrow$ Equ f (Comp id f))
+       (Subst$_{\circ}$: $\forall$ (x,y,z: Ob) $\rightarrow$ Proper (Respect Equ (Respect Equ Equ)) (Comp x y z))
+       (Assoc$_{\circ}$: $\forall$ (x,y,z,w: Ob) (f: Hom x y) (g: Hom y z) (h: Hom z w) 
+               $\rightarrow$ Comp f (Comp g h) = Comp (Comp f g) h)
+\end{lstlisting}
+
+\newpage
 \subsection{Algebraic Types and Cartesian Categories}
 
 After composition operation of construction of new objects with morphisms we introduce

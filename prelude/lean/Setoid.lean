@@ -28,6 +28,11 @@ definition Equ.SymProp {El : Type} (Equ : EquType El) : Prop
  - Definition of the type of categories (CatType) and the category of setoids (SetoidCat)
  -/
 
+record OmSetoid: Type :=
+       (Ob: Type)
+       (Equ: Ob → Ob → Prop)
+       (Refl: ∀ {e: Ob} → Equ e e)
+
 -- the type of setoids, objects of the category `Setoid`
 record SetoidType.{uEl} : Type.{uEl + 1} :=
     (El : Type.{uEl})
