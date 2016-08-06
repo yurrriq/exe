@@ -20,7 +20,7 @@
 
 \vspace{3cm}
 
-    \vspace{3cm}   {\Large \bf Categorical Foundations for Fibrational Theory / Lambek Encoding\\}\par
+    \vspace{3cm}   {\Large \bf Foundations of Lambek Encoding\\}\par
     \vspace{0.3cm} {\Large Technical Article\par}
     \vspace{0.3cm} {\Large Maxim Sokhatsky, Synrc Research Center\par}
     \vspace{4cm}   {\Large Kyiv 2016}
@@ -32,10 +32,10 @@
 \tableofcontents
 \newpage
 
-\section{Types and Categories}
+\section{Category Theory}
 \vspace{0.3cm}
 
-   \subsection{Category Theory, Programs and Functions}
+   \subsection{Programs and Functions}
    Category theory is widely used as an instrument for mathematicians for software analisys.
    Category theory could be treated as an abstract algebra of functions. Let's define an Category
    formally: {\bf Category} consists of two lists: the one is morphisms (arrows) and the second is
@@ -365,6 +365,8 @@ Morphisms : $id\ |\ f \circ g\ |\ \langle f, g \rangle\ |\ apply\ |\ \lambda\ |\
 \endgroup
 
 \newpage
+\section{Type Theory}
+
    \subsection{Intuitionistic Type Theory}
 
    \paragraph{}
@@ -382,81 +384,172 @@ Morphisms : $id\ |\ f \circ g\ |\ \langle f, g \rangle\ |\ apply\ |\ \lambda\ |\
    persistent structures on a low theoretical level. Moreover this style of coding
    is completly compatible with Erlang records which are used to model KVS and N2O hierarchies.
 
-  \subsection{Logic and Quantification}
+  \subsection{Universes}
 
-  Depended product is generalisation of exponential or function definition, when
-  domain of morphism is depended on codomain.
-  Depended sum is generalisation of cartesian product when one element depends on anotehr.
-  Depended product is noted as $\forall$ and depended sum is noted as $\exists$:
+\begin{equation}
+\tag{sorts}
+\dfrac
+  {i : Nat}
+  {Type_i}
+\end{equation}
 
-\begingroup
-\parbox[t][][l]{0.40\textwidth}{
+\begin{equation}
+\tag{axioms}
+\dfrac
+  {i: Nat}
+  {Type_i : Type_{i+1}}
+\end{equation}
 
-\begin{prooftree}
-\AxiomC{$\Gamma\ x: A \vdash B$ }
-\AxiomC{$\Gamma\ \vdash A$ }
-\BinaryInfC{$\Gamma\ \vdash \Pi (x : A) B $}
-\end{prooftree}
+\begin{equation}
+\tag{rules}
+\dfrac
+  {i : Nat,\ \ \ \ j : Nat}
+  {Type_i \rightarrow Type_{j} : Type_{max(i,j)}}
+\end{equation}
 
-\begin{prooftree}
-\AxiomC{$\Gamma\ x: A \vdash B$ }
-\AxiomC{$\Gamma\ \vdash A$ }
-\BinaryInfC{$\Gamma\ \vdash \Sigma (x : A) B $}
-\end{prooftree}
+  \subsection{Dependent Types}
 
-}
-\hspace{0.1cm}
-\parbox[t][][r]{0.60\textwidth}{
+\begin{equation}
+\tag{subst}
+\dfrac
+  {\pi_1 : A\ \ \ \ u:A \vdash \pi_2 : B}
+  {[\pi_1/u]\ \pi_2 : B}
+\end{equation}
 
-\begin{prooftree}
-\AxiomC{$\Gamma\ \vdash a : A$ }
-\AxiomC{$\Gamma\ x : A \vdash B$ }
-\AxiomC{$\Gamma\ b : B (x=a)$ }
-\TrinaryInfC{$\Gamma\ \vdash (a,b) : \Pi (x : A) B $}
-\end{prooftree}
+\begin{equation}
+\tag{$\Pi$-formation}
+\dfrac
+  {x:A \vdash B : Type}
+  {\Pi\ (x:A) \rightarrow B : Type}
+\end{equation}
 
+\begin{equation}
+\tag{$\lambda$-intro}
+\dfrac
+  {x:A \vdash b : B}
+  {\lambda\ (x:A) \rightarrow b : \Pi\ (x: A) \rightarrow B }
+\end{equation}
 
-\begin{prooftree}
-\AxiomC{$\Gamma\ \vdash a : A$ }
-\AxiomC{$\Gamma\ x : A \vdash B$ }
-\AxiomC{$\Gamma\ b : B (x=a)$ }
-\TrinaryInfC{$\Gamma\ \vdash (a,b) : \Sigma (x : A) B $}
-\end{prooftree}
+\begin{equation}
+\tag{$App$-elimination}
+\dfrac
+  {f: (\Pi\ (x:A) \rightarrow B)\ \ \ a: A}
+  {f\ a : B\ [a/x]}
+\end{equation}
 
-}
-\endgroup
+\begin{equation}
+\tag{$\beta$-computation}
+\dfrac
+  {x:A \vdash b: B\ \ \ a:A}
+  {(\lambda\ (x:A) \rightarrow b)\ a = b\ [a/x] : B\ [a/x]}
+\end{equation}
 
-\begingroup
-\parbox[t][][l]{0.40\textwidth}{
+  \subsection{Equality Types}
 
-\begin{prooftree}
-\AxiomC{$\Gamma\ \vdash x: A$ }
-\AxiomC{$\Gamma\ \vdash x': A$ }
-\BinaryInfC{$\Gamma\ \vdash Id_A (x,x')$}
-\end{prooftree}
+\begin{equation}
+\tag{$Id$-formation}
+\dfrac
+  {x:A\ \ \ \ b:A\ \ \ \ A:Type}
+  {Id(A,a,b) : Type}
+\end{equation}
 
-}
-\hspace{0.1cm}
-\parbox[t][][r]{0.60\textwidth}{
+\begin{equation}
+\tag{$Id$-intro}
+\dfrac
+  {a:A}
+  {refl(A,a) : Id(A,a,a) }
+\end{equation}
 
-}\endgroup
+\begin{equation}
+\tag{$J$-elimination}
+\dfrac
+  {p:Id(a,b)\ \ \ \ x,y:A\ \ \ \ u:Id(x,y) \vdash E:Type\ \ \ \ x:A \vdash d: E\ [x/y,\ refl(x)/u]}
+  {J(a,b,p,(x,y,u)\ d) : E\ [a/x,\ b/y,\ p/u]}
+\end{equation}
 
+\begin{equation}
+\tag{$Id$-computation}
+\dfrac
+  {a,x,y:A,\ \ \ \ u:Id(x,y) \vdash E:Type\ \ \ \ x:A \vdash d:E\ [x/y,\ refl(x)/u]}
+  {J(a,a,refl(a),(x,y,u)\ d) = d\ [a/x] : E\ [a/y,\ refl(a)/u]}
+\end{equation}
 
-\begin{center}
-\begin{tabular}{lll}
-  reflexivity     &:& $Id_A(a,a)$ \\
-  substitution    &:& $Id_A(a,a') \rightarrow B(x=a) \rightarrow B(x=a')$ \\
-  symmetry        &:& $Id_A(a,b) \rightarrow Id_A(b,a)$  \\
-  transitivity    &:& $Id_A(a,b) \rightarrow Id_A(b,c) \rightarrow Id_A(a,c)$ \\
-  congruence      &:& $(f: A \rightarrow B) \rightarrow Id_A(x,x') \rightarrow Id_B(f(x),f(x'))$ \\
-\end{tabular}
-\end{center}
+  \subsection{Inductive Types}
 
-\newpage
+\begin{equation}
+\tag{$W$-formation}
+\dfrac
+  {A:Type\ \ \ \ x:A\ \ \ \ B(x):Type}
+  {W (x:A) \rightarrow B(x) : Type}
+\end{equation}
 
-\begin{thebibliography}{9}
+\begin{equation}
+\tag{$W$-intro}
+\dfrac
+  {a:A\ \ \ \ t: B(a) \rightarrow W}
+  {sup(a,t) : W}
+\end{equation}
 
-\end{thebibliography}
-\newpage
+\begin{equation}
+\tag{$W$-elimination}
+\dfrac
+  {w: W \vdash C(w) : Type\ \ \ \ x:A,\ u:B(x) \rightarrow W,\ \ \ \ v:\Pi (y:B(x)) \rightarrow C(u(y)) \vdash c(x,u,v):C(sup(x,u))}
+  {w:W \vdash wrec(w,c):C(w)}
+\end{equation}
+
+\begin{equation}
+\tag{$W$-computation}
+\dfrac
+  {w: W \vdash C(w) : Type\ \ \ \ x:A,\ u:B(x) \rightarrow W,\ \ \ \ v:\Pi (y:B(x)) \rightarrow C(u(y)) \vdash c(x,u,v):C(sup(x,u))}
+  {x:A,\ \ \ \ u:B(x) \rightarrow W \vdash wrec(sup(x,u),c)\ =\ c(x,u,\lambda (y:B(x)) \rightarrow wrec(u(y),c)):C(sup(x,u))}
+\end{equation}
+
+\subsection{Recursor}
+
+There is a belief that recursor (non-dependent eliminator) in Type Theory
+is a weaker property than induction principle (dependent eliminator). At the same time
+from category theory we know that Universal Property defines the object uniquely.
+In the case of initial object in the category of algebras, the initiality could be defined by recursor.
+That means that all properties of algebra follow from its initiality,
+as a case it is possible to get the recursor from induction. There is a sensitive moment here,
+all categorical constructions are being formulated with defined equality on morphisms,
+in type theory the equality is built-in type that could have extended properties. Simplify we could say
+that we can get recursor from induction without equality, and with proper equality we could get induction from recursor.
+
+\subsection{Fibrations}
+
+Mechanism of getting induction principle from equality is based on the presentation
+of dependent types through fibrations. Hereby dependent type $(D: B \rightarrow Type)$ is defined as $(p: Sigma\ B\ P \rightarrow B)$
+which projects dependent pair to the first field. In topology such approach is called fibration.
+To the other direction for a given morphism $(p: E \rightarrow B)$ which we understands as fibration with projection p,
+we could get its dependent type as $(D: B \rightarrow Type)$ by calculation in every point $(b: B)$ its image of
+projection p by using equality on elements of $B$. In type theory besides depndent pair $Sigma$ also
+used the dependent product $Pi$. In encoding of dependent types with fibrations there is a correspondance
+between elements of dependent and morphism-fibrations for projection $p$: such $(s: B \rightarrow E)$ that $s * p = I$.
+The example of this implementaion could be seen in\\
+\\
+EXE\footnote{https://github.com/groupoid/exe/blob/master/prelude/macro.new/Mini.macro}
+OM\footnote{https://github.com/groupoid/om/blob/master/priv/posets/sec2all}
+
+\subsection{Induction}
+
+The input for induction is a predicate — dependent type encoded with $(p: E \rightarrow B)$.
+Induction needed additional information for predicate. The type of induction is defined
+by set of inductive constructors. Induction is just a statement that on E we have the
+structure of F-algebra of inductive type. Now we could apply recursor to E
+getting the map $(I \rightarrow E)$ from initial object which in fact the section (fibre bundle) of fibration
+and thus defines the dependent function which is a proved value of induction principle.
+The example for $Bool$ could be found in\\
+\\
+EXE \footnote{https://github.com/groupoid/exe/blob/master/prelude/macro.new/Data.Bool.macro}
+OM \footnote{https://github.com/groupoid/om/blob/master/priv/posets/Data/Bool/induc}\\
+\\
+Summarizing we encode types of source lambda calculus with objects of selected category,
+dependent types with fibrations, dependent function as fibrations, inductive types as
+limits of identity functors on category of F-algebras.
+
+%\begin{thebibliography}{9}
+%\end{thebibliography}
+%\newpage
 
 \end{document}
