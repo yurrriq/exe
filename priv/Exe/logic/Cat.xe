@@ -6,7 +6,7 @@
         (Comp: ∀ (x,y,z: Ob) → Hom x y → Hom y z → Hom x z)
         (Dom1◦: ∀ (x,y: Ob) (f: Hom x y) → (Hom.Equ x y (Comp x x y id f) f))
         (Cod1◦: ∀ (x,y: Ob) (f: Hom x y) → (Hom.Equ x y (Comp x y y f id) f))
- --     (Subst◦: ∀ (x,y,z: Ob) → Proper (Respect Equ (Respect Equ Equ)) 
+ --     (Subst◦: ∀ (x,y,z: Ob) → Proper (Respect Equ (Respect Equ Equ)) (Comp x y z))
         (Subst◦: ∀ (x,y,z: Ob) (f1,f2: Hom x y) (Hom.Equ x y f1 f2) 
                                (g1,g2: Hom y z) (Hom.Equ y z g1 g2)
               → (Hom.Equ x z (Comp x y z f1 g1) (Comp x y z f2 g2)))
