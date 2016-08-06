@@ -20,10 +20,10 @@
 
 \vspace{3cm}
 
-    \vspace{3cm}   {\Large \bf Foundations of Lambek Encoding\\}\par
-    \vspace{0.3cm} {\Large Technical Article\par}
-    \vspace{0.3cm} {\Large Maxim Sokhatsky, Synrc Research Center\par}
-    \vspace{4cm}   {\Large Kyiv 2016}
+    \vspace{3cm}   {\Large \bf Categorical Encoding of Inductive Types\\}\par
+    \vspace{0.3cm} {\Large Paul Lyutko, Maxim Sokhatsky\par}
+    \vspace{6cm} {\Large Synrc Research Center\par}
+    \vspace{0.3cm}   {\Large Kyiv 2016}
 
 \end{center}
 
@@ -32,15 +32,53 @@
 \tableofcontents
 \newpage
 
+\section{Abstract}
+
+Groupoid Infinity creates a new programming language with dependent types called EXE with small provable dependent core called OM.
+OM is an implementation of Calculus of Constructions (CoC), the pure lambda calculus with dependent types.
+It can be compiled (code extraction) to bytecode of Erlang virtual machines BEAM and LING.
+EXE is an implementation of Calculus of Inductive Constructions (CiC) that lives on top of CoC OM model.
+You may think of EXE as AST transformation of higher language (with HITs) to OM. This document describes
+the foundations of categorical encoding of inductive types used in EXE/OM stack.
+
+\subsection{Why new Dependent Language?}
+\vspace{0.3cm}
+{\bf No Fixpoint and Induction in Core}. We came up with pure CoC core having predicative
+and impredicative universe hierarchies and macro extensions. Other MLTT cores have additional
+axioms like Fixpoint and Induction (and even more) -- something we strive to escape
+because it leads to the complex core. No, we don't have Fixpoint, and yes,
+we implemented Induction principle in pure CoC.
+
+\paragraph{}
+{\bf Extensible Language Design}. Encoding of inductive types is based on categorical semantic
+of compilation to CoC. All other syntax constructions are inductive definitions, plugged
+into the stream parser. AST of the CoC language is also defined in terms of inductive
+constructions and thus allowed in the macros. The language of polynomial functors (data
+and record) and core language of the process calculus (spawn, receive and send) is just
+macrosystem over CoC language, its syntax extensions.
+
+\paragraph{}
+{\bf Changeable Encodings}. In pure CoC we have only arrows, so all inductive type encodings
+would be Church-encoding variations. Most extended nowadays is Church-Boehm-Berrarducci
+the encoding which dedicated to inductive types. Another well known are Scott (laziness),
+Parigot (laziness and constant-time iterators) and CPS (continuations) encodings.
+
+\paragraph{}
+{\bf Proved Categorical Semantic}. There was modeled a math model (using higher-order
+categorical logic) of encoding, which calculates (co)limits in a category of (co)algebras
+built with given set of (de)constructors. We call such encoding in honor of Lambek lemma
+that leads us to the equality of (co)initial object and (co)limit in the categories
+of (co)algebras. Such encoding works with dependent types and its consistency is proved
+in Lean model.
+\newpage
 \section{Category Theory}
 \vspace{0.3cm}
 
    \subsection{Programs and Functions}
    Category theory is widely used as an instrument for mathematicians for software analisys.
    Category theory could be treated as an abstract algebra of functions. Let's define an Category
-   formally: {\bf Category} consists of two lists: the one is morphisms (arrows) and the second is
-   objects (domains and codomains of arrows) along with assoociative operation of composition and
-   unit morphism that exists for all objects in category.
+   formally: {\bf Category} consists of: morphisms (arrows) and objects (domains and codomains of arrows)
+   along with assoociative operation of composition and unit morphism that exists for all objects in category.
 
    \paragraph{}
    The formation axoims of objects and arrows are not given here and autopostulating yet. Formation axoims
@@ -246,7 +284,7 @@ $curry\ apply = id$\\
 }
 \endgroup
 
-\subsection{$\lambda$-language}
+\subsection*{$\lambda$-language}
 
 \begin{center}
 Objects : $\bot\ |\ \rightarrow\ |\ \times$\\
@@ -503,8 +541,242 @@ Morphisms : $id\ |\ f \circ g\ |\ \langle f, g \rangle\ |\ apply\ |\ \lambda\ |\
   {w: W \vdash C(w) : Type\ \ \ \ x:A,\ u:B(x) \rightarrow W,\ \ \ \ v:\Pi (y:B(x)) \rightarrow C(u(y)) \vdash c(x,u,v):C(sup(x,u))}
   {x:A,\ \ \ \ u:B(x) \rightarrow W \vdash wrec(sup(x,u),c)\ =\ c(x,u,\lambda (y:B(x)) \rightarrow wrec(u(y),c)):C(sup(x,u))}
 \end{equation}
+\newpage
+\section{Categorical Encoding}
 
-\subsection{Recursor}
+\subsection{List Sample}
+  Lambek encoding is a categorical proof-representation of higher inductive types encoding.
+  Let's start with simple Curch/Boem/Berrarducci encoding for List as one of the basic inductive types:
+
+\begin{center}
+  Natural Numbers: $\mu\ X \rightarrow 1 + X$ \\
+  List A: $\mu\ X \rightarrow 1 + A \times X$ \\
+  Lambda calculus: $\mu\ X \rightarrow 1 + X \times X + X$ \\
+  Stream: $\nu\ X \rightarrow A \times X$ \\
+  Potentialy Infinite List A: $\nu\ X \rightarrow 1 + A \times X$ \\
+  Finite Tree: $\mu\ X \rightarrow \mu\ Y \rightarrow 1 + X \times Y = \mu\ X = List\ X$ \\
+\end{center}
+
+\subsubsection*{Initial Object}
+
+\begin{lstlisting}[mathescape=true]
+    let I = data List: (A:*) $\rightarrow$ * :=
+                 (nil: List A)
+                 (cons: A $\rightarrow$ List A $\rightarrow$ List A)
+
+           $F_A$ = 1 + A $\times$ X
+\end{lstlisting}
+
+\subsubsection*{Construct corresponding F-Algebra}
+
+\begin{lstlisting}[mathescape=true]
+    record ListAlg: (A:*) $\rightarrow$ * :=
+           (X: *)
+           (nil: X)
+           (cons: A $\rightarrow$ X $\rightarrow$ X)
+
+\end{lstlisting}
+
+\subsubsection*{Introduce List Morphisms}
+
+\begin{lstlisting}[mathescape=true]
+  infix '=' := Setoid.Ob.Equ
+
+  record ListMor: (A: *) $\rightarrow$ (x1 x2: ListAlg A) $\rightarrow$ * :=
+         (map: x1.X $\rightarrow$ x2.X)
+         (okNil: map x1.nil = x2.nil)
+         (okCons: $\forall$ (a: A) $\rightarrow\ \forall$ (x: x1)
+                  $\rightarrow$ map x1.cons a x = x2.cons a (map x))
+\end{lstlisting}
+
+\subsubsection*{Introduce connected points of List type}
+
+\begin{lstlisting}[mathescape=true]
+  record ListPoint: (A: *) $\rightarrow$ * :=
+         (point: $\forall$ (x: ListAlg A) -> x.X)
+         (pointOk:  $\forall$ (x1 x2: ListAlg A)
+                 $\rightarrow$ $\forall$ (m: ListMor A x1 x2)
+                 $\rightarrow$ Setoid.Ob.Equ (map m point x1) (point x2))
+\end{lstlisting}
+
+\subsubsection*{Theorems Section}
+
+\begin{center}
+%\begin{tabular}{l}
+$$
+\begin{tikzcd}
+  lim\ U \arrow{d}[left]{\pi_i} \\
+  X_i 
+\end{tikzcd}
+\Longrightarrow
+\begin{tikzcd}
+  F\ lim\ U \arrow{d}[left]{F\ \pi_i} \\
+  F\ X_i 
+\end{tikzcd}
+\Longrightarrow
+lim\left\{
+\begin{tikzcd}
+  F\ lim\ U \arrow{d}[left]{F\ \pi_i} \\
+  F\ X_i 
+\end{tikzcd}
+\right\}
+$$
+%\end{tabular}
+\end{center}
+
+\subsection{Basic Ornaments}
+
+Our encoding allows you to precise control the type of encoded parameter.
+There is only three cases and three equations: 1) for unit; 2) particular
+functorial type over a parameter type and 3) recursive embedding such as
+in Cons constructor.
+
+q — is a limit in Dialg P category. The constructor body is calculated
+with q applied to forgetful functor U.
+
+$$
+\begin{cases}
+q_{P,D,G} : End\ P\ (G'(-),G'(-)) \rightarrow P\ (Lim\ G',Lim\ G') \\
+P : Set^{op} \times Set \rightarrow Set \\
+U : Dialg\ P \rightarrow Set \\
+G : D \rightarrow Dialg\ P \\
+G' = UG : D \rightarrow Set \\
+U (Lim\ G) = Lim\ G'
+\end{cases}
+$$
+
+\subsubsection{Unit}
+
+Like for Bool or Nil constructors encoding.
+
+$$
+\begin{cases}
+P_0(A,B) =  B \\
+q_0\ e : Lim\ G' \\
+q_0\ e = e
+\end{cases}
+$$
+
+\subsubsection{Fixed Type}
+
+Like for Cons first parameter.
+
+$$
+\begin{cases}
+P_1(A,B) = X \rightarrow P(A,B) \\
+q_1\ e : X \rightarrow P ( Lim\ G',  Lim\ G' ) \\
+q_1\ e\ x\ A = e\ A\ x
+\end{cases}
+$$
+
+\subsubsection{Recursive Parameters}
+
+Like for Cons second parameter. This case is a key in encoding recursive
+   data types such as {\bf Lists} and recursive record types such as {\bf Streams}.
+
+$$
+\begin{cases}
+P_2(A,B) = A \rightarrow P(A,B) \\
+q_2\ e : Lim\ G' \rightarrow P ( Lim\ G',  Lim\ G' ) \\
+q_2\ e\ I\ A = e\ A\ (I\ A)
+\end{cases}
+$$
+
+\newpage
+  \paragraph{Data Type, Polymorphic Functions and Theorems}
+  The data type of lists over a given set A can be represented as the initial algebra
+  $(\mu L_A, in)$ of the functor $L_A(X) = 1 + (A \times X)$. Denote $\mu L_A = List(A)$.
+  The constructor functions $nil: 1 \rightarrow List(A)$ and
+  $cons: A \times List(A) \rightarrow List(A)$ are defined by
+  $nil = in \circ inl$ and $cons = in \circ inr$, so $in = [nil,cons]$.
+  Given any two functions $c: 1 \rightarrow C$ and $h: A \times C \rightarrow C$,
+  the catamorphism $f = \llparenthesis [c,h] \rrparenthesis : List(A) \rightarrow C$
+  is the unique solution of the equation system:
+
+$$
+\begin{cases}
+  f \circ nil  = c \\
+  f \circ cons = h \circ (id \times f)
+\end{cases}
+$$
+
+  where $f = foldr(c,h)$. Having this the initial algebra is presented with functor
+  $\mu (1 + A \times X)$ and morphisms sum $[1 \rightarrow List(A), A \times List(A) \rightarrow List(A)]$
+  as catamorphism. Using this encoding the base library of List will have following form:
+
+$$
+\begin{cases}
+ foldr = \llparenthesis [ f \circ nil , h] \rrparenthesis, f \circ cons = h \circ (id \times f)\\
+ len = \llparenthesis [ zero, \lambda\ a\ n \rightarrow succ\ n ] \rrparenthesis \\
+ (++) = \lambda\ xs\ ys \rightarrow \llparenthesis [ \lambda (x) \rightarrow ys, cons ] \rrparenthesis (xs) \\
+ map = \lambda\ f \rightarrow \llparenthesis [ nil, cons \circ (f \times id)] \rrparenthesis
+\end{cases}
+$$
+
+  \paragraph{Lists in Exe language}
+  
+  We encode List as usually we do in $\Pi,\Sigma$-provers.
+
+\begin{lstlisting}[mathescape=true]
+             data list: (A: *) $\rightarrow$ * :=
+                  (nil: list A)
+                  (cons: A $\rightarrow$ list A $\rightarrow$ list A)
+\end{lstlisting}
+
+$$
+\begin{cases}
+list = \lambda\ ctor \rightarrow \lambda\ cons \rightarrow \lambda\ nil \rightarrow ctor\\
+cons = \lambda\ x\ \rightarrow \lambda\ xs \rightarrow \lambda\ list \rightarrow \lambda\ cons \rightarrow\ \lambda\ nil \rightarrow cons\ x\ (xs\ list\ cons\ nil)\\
+nil = \lambda\ list \rightarrow \lambda\ cons \rightarrow \lambda\ nil \rightarrow nil\\
+\end{cases}
+$$
+
+\begin{lstlisting}[mathescape=true]
+           record lists: (A B: *) :=
+                  (len: list A $\rightarrow$ integer)
+                  ((++): list A $\rightarrow$ list A $\rightarrow$ list A)
+                  (map: (A $\rightarrow$ B) $\rightarrow$ (list A $\rightarrow$ list B))
+                  (filter: (A $\rightarrow$ bool) $\rightarrow$ (list A $\rightarrow$ list A))
+\end{lstlisting}
+$$
+\begin{cases}
+len = foldr\ (\lambda\ x\ n \rightarrow succ\ n)\ 0\\
+(++) = \lambda\ ys \rightarrow foldr\ cons\ ys\\
+map = \lambda\ f \rightarrow foldr\ (\lambda x\ xs \rightarrow cons\ (f\ x)\ xs)\ nil\\
+filter = \lambda\ p \rightarrow foldr\ (\lambda x\ xs \rightarrow if\ p\ x\ then\ cons\ x\ xs\ else\ xs)\ nil\\
+foldl = \lambda\ f\ v\ xs = foldr\ (\lambda\ xg\rightarrow\ (\lambda \rightarrow g\ (f\ a\ x)))\ id\ xs\ v\\
+\end{cases}
+$$
+
+%\subsection{Identity Functor Encoding}
+
+%As known as predicative encoding.\\
+%\\
+
+%\begin{array}{ccccccc}
+%      A &           & \mapright{f} &           & B & \mapright{f} & Set \\[3pt]
+%        & \mapdiagl{a}  & \varphi      & \mapdiagr{b}  &   & \searrow     & \mapdown{\mathbf{1}} \\
+%        &           & Set          &           &   &              & Set
+%\end{array}
+
+
+%$\varphi : a \rightarrow b$
+
+%\subsection{Identity Functor Limit Encoding}
+
+%As known as impredicative encoding.
+
+%\begin{array}{ccccccc}
+%      $A &           & \mapright{f} &           & B & \mapright{f} & Set \\[3pt]
+%        & \mapdiagl{a}  & \varphi      & \mapdiagr{b}  &   & \searrow     & \mapdown{\mathbf{1}} \\
+%        &           & Set          &           &   &              & Set
+%\end{array}
+
+%$lim\ \varphi : lim\ a \rightarrow lim\ b$
+
+\newpage
+\subsection{Recursor and Induction}
+\subsubsection{Recursor}
 
 There is a belief that recursor (non-dependent eliminator) in Type Theory
 is a weaker property than induction principle (dependent eliminator). At the same time
@@ -516,7 +788,7 @@ all categorical constructions are being formulated with defined equality on morp
 in type theory the equality is built-in type that could have extended properties. Simplify we could say
 that we can get recursor from induction without equality, and with proper equality we could get induction from recursor.
 
-\subsection{Fibrations}
+\subsubsection{Fibrations}
 
 Mechanism of getting induction principle from equality is based on the presentation
 of dependent types through fibrations. Hereby dependent type $(D: B \rightarrow Type)$ is defined as $(p: Sigma\ B\ P \rightarrow B)$
@@ -531,8 +803,7 @@ The example of this implementaion could be seen in\\
 EXE\footnote{https://github.com/groupoid/exe/blob/master/prelude/macro.new/Mini.macro}
 OM\footnote{https://github.com/groupoid/om/blob/master/priv/posets/sec2all}
 
-\subsection{Induction}
-
+\subsubsection{Induction}
 The input for induction is a predicate — dependent type encoded with $(p: E \rightarrow B)$.
 Induction needed additional information for predicate. The type of induction is defined
 by set of inductive constructors. Induction is just a statement that on E we have the
@@ -543,7 +814,8 @@ The example for $Bool$ could be found in\\
 \\
 EXE \footnote{https://github.com/groupoid/exe/blob/master/prelude/macro.new/Data.Bool.macro}
 OM \footnote{https://github.com/groupoid/om/blob/master/priv/posets/Data/Bool/induc}\\
-\\
+
+\subsection{Conclusion}
 Summarizing we encode types of source lambda calculus with objects of selected category,
 dependent types with fibrations, dependent function as fibrations, inductive types as
 limits of identity functors on category of F-algebras.

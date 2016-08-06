@@ -205,36 +205,6 @@ foldl = \lambda\ f\ v\ xs = foldr\ (\lambda\ xg\rightarrow\ (\lambda \rightarrow
 \end{cases}
 $$
 
-\paragraph{Exe Prelude}
-
-We have coinductive Setoid as a base object to reason about.
-
-\begin{lstlisting}[mathescape=true]
-    record Ob: * :=
-           (elem: *)
-           (eq: Equ elem)
-           (point: elem)
-
-    record Hom (X Y: Ob): * :=
-           (elem: X.elem $\rightarrow$ Y.elem)
-           (eq: $\forall$ (x1, x2: X.elem) $\rightarrow$ 
-                X.eq x1 x2 $\rightarrow$ Y.eq (elem x1) (elem x2))
-           (point: Y.eq (elem X.point) Y.point)
-
-      data True: Prop :=
-           (intro: () $\rightarrow$ true)
-
-      data False: Prop := ()
-
-      data Eq: (A:*) $\rightarrow$ A $\rightarrow$ A $\rightarrow$ Prop :=
-           (refl: (x:A) $\rightarrow$ Eq A x x)
-
-    record Setoid: * :=
-           (ob: *)
-           (hom: $\forall$ (X Y: ob) $\rightarrow$ Hom X Y)
-\end{lstlisting}
-
-\newpage
 \paragraph{Lambda Assembler}
 
 One List/Type constructor and two List constructors Cons and Nil.
