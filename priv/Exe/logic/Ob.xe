@@ -1,5 +1,0 @@
-
-  record Ob: * :=
-         (elem: *)
-         (eq: Eq elem)
-         (point: elem)
