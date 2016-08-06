@@ -125,27 +125,32 @@ in Lean model.
 \AxiomC{$f: A \rightarrow B$ }
 \UnaryInfC{$id_B \circ f = f : A \rightarrow B $}
 \end{prooftree}
-
 }
 \endgroup
 
 \paragraph{}
-Composition shows an ability to connect the result space of the previous evaluation (codomain)
-and the arguments space of the next evaluation (domain). Composition is fundamental property of morphisms
-that allows us to chain evaluations.
 
-\paragraph{}
-\begin{tabular}{lll}
-$1.$ & $A: *$\\
-$2.$ & $A: *\ ,\ B: * \implies f: A \rightarrow B$\\
-$3.$ & $f: B \rightarrow C\ ,\ g: A \rightarrow B \implies f \circ g : A \rightarrow C$\\
-$4.$ & $(f \circ g) \circ h = f \circ (g \circ h)$\\
-$5.$ & $A \implies id : A \rightarrow A$\\
-$6.$ & $f \circ id = f$\\
-$7.$ & $id \circ f = f$\\
-\end{tabular}
+\begin{lstlisting}[mathescape=true]
+        record Setoid: Type :=
+               (Carrier: Type)
+               (Equ: Carrier $\rightarrow$ Carrier $\rightarrow$ Prop)
+               (Refl: $\forall$ (e$_0$: Carrier) $\rightarrow$ Equ e$_0$ e$_0$)
+               (Trans: $\forall$ (e$_1$,e$_2$,e$_3$: Carrier) $\rightarrow$ Equ e$_1$ e$_2$ $\rightarrow$ Equ e$_2$ e$_3$ $\rightarrow$ Equ e$_1$ e$_3$)
+               (Sym: $\forall$ (e$_1$ e$_2$: Carrier) $\rightarrow$ Equ e$_1$ e$_2$ $\rightarrow$ Equ e$_2$ e$_1$)
+\end{lstlisting}
 
-\newpage
+\begin{lstlisting}[mathescape=true]
+        record Cat: Type := 
+               (Ob: Type)
+               (Hom: $\forall$ (a,b: Ob) $\rightarrow$ Setoid)
+               (id: $\forall$ (o$_0$: Ob) $\rightarrow$ Hom o$_0$ o$_0$)
+               ($\circ$: $\forall$ (o$_1$,o$_2$,o$_3$: Ob) $\rightarrow$ Hom o$_2$ o$_3$ $\rightarrow$ Hom o$_1$ o$_2$ $\rightarrow$ Hom o$_1$ o$_3$)
+               (1$_L$: $\forall$ (x,y: Ob) $\rightarrow$ $\forall$ (f: hom x y) $\rightarrow$ id $\circ$ f = f)
+               (1$_R$: $\forall$ (x,y: Ob) (f: hom x y) $\rightarrow$ f = id $\circ$ f)
+               (Assoc: $\forall$ (x,y,z,w: Ob) (f: Hom z w) (g: Hom y z) (h: Hom x y) 
+                       $\rightarrow$ (f $\circ$ g) $\circ$ h = f $\circ$ (g $\circ$ h))
+\end{lstlisting}
+
 \subsection{Algebraic Types and Cartesian Categories}
 
 After composition operation of construction of new objects with morphisms we introduce
