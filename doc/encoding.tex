@@ -70,6 +70,148 @@ built with given set of (de)constructors. We call such encoding in honor of Lamb
 that leads us to the equality of (co)initial object and (co)limit in the categories
 of (co)algebras. Such encoding works with dependent types and its consistency is proved
 in Lean model.
+
+
+\newpage
+\section{Type Theory}
+
+\subsection{Intuitionistic Type Theory}
+
+\paragraph{}
+Using Build Yourself Type Teory approach sooner or later
+you should decide the pallete of inductive structures. Such in Coq
+abstract algebra framework was built upon polymorphic records\cite{coqalg} rather
+that type classes engine like it is used in Agda and Idris. However
+Idris still lack of polymorphic records and coinductive types. Lean also
+lack of coinductive structures but has powerful non-recursive polymorphic records
+which are used in Lean HoTT library.
+
+\paragraph{}
+As was show by Spephan Kaes\cite{kaes}, one of strategy of type clasess engine
+implementataion is using polymorphic structures which allows us do deal with
+persistent structures on a low theoretical level. Moreover this style of coding
+is completly compatible with Erlang records which are used to model KVS and N2O hierarchies.
+
+\subsection{Universes}
+
+\begin{equation}
+\tag{sorts}
+\dfrac
+  {i : Nat}
+  {Type_i}
+\end{equation}
+
+\begin{equation}
+\tag{axioms}
+\dfrac
+  {i: Nat}
+  {Type_i : Type_{i+1}}
+\end{equation}
+
+\begin{equation}
+\tag{rules}
+\dfrac
+  {i : Nat,\ \ \ \ j : Nat}
+  {Type_i \rightarrow Type_{j} : Type_{max(i,j)}}
+\end{equation}
+
+  \subsection{Dependent Types}
+
+\begin{equation}
+\tag{subst}
+\dfrac
+  {\pi_1 : A\ \ \ \ u:A \vdash \pi_2 : B}
+  {[\pi_1/u]\ \pi_2 : B}
+\end{equation}
+
+\begin{equation}
+\tag{$\Pi$-formation}
+\dfrac
+  {x:A \vdash B : Type}
+  {\Pi\ (x:A) \rightarrow B : Type}
+\end{equation}
+
+\begin{equation}
+\tag{$\lambda$-intro}
+\dfrac
+  {x:A \vdash b : B}
+  {\lambda\ (x:A) \rightarrow b : \Pi\ (x: A) \rightarrow B }
+\end{equation}
+
+\begin{equation}
+\tag{$App$-elimination}
+\dfrac
+  {f: (\Pi\ (x:A) \rightarrow B)\ \ \ a: A}
+  {f\ a : B\ [a/x]}
+\end{equation}
+
+\begin{equation}
+\tag{$\beta$-computation}
+\dfrac
+  {x:A \vdash b: B\ \ \ a:A}
+  {(\lambda\ (x:A) \rightarrow b)\ a = b\ [a/x] : B\ [a/x]}
+\end{equation}
+
+  \subsection{Equality Types}
+
+\begin{equation}
+\tag{$Id$-formation}
+\dfrac
+  {x:A\ \ \ \ b:A\ \ \ \ A:Type}
+  {Id(A,a,b) : Type}
+\end{equation}
+
+\begin{equation}
+\tag{$Id$-intro}
+\dfrac
+  {a:A}
+  {refl(A,a) : Id(A,a,a) }
+\end{equation}
+
+\begin{equation}
+\tag{$J$-elimination}
+\dfrac
+  {p:Id(a,b)\ \ \ \ x,y:A\ \ \ \ u:Id(x,y) \vdash E:Type\ \ \ \ x:A \vdash d: E\ [x/y,\ refl(x)/u]}
+  {J(a,b,p,(x,y,u)\ d) : E\ [a/x,\ b/y,\ p/u]}
+\end{equation}
+
+\begin{equation}
+\tag{$Id$-computation}
+\dfrac
+  {a,x,y:A,\ \ \ \ u:Id(x,y) \vdash E:Type\ \ \ \ x:A \vdash d:E\ [x/y,\ refl(x)/u]}
+  {J(a,a,refl(a),(x,y,u)\ d) = d\ [a/x] : E\ [a/y,\ refl(a)/u]}
+\end{equation}
+
+  \subsection{Inductive Types}
+
+\begin{equation}
+\tag{$W$-formation}
+\dfrac
+  {A:Type\ \ \ \ x:A\ \ \ \ B(x):Type}
+  {W (x:A) \rightarrow B(x) : Type}
+\end{equation}
+
+\begin{equation}
+\tag{$W$-intro}
+\dfrac
+  {a:A\ \ \ \ t: B(a) \rightarrow W}
+  {sup(a,t) : W}
+\end{equation}
+
+\begin{equation}
+\tag{$W$-elimination}
+\dfrac
+  {w: W \vdash C(w) : Type\ \ \ \ x:A,\ u:B(x) \rightarrow W,\ \ \ \ v:\Pi (y:B(x)) \rightarrow C(u(y)) \vdash c(x,u,v):C(sup(x,u))}
+  {w:W \vdash wrec(w,c):C(w)}
+\end{equation}
+
+\begin{equation}
+\tag{$W$-computation}
+\dfrac
+  {w: W \vdash C(w) : Type\ \ \ \ x:A,\ u:B(x) \rightarrow W,\ \ \ \ v:\Pi (y:B(x)) \rightarrow C(u(y)) \vdash c(x,u,v):C(sup(x,u))}
+  {x:A,\ \ \ \ u:B(x) \rightarrow W \vdash wrec(sup(x,u),c)\ =\ c(x,u,\lambda (y:B(x)) \rightarrow wrec(u(y),c)):C(sup(x,u))}
+\end{equation}
+
 \newpage
 \section{Category Theory}
 \vspace{0.3cm}
@@ -418,145 +560,7 @@ Morphisms : $id\ |\ f \circ g\ |\ \langle f, g \rangle\ |\ apply\ |\ \lambda\ |\
 %  and a carrier X having morphism $[zero: 1_C \rightarrow X,succ: X \rightarrow X]$.
 %  The initial object of C is called Natural Number Object and models Peano axiom set.
 
-\newpage
-\section{Type Theory}
 
-\subsection{Intuitionistic Type Theory}
-
-\paragraph{}
-Using Build Yourself Type Teory approach sooner or later
-you should decide the pallete of inductive structures. Such in Coq
-abstract algebra framework was built upon polymorphic records\cite{coqalg} rather
-that type classes engine like it is used in Agda and Idris. However
-Idris still lack of polymorphic records and coinductive types. Lean also
-lack of coinductive structures but has powerful non-recursive polymorphic records
-which are used in Lean HoTT library.
-
-\paragraph{}
-As was show by Spephan Kaes\cite{kaes}, one of strategy of type clasess engine
-implementataion is using polymorphic structures which allows us do deal with
-persistent structures on a low theoretical level. Moreover this style of coding
-is completly compatible with Erlang records which are used to model KVS and N2O hierarchies.
-
-\subsection{Universes}
-
-\begin{equation}
-\tag{sorts}
-\dfrac
-  {i : Nat}
-  {Type_i}
-\end{equation}
-
-\begin{equation}
-\tag{axioms}
-\dfrac
-  {i: Nat}
-  {Type_i : Type_{i+1}}
-\end{equation}
-
-\begin{equation}
-\tag{rules}
-\dfrac
-  {i : Nat,\ \ \ \ j : Nat}
-  {Type_i \rightarrow Type_{j} : Type_{max(i,j)}}
-\end{equation}
-
-  \subsection{Dependent Types}
-
-\begin{equation}
-\tag{subst}
-\dfrac
-  {\pi_1 : A\ \ \ \ u:A \vdash \pi_2 : B}
-  {[\pi_1/u]\ \pi_2 : B}
-\end{equation}
-
-\begin{equation}
-\tag{$\Pi$-formation}
-\dfrac
-  {x:A \vdash B : Type}
-  {\Pi\ (x:A) \rightarrow B : Type}
-\end{equation}
-
-\begin{equation}
-\tag{$\lambda$-intro}
-\dfrac
-  {x:A \vdash b : B}
-  {\lambda\ (x:A) \rightarrow b : \Pi\ (x: A) \rightarrow B }
-\end{equation}
-
-\begin{equation}
-\tag{$App$-elimination}
-\dfrac
-  {f: (\Pi\ (x:A) \rightarrow B)\ \ \ a: A}
-  {f\ a : B\ [a/x]}
-\end{equation}
-
-\begin{equation}
-\tag{$\beta$-computation}
-\dfrac
-  {x:A \vdash b: B\ \ \ a:A}
-  {(\lambda\ (x:A) \rightarrow b)\ a = b\ [a/x] : B\ [a/x]}
-\end{equation}
-
-  \subsection{Equality Types}
-
-\begin{equation}
-\tag{$Id$-formation}
-\dfrac
-  {x:A\ \ \ \ b:A\ \ \ \ A:Type}
-  {Id(A,a,b) : Type}
-\end{equation}
-
-\begin{equation}
-\tag{$Id$-intro}
-\dfrac
-  {a:A}
-  {refl(A,a) : Id(A,a,a) }
-\end{equation}
-
-\begin{equation}
-\tag{$J$-elimination}
-\dfrac
-  {p:Id(a,b)\ \ \ \ x,y:A\ \ \ \ u:Id(x,y) \vdash E:Type\ \ \ \ x:A \vdash d: E\ [x/y,\ refl(x)/u]}
-  {J(a,b,p,(x,y,u)\ d) : E\ [a/x,\ b/y,\ p/u]}
-\end{equation}
-
-\begin{equation}
-\tag{$Id$-computation}
-\dfrac
-  {a,x,y:A,\ \ \ \ u:Id(x,y) \vdash E:Type\ \ \ \ x:A \vdash d:E\ [x/y,\ refl(x)/u]}
-  {J(a,a,refl(a),(x,y,u)\ d) = d\ [a/x] : E\ [a/y,\ refl(a)/u]}
-\end{equation}
-
-  \subsection{Inductive Types}
-
-\begin{equation}
-\tag{$W$-formation}
-\dfrac
-  {A:Type\ \ \ \ x:A\ \ \ \ B(x):Type}
-  {W (x:A) \rightarrow B(x) : Type}
-\end{equation}
-
-\begin{equation}
-\tag{$W$-intro}
-\dfrac
-  {a:A\ \ \ \ t: B(a) \rightarrow W}
-  {sup(a,t) : W}
-\end{equation}
-
-\begin{equation}
-\tag{$W$-elimination}
-\dfrac
-  {w: W \vdash C(w) : Type\ \ \ \ x:A,\ u:B(x) \rightarrow W,\ \ \ \ v:\Pi (y:B(x)) \rightarrow C(u(y)) \vdash c(x,u,v):C(sup(x,u))}
-  {w:W \vdash wrec(w,c):C(w)}
-\end{equation}
-
-\begin{equation}
-\tag{$W$-computation}
-\dfrac
-  {w: W \vdash C(w) : Type\ \ \ \ x:A,\ u:B(x) \rightarrow W,\ \ \ \ v:\Pi (y:B(x)) \rightarrow C(u(y)) \vdash c(x,u,v):C(sup(x,u))}
-  {x:A,\ \ \ \ u:B(x) \rightarrow W \vdash wrec(sup(x,u),c)\ =\ c(x,u,\lambda (y:B(x)) \rightarrow wrec(u(y),c)):C(sup(x,u))}
-\end{equation}
 \newpage
 \section{Categorical Encoding}
 
