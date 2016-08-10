@@ -8,22 +8,17 @@
 \thispagestyle{empty}
 \begin{center}
 
-\begin{minipage}[t]{2cm}
-    \includegraphics[scale=0.4]{img/S}
-\end{minipage}
-\begin{minipage}[t]{12cm}
-    \begin{flushright}
-        \textsc{{\Large {\bf {\color{Blue}syn}{\color{OrangeRed}rc} research center s.r.o.}}}\\
-        \textsc{Roháčova 141/18, Praha 3 13000, Czech Republic}\\
-    \end{flushright}
-\end{minipage}
+\begingroup
+\parbox[t][][l]{0.30\textwidth}{ \includegraphics[scale=0.3]{img/grp} }
+\parbox[t][][r]{0.60\textwidth}{ \flushright \textsc{{\Large {\bf {Groupoid Infinity}}}}\\
+                                             \textsc{Kostiantynivska 20/14, Kyiv, Ukraine 04071}\\  }\endgroup
 
 \vspace{3cm}
 
     \vspace{3cm}   {\Large \bf Categorical Encoding of Inductive Types\\}\par
     \vspace{0.3cm} {\Large Paul Lyutko, Maxim Sokhatsky\par}
     \vspace{6cm} {\Large Groupoid Infinity\par}
-    \vspace{0.3cm}   {\Large Kyiv 2016}
+    \vspace{0.3cm}   {\Large Kamianets-Podilsky 2016}
 
 \end{center}
 
@@ -234,15 +229,17 @@ is completly compatible with Erlang records which are used to model KVS and N2O 
 %   however here we define here in proof-theoretic manner:
 
 \begingroup
-\parbox[t][][l]{0.60\textwidth}{
-
+\parbox[t][][l]{0.70\textwidth}{
+\flushleft
 \begin{prooftree}
+\RightLabel{($Comp$)}
 \AxiomC{$f: A \rightarrow B$ }
 \AxiomC{$g: B \rightarrow C$ }
 \BinaryInfC{$g \circ f : A \rightarrow C $}
 \end{prooftree}
 
 \begin{prooftree}
+\RightLabel{($Assoc$)}
 \AxiomC{$f : B \rightarrow A$ }
 \AxiomC{$g : C \rightarrow B$ }
 \AxiomC{$h : D \rightarrow C$ }
@@ -254,16 +251,19 @@ is completly compatible with Erlang records which are used to model KVS and N2O 
 \parbox[t][][r]{0.40\textwidth}{
 
 \begin{prooftree}
+\RightLabel{($Id$)}
 \AxiomC{$$ }
 \UnaryInfC{$id_A : A \rightarrow A $}
 \end{prooftree}
 
 \begin{prooftree}
+\RightLabel{($Id_L$)}
 \AxiomC{$f: A \rightarrow B$ }
 \UnaryInfC{$f \circ id_A = f : A \rightarrow B$}
 \end{prooftree}
 
 \begin{prooftree}
+\RightLabel{($Id_R$)}
 \AxiomC{$f: A \rightarrow B$ }
 \UnaryInfC{$id_B \circ f = f : A \rightarrow B $}
 \end{prooftree}
@@ -276,19 +276,19 @@ is completly compatible with Erlang records which are used to model KVS and N2O 
 record Setoid: Type :=
        (Carrier: Type)
        (Equ: Carrier $\rightarrow$ Carrier $\rightarrow$ Prop)
-       (Refl: $\forall$ (e$_0$: Carrier) $\rightarrow$ Equ e$_0$ e$_0$)
+       (Refl:  $\forall$ (e$_0$: Carrier) $\rightarrow$ Equ e$_0$ e$_0$)
        (Trans: $\forall$ (e$_1$,e$_2$,e$_3$: Carrier) $\rightarrow$ Equ e$_1$ e$_2$ $\rightarrow$ Equ e$_2$ e$_3$ $\rightarrow$ Equ e$_1$ e$_3$)
-       (Sym: $\forall$ (e$_1$ e$_2$: Carrier) $\rightarrow$ Equ e$_1$ e$_2$ $\rightarrow$ Equ e$_2$ e$_1$)
+       (Sym:   $\forall$ (e$_1$ e$_2$: Carrier) $\rightarrow$ Equ e$_1$ e$_2$ $\rightarrow$ Equ e$_2$ e$_1$)
 \end{lstlisting}
 
 \begin{lstlisting}[mathescape=true]
 record Cat: Type :=
        (Ob: Type)
-       (Hom: $\forall$ (dom,cod: Ob) $\rightarrow$ Setoid)
-       (Id: $\forall$ (x: Ob) $\rightarrow$ Hom x x)
-       (Comp: $\forall$ (x,y,z: Ob) $\rightarrow$ Hom x y $\rightarrow$ Hom y z $\rightarrow$ Hom x z)
-       (Dom$_{1\circ}$: $\forall$ (x,y: Ob) (f: Hom x y) $\rightarrow$ (Hom.Equ x y (Comp x x y id f) f))
-       (Cod$_{1\circ}$: $\forall$ (x,y: Ob) (f: Hom x y) $\rightarrow$ (Hom.Equ x y (Comp x y y f id) f))
+       (Hom:    $\forall$ (dom,cod: Ob) $\rightarrow$ Setoid)
+       (Id:     $\forall$ (x: Ob) $\rightarrow$ Hom x x)
+       (Comp:   $\forall$ (x,y,z: Ob) $\rightarrow$ Hom x y $\rightarrow$ Hom y z $\rightarrow$ Hom x z)
+       (Dom$_{1\circ}$:    $\forall$ (x,y: Ob) (f: Hom x y) $\rightarrow$ (Hom.Equ x y (Comp x x y id f) f))
+       (Cod$_{1\circ}$:    $\forall$ (x,y: Ob) (f: Hom x y) $\rightarrow$ (Hom.Equ x y (Comp x y y f id) f))
        (Subst$_{\circ}$: $\forall$ (x,y,z: Ob)
             (f$_1$, f$_2$: Hom x y) (Hom.Equ x y f$_1$ f$_2$)
             (g$_1$, g$_2$: Hom y z) (Hom.Equ y z g$_1$ g$_2$) $\rightarrow$
@@ -437,10 +437,10 @@ $curry\ apply = id$\\
 }
 \endgroup
 
-\subsection*{$\lambda$-language}
+\subsection*{$\lambda$-language as CAM machine}
 
 \begin{center}
-Objects : $\bot\ |\ \rightarrow\ |\ \times$\\
+Objects : $\top\ |\ \rightarrow\ |\ \times$\\
 Morphisms : $id\ |\ f \circ g\ |\ \langle f, g \rangle\ |\ apply\ |\ \lambda\ |\ curry$
 \end{center}
 
