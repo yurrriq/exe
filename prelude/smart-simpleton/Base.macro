@@ -1,24 +1,51 @@
 Nat.Base := new
-    ( Alg.Ob : Type := record
-        ( @default A : Type )
-        ( Z : A )
-        ( S : A → A ) )
-    ( Alg.P (A : Alg.Ob) : Type := record
-        ( @default Ok : A → Prop )
-        ( Z' : Ok A.Zero )
-        ( S' (a : A) : Ok a → Ok (A.S a) ) )
+    ( Equival (T : Type) : Type := record
+        ( @default Rel (t1, t2 : T) : Prop )
+        ( refl (t0 : T) : Rel t0 t0 ) )
+    ( EquProp (T : Type) (t1, t2 : T) : Prop := record
+        ( equ (E : Equival T) : E t1 t2 ) )
+    ( Kitten : Type := record
+        ( @default Ob : Type )
+        ( @coerce Support : Ob → Type )
+        ( Hom : Ob → Ob → Type ) )
+    ( ClosedKitten : Type := record extend Kitten
+        ( Exp : Ob → Ob → Ob )
+        ( Hom dom cod := Exp dom cod ) )
+    ( TypeK : ClosedKitten := new
+        ( Ob := Type )
+        ( Exp dom cod := dom → cod ) )
+    ( SigmaK : ClosedKitten := new
+        ( Ob := record
+            ( El : Type )
+            ( Ok : El → Prop )
+            ( @default Support : Type )
+            ( Support := record
+                ( el : El )
+                ( ok : Ok el ) ) )
+        ( Exp dom cod := new
+            ( El := record
+                ( onEl (d.el : dom.El) (d.ok : dom.Ok d.el) : cod.El ) )
+            ( Ok f := packed record
+                ( onOk (d.el : dom.El) (d.ok : dom.Ok d.el) : cod.Ok (f d.el d.ok) )
+                ( onIrr (d.el : dom.El) (d.ok1, d.ok2 : dom.Ok d.el) :
+                    EquProp cod.El (f d.el d.ok1) (f d.el d.ok2)) ) ) )
+    ( Alg.Ob (K : Kitten) : Kitten := record
+            ( @default ob : K )
+            ( Z : ob )
+            ( S : K.Hom ob ob ) )
+    ( Alg.ObOk (A : Alg.Ob) : Type := record
+        ( @default p : A → Prop )
+        ( Z' : p A.Z )
+        ( S' (a : A) : p a → p (A.S a) ) )
     ( Church : Alg.Ob := new
-        ( Carrier := record (rec (A : Alg.Ob) : A) )
-        ( Z.rec   A := A.Z )
-        ( S.rec n A := A.S (n A) ) )
+        ( ob := record (rec (A : Alg.Ob) : A) )
+        ( Z.rec    A := A.Z )
+        ( S.rec el A := A.S (el A) ) )
     ( SmallSigma (A : Alg.Ob) (Ok : Alg.P A) : Alg.Ob := new
-        ( Carrier := record (el : A) (ok : Ok el) )
+        ( ob := record (el : A) (ok : Ok el) )
         ( Zero   := new (el := A.Z) (ok := Ok.Z') )
         ( Succ n := new (el := A.S n.el) (ok := Ok.S' n.el n.ok) ) )
-    ( Alg.P' (A : Alg.Ob) : Type := record extend (Alg.P A)
-        ( coS' (a : A) : Ok (A.S a) → Ok a ) )
-    ( Free (A : Alg.Ob) (Ok : Alg.P A) : Alg.P' A := new
-        ( Ok a := record (free (it : Alg.P' A) : it a) )
-        (   Z'.free      it := it.  Z' )
-        (   S'.free a ok it := it.  S' a (ok it) )
-        ( coS'.free a ok it := it.coS' a (ok it) ) )
+
+    Alg.Sigma (A:Ob)(AOk:ObOk A) -> Ob
+
+    induc : Alg .Hom.Ok (A,AOk) (A,P) (Alg.Id A)
