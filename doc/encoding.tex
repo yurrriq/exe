@@ -13,12 +13,10 @@
 \parbox[t][][r]{0.60\textwidth}{ \flushright \textsc{{\Large {\bf {Groupoid Infinity}}}}\\
                                              \textsc{Kostiantynivska 20/14, Kyiv, Ukraine 04071}\\  }\endgroup
 
-\vspace{3cm}
-
-    \vspace{3cm}   {\Large \bf Categorical Encoding of Inductive Types\\}\par
-    \vspace{0.3cm} {\Large Paul Lyutko, Maxim Sokhatsky\par}
-    \vspace{6cm} {\Large Groupoid Infinity\par}
-    \vspace{0.3cm}   {\Large Kamianets-Podilsky 2016}
+\vspace{6cm}   {\Large \bf Categorical Encoding of Inductive Types\\}\par
+\vspace{0.3cm} {\Large Paul Lyutko, Maxim Sokhatsky\par}
+\vspace{6cm}   {\Large Groupoid Infinity\par}
+\vspace{0.3cm} {\Large Kamianets-Podilsky 2016}
 
 \end{center}
 
@@ -73,19 +71,20 @@ in Lean model.
 \subsection{Intuitionistic Type Theory}
 
 \paragraph{}
-Using Build Yourself Type Teory approach sooner or later
-you should decide the pallete of inductive structures. Such in Coq
-abstract algebra framework was built upon polymorphic records\cite{coqalg} rather
-that type classes engine like it is used in Agda and Idris. However
-Idris still lack of polymorphic records and coinductive types. Lean also
-lack of coinductive structures but has powerful non-recursive polymorphic records
-which are used in Lean HoTT library.
+Type Theory of Per Martin-Löf (MLTT) is formulated in well known and common to all mathematicians style of Natural Deduction.
+In original MLTT postulates four types of judgment rules: for {\bf types}, {\bf terms} and {\bf definitional equalities} on both.
+Each form of type contains four groups of deduction rules:  {\bf formations}, {\bf introductions}, {\bf eliminators} and {\bf computational}.
+Formation are correspond to typing rules, introductions (type constructors) and eliminators are adjunctions that correspond to axioms,
+and computational rules correspond to operational semantics.
+From categorical point of view typing rules correspond to functors, axioms to morphisms and operational semantics to equalities on morphisms.
 
 \paragraph{}
-As was show by Spephan Kaes\cite{kaes}, one of strategy of type clasess engine
-implementataion is using polymorphic structures which allows us do deal with
-persistent structures on a low theoretical level. Moreover this style of coding
-is completly compatible with Erlang records which are used to model KVS and N2O hierarchies.
+Original CoC pure type system was formualted on a limited number of universes, while in contemporary provers infinite
+number of universes is used. Usually all of them are predicative which mean that for any dependent terms,
+the resulting type complexity depends on complexity of both. Impredicative universe is used only for propositions.
+More than one impredicative universes causes to system inconsistency, while it still can be useful in programming.
+One can also build denotational semantics for predicative encodings that compiles to impredicative infinite hierarchy.
+We give here infinite predicative non-comulative hierarchy for top level language.
 
 \subsection{Universes}
 
@@ -147,6 +146,7 @@ is completly compatible with Erlang records which are used to model KVS and N2O 
   {(\lambda\ (x:A) \rightarrow b)\ a = b\ [a/x] : B\ [a/x]}
 \end{equation}
 
+\newpage
   \subsection{Equality Types}
 
 \begin{equation}
