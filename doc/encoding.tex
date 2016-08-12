@@ -177,7 +177,19 @@ We give here infinite predicative non-comulative hierarchy for top level languag
   {J(a,a,refl(a),(x,y,u)\ d) = d\ [a/x] : E\ [a/y,\ refl(a)/u]}
 \end{equation}
 
-  \subsection{Inductive Types}
+\begin{lstlisting}[mathescape=true]
+record Id (A: Type): Type :=
+       (Id: A $\rightarrow$ A $\rightarrow$ Type)
+       (refl (a: A): Id a a)
+       (Predicate := $\forall$ (x,y: A) $\rightarrow$ Id x y $\rightarrow$ Type)
+       (Forall (C: Predicate) := $\forall$ (x,y: A) $\rightarrow$ $\forall$ (p: Id x y) $\rightarrow$ C x y p)
+       (DiagonalForall (C: Predicate) := $\forall$ (x: A) $\rightarrow$ C x x (refl x))
+       (axiom-J (C: Predicate): DiagonalForall C $\rightarrow$ Forall C)
+       (computation-rule (C: Predicate) (t: DiagonalForall C):
+                         (J C t x x (refl x)) ==> (t x))
+\end{lstlisting}
+
+\subsection{Inductive Types}
 
 \begin{equation}
 \tag{$W$-formation}
