@@ -1,0 +1,13 @@
+IdStructure (A : Type) : Type := record
+    ( Id : A → A → Type )
+    ( refl (a0 : A) : Id a0 a0 )
+    ( J-classic :
+        ∀ (C : ∀ (a1,a2 : A) → Id a1 a2 → Type) →
+        ∀ (t : ∀ (a0 : A) → C a0 a0 (refl a0)) →
+        ∀ (a1,a2 : A) → ∀ (p12 : Id a1 a2) → C a1 a2 p12 )
+    ( Predicate := ∀ (a1,a2 : A) → Id a1 a2 → Type )
+    ( Forall (C : Predicate) := ∀ (a1,a2 : A) → ∀ (p12 : Id a1 a2) → C a1 a2 p12 )
+    ( DiagonalForall (C : Predicate) := ∀ (a0 : A) → C a0 a0 (refl a0) )
+    ( J-modern (C : Predicate) : DiagonalForall C → Forall C )
+    ( compute (C : Predicate) (t : DiagonalForall C) : (J C t x x (refl x)) ==> (t x) ) -- reduction in typechecker
+    
