@@ -1,0 +1,21 @@
+IdStructure (A : Type) : Type := record
+
+    -- It type and its only constructor
+    ( Id : A → A → Type )
+    ( refl (a0 : A) : Id a0 a0 )
+
+    -- dependent eliminator
+    ( axiom-J-low-level :
+        ∀ (C : ∀ (a1,a2 : A) → Id a1 a2 → Type) →
+        ∀ (t : ∀ (a0 : A) → C a0 a0 (refl a0)) →
+        ∀ (a1,a2 : A) → ∀ (p12 : Id a1 a2) → C a1 a2 p12 )
+
+    -- once again, with named fragments
+    ( Predicate := ∀ (a1,a2 : A) → Id a1 a2 → Type )
+    ( Forall (C : Predicate) := ∀ (a1,a2 : A) → ∀ (p12 : Id a1 a2) → C a1 a2 p12 )
+    ( DiagonalForall (C : Predicate) := ∀ (a0 : A) → C a0 a0 (refl a0) )
+    ( axiom-J-high-level (C : Predicate) : DiagonalForall C → Forall C )
+
+    -- definitional equality, to be implemented as reduction in typechecker
+    ( computation-rule (C : Predicate) (t : DiagonalForall C) :
+        (J C t x x (refl x)) ==> (t x) ) 
