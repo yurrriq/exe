@@ -147,7 +147,16 @@ We give here infinite predicative non-comulative hierarchy for top level languag
 \end{equation}
 
 \newpage
-  \subsection{Equality Types}
+
+\begin{lstlisting}[mathescape=true]
+record $\Pi$ (A: Type): Type :=
+       ($\Pi$: (A $\rightarrow$ Type) $\rightarrow$ Type)
+       (fun: (B: A $\rightarrow$ Type) $\rightarrow$ $\forall$ (a: A) $\rightarrow$ B a $\rightarrow$ $\Pi$ B)
+       (app: (B: A $\rightarrow$ Type) $\rightarrow$ $\Pi$ B $\rightarrow$ $\forall$ (a: A) $\rightarrow$ B a)
+       (app-fun (B: $\Pi$) (b: B): $\forall$ (a: A) $\rightarrow$ app (fun b) a ==> b a)
+\end{lstlisting}
+
+  \subsection{Identity Types}
 
 \begin{equation}
 \tag{$Id$-formation}
@@ -170,6 +179,7 @@ We give here infinite predicative non-comulative hierarchy for top level languag
   {J(a,b,p,(x,y,u)\ d) : E\ [a/x,\ b/y,\ p/u]}
 \end{equation}
 
+
 \begin{equation}
 \tag{$Id$-computation}
 \dfrac
@@ -183,9 +193,9 @@ record Id (A: Type): Type :=
        (refl (a: A): Id a a)
        (Predicate := $\forall$ (x,y: A) $\rightarrow$ Id x y $\rightarrow$ Type)
        (Forall (C: Predicate) := $\forall$ (x,y: A) $\rightarrow$ $\forall$ (p: Id x y) $\rightarrow$ C x y p)
-       (DiagonalForall (C: Predicate) := $\forall$ (x: A) $\rightarrow$ C x x (refl x))
-       (axiom-J (C: Predicate): DiagonalForall C $\rightarrow$ Forall C)
-       (computation-rule (C: Predicate) (t: DiagonalForall C):
+       ($\Delta$ (C: Predicate) := $\forall$ (x: A) $\rightarrow$ C x x (refl x))
+       (axiom-J (C: Predicate): $\Delta$ C $\rightarrow$ Forall C)
+       (computation-rule (C: Predicate) (t: $\Delta$ C):
                          $\forall$ (x: A) $\rightarrow$ (J C t x x (refl x)) ==> (t x))
 \end{lstlisting}
 
