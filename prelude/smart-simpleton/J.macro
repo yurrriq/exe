@@ -1,10 +1,13 @@
 IdStructure (A : Type) : Type := record
 
-    -- It type and its only constructor
+    -- `Id` as abstract type and its only constructor
     ( Id : A → A → Type )
     ( refl (a0 : A) : Id a0 a0 )
 
-    -- dependent eliminator
+    -- `Id` defined as inductive type (to be encoded)
+    ( Id' : A → A → Type := data (refl (a0 : A) : Id' a0 a0) )
+
+    -- dependent eliminator for `Id`
     ( axiom-J-low-level :
         ∀ (C : ∀ (a1,a2 : A) → Id a1 a2 → Type) →
         ∀ (t : ∀ (a0 : A) → C a0 a0 (refl a0)) →
@@ -18,4 +21,4 @@ IdStructure (A : Type) : Type := record
 
     -- definitional equality, to be implemented as reduction in typechecker
     ( computation-rule (C : Predicate) (t : DiagonalForall C) :
-        (J C t x x (refl x)) ==> (t x) ) 
+        ∀ (a : A) → (axiom-J C t a a (refl a)) ==> (t a) ) 
