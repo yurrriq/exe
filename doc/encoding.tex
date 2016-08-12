@@ -186,7 +186,7 @@ record Id (A: Type): Type :=
        (DiagonalForall (C: Predicate) := $\forall$ (x: A) $\rightarrow$ C x x (refl x))
        (axiom-J (C: Predicate): DiagonalForall C $\rightarrow$ Forall C)
        (computation-rule (C: Predicate) (t: DiagonalForall C):
-                         (J C t x x (refl x)) ==> (t x))
+                         $\forall$ (x: A) $\rightarrow$ (J C t x x (refl x)) ==> (t x))
 \end{lstlisting}
 
 \subsection{Inductive Types}
