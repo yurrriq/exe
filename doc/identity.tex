@@ -44,7 +44,7 @@ record Id (A: Type): A $\rightarrow$ A $\rightarrow$ Type :=
 \begin{equation}
 \tag{$Id$-formation}
 \dfrac
-  {x:A\ \ \ \ b:A\ \ \ \ A:Type}
+  {a:A\ \ \ \ b:A\ \ \ \ A:Type}
   {Id(A,a,b) : Type}
 \end{equation}
 
@@ -81,6 +81,7 @@ record Id (A: Type): Type :=
                          $\forall$ (x: A) $\rightarrow$ (J C t x x (refl x)) ==> (t x))
 \end{lstlisting}
 
+\newpage
 \subsection{Symmetry and Transitivity}
 
 \begin{lstlisting}[mathescape=true]
@@ -99,7 +100,6 @@ record Subst (A: Type): Type :=
         Id.axiom-J ($\lambda$ a1 a2 p12 $\rightarrow$ P a1 $\rightarrow$ P a2) ($\lambda$ a0 p0 $\rightarrow$ p0) a1 a2)
 \end{lstlisting}
 
-\newpage
 \subsection{Uniqueness of Identity Proofs}
 
 \begin{lstlisting}[mathescape=true]
