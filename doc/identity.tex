@@ -81,7 +81,6 @@ record Id (A: Type): Type :=
                          $\forall$ (x: A) $\rightarrow$ (J C t x x (refl x)) ==> (t x))
 \end{lstlisting}
 
-\newpage
 \subsection{Symmetry and Transitivity}
 
 \begin{lstlisting}[mathescape=true]
@@ -100,6 +99,7 @@ record Subst (A: Type): Type :=
         Id.axiom-J ($\lambda$ a1 a2 p12 $\rightarrow$ P a1 $\rightarrow$ P a2) ($\lambda$ a0 p0 $\rightarrow$ p0) a1 a2)
 \end{lstlisting}
 
+\newpage
 \subsection{Uniqueness of Identity Proofs}
 
 \begin{lstlisting}[mathescape=true]
@@ -107,17 +107,27 @@ record UIP (A: Type): Type :=
        (intro (A: Type) (a,b: A) (x,y: Id a b) : Id (Id A a b) x y)
 \end{lstlisting}
 
+\subsection{Axiom K}
+
+\begin{lstlisting}[mathescape=true]
+record K (A: Type): Type :=
+       (Predicate$_K$ := $\forall$ (a: A) $\rightarrow$ Id a a $\rightarrow$ Type)
+       (Forall$_K$ (C: Predicate$_K$) := $\forall$ (a: A) $\rightarrow$ $\forall$ (p: Id a a) $\rightarrow$ C a p)
+       ($\Delta_K$ (C: Predicate$_K$) := $\forall$ (a: A) $\rightarrow$ C a (Id.refl a))
+       (axiom-K (C: Predicate): $\Delta_K$ C $\rightarrow$ Forall$_K$ C)
+\end{lstlisting}
+
 \subsection{Congruence}
 
 \begin{lstlisting}[mathescape=true]
-define Respect (A,B: Type) (C: A $\rightarrow$ Type) (D: B $\rightarrow$ Type) (R: A $\rightarrow$ B $\rightarrow$ Prop)
+define Respect$_1$ (A,B: Type) (C: A $\rightarrow$ Type) (D: B $\rightarrow$ Type) (R: A $\rightarrow$ B $\rightarrow$ Prop)
        (Ro: $\forall$ (x: A) (y: B) $\rightarrow$ C x $\rightarrow$ D y $\rightarrow$ Prop) :
             ($\forall$ (x: A) $\rightarrow$ C x) $\rightarrow$ ($\forall$ (x: B) $\rightarrow$ D x) $\rightarrow$ Prop :=
                        $\lambda$ (f g: Type $\rightarrow$ Type) $\rightarrow$ ($\forall$ (x y) $\rightarrow$ R x y) $\rightarrow$ Ro x y (f x) (g y)
 \end{lstlisting}
 
 \begin{lstlisting}[mathescape=true]
-record Respect (A: Type): Type :=
+record Respect$_2$ (A: Type): Type :=
        (intro (A,B: Type) (f: A $\rightarrow$ B) (a,b: A) : Id A a b $\rightarrow$ Id B (f a) (f b) :=
               Id.axiom-J ($\lambda$ a b p12 $\rightarrow$ Id B (f a) (f b)) ($\lambda$ x $\rightarrow$ refl B (f x)) a b)
 \end{lstlisting}
@@ -134,13 +144,17 @@ record Setoid: Type :=
 \end{lstlisting}
 
 \subsection{Conclusion}
+As you can see EXE language has enough expressive power to be used for
+drawing MLTT axioms in computer science articles and papers.
 
+\newpage
 \begin{thebibliography}{9}
 
 \bibitem{bis} E.Bishop \textit{Foundations of Constructive Analysis} 1967
 \bibitem{str} T.Streicher, M.Hofmann  \textit{The groupoid interpretation of type theory} 1996
 \bibitem{bar} G.Barthe, V.Capretta \textit{Setoids in type theory} 2003
 \bibitem{soz} M.Sozeau, N.Tabareau \textit{Internalizing Intensional Type Theory} 2013
+\bibitem{voe} V.Voevodsky \textit{Identity types in the C-systems defined by a universe category} 2015
 \bibitem{con} D.Selsam and L.de Moura \textit{Congruence Closure in Intensional Type Theory} 2016
 \end{thebibliography}
 
