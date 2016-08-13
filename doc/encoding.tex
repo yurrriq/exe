@@ -73,10 +73,12 @@ in Lean model.
 \paragraph{}
 Type Theory of Per Martin-Löf (MLTT) is formulated in well known and common to all mathematicians style of Natural Deduction.
 In original MLTT postulates four types of judgment rules: for {\bf types}, {\bf terms} and {\bf definitional equalities} on both.
-Each form of type contains four groups of deduction rules:  {\bf formations}, {\bf introductions}, {\bf eliminators} and {\bf computational}.
+Each form of type contains four groups of deduction rules:  {\bf formations}, {\bf introductions}, {\bf eliminators} and {\bf computational}
+that are understood in any valid contexts.
 Formation are correspond to typing rules, introductions (type constructors) and eliminators are adjunctions that correspond to axioms,
 and computational rules correspond to operational semantics.
-From categorical point of view typing rules correspond to functors, axioms to morphisms and operational semantics to equalities on morphisms.
+From categorical point of view typing rules correspond to functors,
+axioms to morphisms and operational semantics to equalities on morphisms.
 
 \paragraph{}
 Original CoC pure type system was formualted on a limited number of universes, while in contemporary provers infinite
@@ -153,7 +155,8 @@ record $\Pi$ (A: Type): Type :=
        ($\Pi$: (A $\rightarrow$ Type) $\rightarrow$ Type)
        (fun: (B: A $\rightarrow$ Type) $\rightarrow$ $\forall$ (a: A) $\rightarrow$ B a $\rightarrow$ $\Pi$ B)
        (app: (B: A $\rightarrow$ Type) $\rightarrow$ $\Pi$ B $\rightarrow$ $\forall$ (a: A) $\rightarrow$ B a)
-       (app-fun (B: $\Pi$) (b: B): $\forall$ (a: A) $\rightarrow$ app (fun b) a ==> b a)
+       (app-fun (B: A $\rightarrow$ Type) (f: $\forall$ (a: A) $\rightarrow$ B a): $\forall$ (a: A) $\rightarrow$ app (fun f) a ==> f a)
+       (fun-app (B: A $\rightarrow$ Type) (p: $\Pi$ B): fun ($\lambda$(a: A) $\rightarrow$ app p a) ==> p)
 \end{lstlisting}
 
   \subsection{Identity Types}
