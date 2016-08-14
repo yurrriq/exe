@@ -92,7 +92,8 @@ preassign -> path match_seq                 : mk_preassign_match('$1','$1','$2')
 preassign -> type                           : mk_preassign_type('$1','$1') .
 
 assign -> preassign ':=' expr                   : mk_assign('$1','$1','$3') .
-assign -> 'data' preassign ':=' type_par_seq    : mk_assign('$1','$2', mk_expr_data('$4','$4')) .
+assign -> 'define' preassign ':=' expr          : mk_assign('$1','$2', mk_expr_define('$4','$4')) .
+assign -> 'data'   preassign ':=' type_par_seq  : mk_assign('$1','$2', mk_expr_data('$4','$4')) .
 assign -> 'record' preassign ':=' id_ta_par_seq : mk_assign('$1','$2', mk_expr_record('$4','$4')) .
 
 assign_par_seq -> '(' ')'                       : [] .
@@ -153,7 +154,6 @@ expr_ ->    token_lambda id_ta_par_seq token_arrow expr : mk_expr_lambda_type('$
 expr_ ->    token_lambda match_seq token_arrow expr     : mk_expr_lambda_match('$1','$2','$4') .
 expr_ ->    path                                        : mk_expr_id('$1','$1') .
 expr_ ->    token_id token_quoted_literal               : mk_expr_literal('$1','$1','$2') .
-expr_ ->    'define' preassign ':=' expr                : mk_expr_define('$2',[]) .
 expr_ ->    expr token_arrow expr                       : mk_expr_arrow('$1','$1','$3') .
 expr_ ->    '#' path                                    : mk_expr_external('$1','$2') .
 expr_ ->    '(' expr ')'                                : '$2' .
