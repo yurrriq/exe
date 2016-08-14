@@ -89,10 +89,12 @@ preassign -> path_comma_seq                 : mk_preassign_match('$1','$1',[]) .
 preassign -> path match_seq                 : mk_preassign_match('$1','$1','$2') .
 preassign -> type                           : mk_preassign_type('$1','$1') .
 
-assign -> preassign ':=' expr               : mk_assign('$1','$1','$3') .
+assign -> preassign ':=' expr                   : mk_assign('$1','$1','$3') .
+assign -> 'data' preassign ':=' type_par_seq    : mk_assign('$1','$2', mk_expr_data('$4','$4')) .
+assign -> 'record' preassign ':=' id_ta_par_seq : mk_assign('$1','$2', mk_expr_record('$4','$4')) .
 
-assign_par_seq -> '(' assign ')'                  : ['$2'] .
-assign_par_seq -> '(' assign ')' assign_par_seq   : ['$2'|'$4'] .
+assign_par_seq -> '(' assign ')'                : ['$2'] .
+assign_par_seq -> '(' assign ')' assign_par_seq : ['$2'|'$4'] .
 
 id_ta -> assign :   '$1' .
 id_ta -> type   :   '$1' .
