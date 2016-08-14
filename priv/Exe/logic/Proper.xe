@@ -1,4 +1,3 @@
 
  record Proper (A: Type) (R: A → A → Prop) (m: A): Prop :=
         (Proof: R m m)
- 

@@ -1,17 +1,19 @@
 
-    data empty: * := ()
+  Cartesian := new
 
-  record sum: (A:*) → (B:*) → * :=
+  (record sum (A:Type) (B:Type): Type :=
          (left: A)
-         (right: B)
+         (right: B))
 
-    data unit: * :=
-         (make: () → unit)
+    (data unit: Type :=
+         (make: () → unit))
 
-  record prod: (A:*) → (B:*) → * :=
+  (record prod (A:Type) (B:Type): Type :=
          (pr1: A)
-         (pr2: B)
+         (pr2: B))
 
-  record sigma (A: *) → (B: A → *) → * :=
+  (record sigma (A: Type) (B: A → Type): Type :=
          (pr1: A)
-         (pr2: B pr1)
+         (pr2: B pr1))
+
+    (data empty: Type := ())

@@ -1,7 +1,7 @@
 
   import Process
 
-  record Spawn: 
+  record Spawn: Type :=
          (spawn: Process)
          (raise: list Eff)
 

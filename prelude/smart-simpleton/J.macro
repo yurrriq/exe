@@ -1,7 +1,7 @@
 ( Id (A : Type) : Type := record
 
     -- `Id` as abstract type and its only constructor
-    ( @default Id : A → A → Type )
+    ( Id : A → A → Type )
     ( refl (a0 : A) : Id a0 a0 )
 
     -- `Id` defined as inductive type (to be encoded)

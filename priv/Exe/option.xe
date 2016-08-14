@@ -1,4 +1,4 @@
 
-             data option: (A:*) → * :=
+             data option (A:Type) : Type :=
                   (none: () → option A)
                   (some: A → option A)

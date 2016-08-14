@@ -11,7 +11,7 @@ Nonterminals level level_comma_seq id path path_comma_seq
 Terminals    token_id token_digits token_atom token_quoted_literal
              '(' ')' '[' ']' '{' '}' '.' ',' ':' ':=' '#' '|' '+'
            % '-' '*' '/' % uncoment on usage
-             token_arrow token_forall token_lambda
+             token_arrow token_forall token_lambda 'define'
              'packed' 'record' 'new' 'data' 'default' 'let' 'in' 'case' 'of' .
 
 Rootsymbol   assign .
@@ -61,6 +61,7 @@ Left  80 ']' .
 Right 90 ',' .
 Right 100 ':=' .
 Right 110 'record' .
+Right 110 'define' .
 Right 120 'new' .
 Right 130 'case' .
 Right 140 'data' .
@@ -82,6 +83,7 @@ pretype -> path_comma_seq type_par_seq      : mk_pretype_mk('$1','$1','$2').
 
 type -> pretype ':' expr                    : mk_type('$1','$1','$3').
 
+type_par_seq -> '(' ')'                     : [] .
 type_par_seq -> '(' type ')'                : ['$2'] .
 type_par_seq -> '(' type ')' type_par_seq   : ['$2'|'$4'] .
 
@@ -93,6 +95,7 @@ assign -> preassign ':=' expr                   : mk_assign('$1','$1','$3') .
 assign -> 'data' preassign ':=' type_par_seq    : mk_assign('$1','$2', mk_expr_data('$4','$4')) .
 assign -> 'record' preassign ':=' id_ta_par_seq : mk_assign('$1','$2', mk_expr_record('$4','$4')) .
 
+assign_par_seq -> '(' ')'                       : [] .
 assign_par_seq -> '(' assign ')'                : ['$2'] .
 assign_par_seq -> '(' assign ')' assign_par_seq : ['$2'|'$4'] .
 
@@ -141,11 +144,6 @@ clause -> pattern_comma_seq token_arrow expr            : mk_clause('$1','$1','$
 clause_par_seq -> '(' clause ')'                        : ['$2'] .
 clause_par_seq -> '(' clause ')' clause_par_seq         : ['$2'|'$4'] .
 
-
-%% expessions (w/o priority)
-
-% sequence of application (FIXME priority)
-
 expr ->     expr_                                       : ['$1'].
 expr ->     expr_ expr                                  : ['$1'|'$2'] .
 
@@ -155,9 +153,11 @@ expr_ ->    token_lambda id_ta_par_seq token_arrow expr : mk_expr_lambda_type('$
 expr_ ->    token_lambda match_seq token_arrow expr     : mk_expr_lambda_match('$1','$2','$4') .
 expr_ ->    path                                        : mk_expr_id('$1','$1') .
 expr_ ->    token_id token_quoted_literal               : mk_expr_literal('$1','$1','$2') .
+expr_ ->    'define' preassign ':=' expr                : mk_expr_define('$2',[]) .
 expr_ ->    expr token_arrow expr                       : mk_expr_arrow('$1','$1','$3') .
 expr_ ->    '#' path                                    : mk_expr_external('$1','$2') .
 expr_ ->    '(' expr ')'                                : '$2' .
+expr_ ->    '(' ')'                                     : mk_expr_tuple('$1',[]).
 expr_ ->    '{' '}'                                     : mk_expr_tuple('$1',[]) .
 expr_ ->    '{' expr_comma_seq '}'                      : mk_expr_tuple('$1','$2') .
 expr_ ->    '[' ']'                                     : mk_expr_list('$1',[]) .
@@ -184,6 +184,7 @@ encoding -> '(' ')' : mk_encoding('$1') . %TODO
 
 Erlang       code.
 
+get_line([])                 -> [];
 get_line([T|_])              -> get_line(T);
 get_line(T) when is_tuple(T) -> element(2, T).
 
@@ -246,6 +247,7 @@ mk_expr_arrow(L,X,Y)        -> exe_ast(expr, L, {mk_arrow,X,Y}).
 mk_expr_forall(L,X,Y)       -> exe_ast(expr, L, {mk_forall,X,Y}).
 mk_expr_lambda_type(L,X,Y)  -> exe_ast(expr, L, {mk_lambda_type,X,Y}).
 mk_expr_lambda_match(L,X,Y) -> exe_ast(expr, L, {mk_lambda_match,X,Y}).
+mk_expr_define(L,X)         -> exe_ast(expr, L, {mk_define,X}).
 mk_expr_record(L,X)         -> exe_ast(expr, L, {mk_record,X}).
 mk_expr_new(L,X)            -> exe_ast(expr, L, {mk_new,X}).
 mk_expr_data(L,X)           -> exe_ast(expr, L, {mk_data,X}).

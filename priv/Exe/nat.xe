@@ -1,4 +1,4 @@
 
-             data nat: * :=
+             data nat: Type :=
                   (zero: () → nat)
                   (succ: nat → nat)

@@ -16,7 +16,7 @@ Definitions.
 
 D		= [0-9]
 C		= [a-zA-Z_]
-A		= [a-zA-Z_0-9₁ₒ₂\-]
+A		= [a-zA-Z_0-9₁ₒ₂₃\-]
 S		= ([\000-\s]|--.*)
 Index   = \*(\.{(.*|[^}])})?
 Star    = \*
@@ -39,7 +39,7 @@ VBar    = \|
 
 Rules.
 
-(data|record|new|default|packed)        : {token,{list_to_atom(TokenChars),TokenLine}}.
+(data|record|new|default|packed|define) : {token,{list_to_atom(TokenChars),TokenLine}}.
 (case|of||let|in)                       : {token,{list_to_atom(TokenChars),TokenLine}}.
 (spawn|send|receive|try|do|raise)       : {token,{list_to_atom(TokenChars),TokenLine}}.
 ({Curly}|{Parens}|{Angle}|{Square})     : {token,{list_to_atom(TokenChars),TokenLine}}.
