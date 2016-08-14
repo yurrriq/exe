@@ -1,0 +1,3 @@
+
+  data Inhabited (A: Type): Prop :=
+       (intro: A -> Inhabited A)

@@ -115,4 +115,6 @@ definition Under.Forget (C : CatType) (X : C) : UnderCat C X ⟶ C :=
         (sorry)
         (sorry)
 
+print Under.Forget
+
 end EXE
