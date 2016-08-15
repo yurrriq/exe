@@ -22,10 +22,19 @@
 \maketitle
 
 \begin{abstract}
-We propose a new programming language with dependent types for Erlang virtual machines (called EXE), with small core (called OM).
-OM is an implementation of Calculus of Constructions (CoC), the pure lambda calculus with dependent types and infinite universes.
+We adress the problem of missing a programming language with dependent types for Erlang virtual machines.
+Presence of dependent types in programming languages turns them to theorem provers and helps builing
+certified software for mission critical applications.
+While other platforms has dependently types languages: Scala (JVM), F* (CLR), Agda and Idris (GHC);
+Erlang virtual machines (LING and BEAM) lacks support of such languages.
+We creates a PL based on Dependent Type Theory and Categorical Semantics of Lambda Encodings (called EXE),
+with small core of Pure Type System (called OM) for Erlang virtual machines.
+OM is an implementation of Calculus of Constructions (CoC), the pure lambda calculus with dependent types enriched with infinite universes.
 EXE is an implementation of Calculus of Inductive Constructions (CiC) that compiles to OM.
-OM and EXE code can be compiled (code extraction) to bytecode of Erlang virtual machines BEAM and LING.
+The core problem of building a dependently typed language is a semantics of inductive types encoding.
+We propose a system of pluggable encoding backends which are based on verified categorical models.
+Switcheable encoding will allow us to measure the performance of different encodings on real world applications.
+OM and EXE code can be compiled (by code extraction and type erasure) to bytecode of Erlang virtual machines BEAM and LING.
 \end{abstract}
 
 \paragraph{Motivation}
@@ -61,11 +70,10 @@ Intermediate language resemble both the Henk\cite{Henk} theory of PTS CoC langua
 and can be tooled with its Morte\cite{morte} implementation:
 
 \begin{lstlisting}[mathescape=true]
-    E := * | $\Box$ | ( E ) | E E
-           | $\lambda$ ( L : E ) $\rightarrow$ E
-           | $\forall$ ( L : E ) $\rightarrow$ E
+    E := *$_i$ | ( E ) | E E | $\lambda$ ( L : E ) $\rightarrow$ E | $\forall$ ( L : E ) $\rightarrow$ E
 \end{lstlisting}
 
+\newpage
 \paragraph{Exe Language}
 
 We extend the core PTS language with inductive {\bf data} and coinductive {\bf record} definitions.
@@ -193,23 +201,6 @@ nil = \lambda\ list \rightarrow \lambda\ cons \rightarrow \lambda\ nil \rightarr
 \end{cases}
 $$
 
-\begin{lstlisting}[mathescape=true]
-           record lists (A,B: Type): Type :=
-                  (len: list A $\rightarrow$ integer)
-                  ((++): list A $\rightarrow$ list A $\rightarrow$ list A)
-                  (map: (A $\rightarrow$ B) $\rightarrow$ (list A $\rightarrow$ list B))
-                  (filter: (A $\rightarrow$ bool) $\rightarrow$ (list A $\rightarrow$ list A))
-\end{lstlisting}
-$$
-\begin{cases}
-len = foldr\ (\lambda\ x\ n \rightarrow succ\ n)\ 0\\
-(++) = \lambda\ ys \rightarrow foldr\ cons\ ys\\
-map = \lambda\ f \rightarrow foldr\ (\lambda x\ xs \rightarrow cons\ (f\ x)\ xs)\ nil\\
-filter = \lambda\ p \rightarrow foldr\ (\lambda x\ xs \rightarrow if\ p\ x\ then\ cons\ x\ xs\ else\ xs)\ nil\\
-foldl = \lambda\ f\ v\ xs = foldr\ (\lambda\ xg\rightarrow\ (\lambda \rightarrow g\ (f\ a\ x)))\ id\ xs\ v\\
-\end{cases}
-$$
-
 \paragraph{Intermediate Lambda Assembler OM}
 
 We present here (in this document) only Church-Boem-Berrarducci simplified encoding.
@@ -260,5 +251,14 @@ Result language after type erasure.
               ((Cons(Head))((Tail(Cons))(Nil))) end end end end.
 \end{lstlisting}
 
+\begin{thebibliography}{3}
+\vspace{0.1cm}
+\bibitem{cat} P.Lyutko,M.Sokhatsky \textit{Categorical Encoding of Inductive Types} 2016 \\
+\bibitem{id}  P.Lyutko,M.Sokhatsky \textit{Identity Type Encoding} 2016 \\
+\bibitem{id}  M.Sokhatsky,P.Maslyanko \textit{System Engineering and Verification of Execution Environment} 2016 \\
+
+\end{thebibliography}
+
 \end{theses}
 \end{document}
+
