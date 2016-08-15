@@ -1,4 +1,0 @@
-*.beam
-*_lexer.erl
-*_parser.erl
-*.dump

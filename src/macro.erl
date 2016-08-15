@@ -20,6 +20,7 @@ parser({ok,T})    -> case macro_parser:parse(T) of
                                         io:format("~n"),
                                         {error,parser} end.
 
+parse(F)        -> snd(parser(lexer({ok,F}))).
 a(F)            -> snd(parser(lexer(file(F)))).
 
 fst({X,_})      -> X.
