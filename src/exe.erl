@@ -12,11 +12,11 @@ boot()       -> [ ets:new(T,opt()) || T <- tables() ],
 unicode()    -> io:setopts(standard_io, [{encoding, unicode}]).
 main(A)      -> unicode(), case A of [] -> mad:main(["sh"]); A -> console(A) end.
 start()      -> start(normal,[]).
-start(_,_)   -> unicode(), mad:info("~tp~n",[exe:ver()]), supervisor:start_link({local,exe},exe,[]).
+start(_,_)   -> unicode(), supervisor:start_link({local,exe},exe,[]).
 stop(_)      -> ok.
 init([])     -> boot(), mode("normal"), {ok, {{one_for_one, 5, 10}, []}}.
 ver(_)       -> ver().
-ver()        -> {version,[keyget(I,element(2,application:get_all_key(exe)))||I<-[description,vsn]]}.
+ver()        -> string:join([keyget(I,element(2,application:get_all_key(exe)))||I<-[description,vsn]]," ").
 mode(S)      -> application:set_env(exe,mode,S).
 mode()       -> application:get_env(exe,mode,"Exe").
 
@@ -30,13 +30,13 @@ console(S)   -> boot(),
                       end, [], string:tokens(S,[","])),
                 halt(lists:sum(Fold)).
 
-rev(X)       -> lists:reverse(X).
-flat(X)      -> lists:flatten(X).
-tokens(X,Y)  -> string:tokens(X,Y).
-atom(X)      -> list_to_atom(cat([X])).
-cat(X)       -> lists:concat(X).
-keyget(K,D)  -> proplists:get_value(K,D).
-keyget(K,D,I)  -> lists:nth(I+1,proplists:get_all_values(K,D)).
+rev(X)           -> lists:reverse(X).
+flat(X)          -> lists:flatten(X).
+tokens(X,Y)      -> string:tokens(X,Y).
+atom(X)          -> list_to_atom(cat([X])).
+cat(X)           -> lists:concat(X).
+keyget(K,D)      -> proplists:get_value(K,D).
+keyget(K,D,I)    -> lists:nth(I+1,proplists:get_all_values(K,D)).
 
 convert(A,S, nt) -> convert(A,S);
 convert(A,S, _)  -> A.
