@@ -469,6 +469,7 @@ Objects : $\top\ |\ \rightarrow\ |\ \times$\\
 Morphisms : $id\ |\ f \circ g\ |\ \langle f, g \rangle\ |\ apply\ |\ \lambda\ |\ curry$
 \end{center}
 
+\newpage
   \subsection{Functors, $\Lambda$-calculus}
 
   Functor comes as a notion of morphisms in categories whose objects are categories.
@@ -495,7 +496,15 @@ Morphisms : $id\ |\ f \circ g\ |\ \langle f, g \rangle\ |\ apply\ |\ \lambda\ |\
    We start thinking of functors on dealing with typed theories, because functors usually
    could be seen as higher order type con
 
-\newpage
+\vspace{1cm}
+\begin{lstlisting}[mathescape=true]
+   record Functor ($\varphi$: Type $\rightarrow$ Type): Type :=
+          (fmap: $\forall$ ($\alpha$,$\beta$: Type) $\rightarrow$ ($\alpha$ $\rightarrow$ $\beta$) $\rightarrow$ $\varphi$ $\beta$ $\rightarrow$ $\varphi$ $\beta$;
+          (id$_\rightarrow$: $\forall$ ($\alpha$: Type) (x: $\varphi$ $\alpha$) $\rightarrow$ fmap id x = x)
+          (comp$_\rightarrow$: $\forall$ ($\alpha$,$\beta$,$\gamma$: Type) (f: $\beta$ $\rightarrow$ $\gamma$) (g: $\alpha$ $\rightarrow$ $\beta$) (x: $\varphi$ $\alpha$)
+                   $\rightarrow$ fmap (f $\circ$ g) x = (fmap f $\circ$ fmap g) x)
+\end{lstlisting}
+
 
 
 
