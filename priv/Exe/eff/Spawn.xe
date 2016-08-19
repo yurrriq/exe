@@ -1,7 +1,4 @@
 
-  import Process
-
   record Spawn: Type :=
-         (spawn: Process)
-         (raise: list Eff)
-
+         (what: Process)
+         (effects: list Eff)

@@ -1,4 +1,10 @@
 
-  record Case Receive: * :=
+  Case := new
+
+  (record Case: Type :=
          (legs: list (prod atom (prod Om Exe)))
-         (default: Exe)
+         (Default: Exe))
+
+  (record Receive: Type :=
+         (legs: list (prod atom (prod Om Exe)))
+         (Default: Exe))

@@ -1,6 +1,4 @@
 
-  import list
-
-  record Let: * :=
-         (binds: list (prod string Om))
-         (in: Exe)
+  record Let: Type :=
+         (Binds: list (prod string Om))
+         (In: Exe)

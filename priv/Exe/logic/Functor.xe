@@ -1,0 +1,6 @@
+
+ record Functor (φ: Type → Type): Type :=
+        (fmap: ∀ (α,β: Type) → (α → β) → φ β → φ β)
+        (id: ∀ (α: Type) (x: φ α) → Equ (fmap id x) x)
+        (comp: ∀ (α,β,γ: Type) (f: β → γ) (g: α → β) (x: φ α)
+               → Equ (fmap (f ◦ g) x) ((fmap f ◦ fmap g) x))

@@ -1,33 +1,32 @@
 
-  import Random, File, Exception
+    Eff := new
 
-    -- simplified IO as free monad
+    -- Simplified IO as free monad
 
-    data FIO: * :=
+    (data FIO: Type :=
          (read: (string → FIO) → FIO)
          (write: string → FIO → FIO)
          (rand: (nat → FIO) → FIO)
          (ex: exception → FIO → FIO)
-         (stop: () → FIO)
+         (stop: () → FIO))
 
-    -- more sane effects handling
+    -- Idris-like effects handling
 
-    data effect: (v:*) → (r:*) → * :=
-         (intro: v → r → (v → r) → effect)
+    (data effect (v:Type) (r:Type): Type :=
+         (intro: v → r → (v → r) → effect))
 
-  record effect: (v:*) → (r:*) → * :=
+  (record effect (v:Type) (r:Type): Type :=
          (values: v)
          (resource: r)
          (computation: (v → r))
-         (handler: effect v r → monad effect v r)
+         (handler: effect v r → monad effect v r))
 
-    data monad_eff: list effect → (* → *) → * -> * :=
-         (intro: eff m a xs (\ (v) → xs) → monad_eff xs m a
+    (data monad_eff (eff: list effect) (m: Type → Type) (a: Type): Type :=
+         (intro: eff m a xs (\ (v: Type) → xs) → monad_eff xs m a))
 
-  record handler: (e: effect) → (m: * → *) :=
-         (action: (r: res) → (eff: e t res resk) → (k: (x: t) → resk x → m a) → m a)
+  (record handler (e: effect) (m: Type → Type): Type :=
+         (action: ∀ (r: res) (eff: e t res resk) (k: ∀ (x: t) → resk x → m a) → m a))
 
-    data RND: *        := (intro: effect.mk nat (random nat))
-    data IO: (t:*) → * := (intro: effect.mk t (file t))
-    data EX: (t:*) → * := (intro: effect.mk () (exception t))
-
+    (data RND: Type         := (intro: effect.mk nat (random nat)))
+    (data IO (t:Type): Type := (intro: effect.mk t (file t)))
+    (data EX (t:Type): Type := (intro: effect.mk () (exception t)))

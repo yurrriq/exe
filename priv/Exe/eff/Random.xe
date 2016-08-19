@@ -1,4 +1,4 @@
 
-    data Random: (x:*) → * → (x → *) → * :=
-         (rand: Random x)
+    data Random (x:Type) (y:Type) (z: x → Type): Type :=
+         (Rand: Random x)
          (seed: x -> Random ())

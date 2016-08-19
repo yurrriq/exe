@@ -1,6 +1,15 @@
 
-  record Record Data: * :=
-         (name: string)
-         (base: Om)
-         (body: list (prod string Exe))
+  Inductive := new
+
+  (record Record: Type :=
+          (name: string)
+          (base: Om)
+          (body: list (prod string Exe)))
+
+  (record Data: Type :=
+          (name: string)
+          (base: Om)
+          (body: list (prod string Exe)))
+
+
 

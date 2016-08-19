@@ -1,16 +1,16 @@
 
     Control := new
 
-           (record pure: (P: Type → Type) (A: Type) : Type :=
+           (record pure (P: Type → Type) (A: Type): Type :=
                    (return: P A))
 
-           (record functor: (F: Type → Type) -> (A B: Type) : Type :=
+           (record functor (F: Type → Type) (A,B: Type): Type :=
                    (fmap: (A → B) → F A → F B))
 
-           (record applicative (F: Type → Type) (A B: Type)
-            extend pure F A, functor F A B : Type :=
+           (record applicative (F: Type → Type) (A,B: Type): Type :=
+--            extend pure F A, functor F A B : Type :=
                    (ap: F (A → B) → F A → F B))
 
-           (record monad (F: Type → Type) (A B: Type)
-            extend pure F A, functor F A B : Type :=
+           (record monad (F: Type → Type) (A,B: Type): Type :=
+--            extend pure F A, functor F A B : Type :=
                    (join: F (F A) → F B))

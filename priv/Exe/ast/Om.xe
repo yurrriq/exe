@@ -1,23 +1,24 @@
 
-    data Om: * :=
-         (star: Star → Om)
-         (var: Var → Om)
-         (app: App → Om)
-         (arrow: Arrow → Om)
-         (pi: Pi → Om)
+   Om := new
 
-  record Star: * :=
-         (index: nat)
+    (data Om: Type :=
+          (star: Star → Om)
+          (var: Var → Om)
+          (app: App → Om)
+          (arrow: Pi → Om)
+          (pi: Pi → Om))
 
-  record Var: * :=
-         (name: string)
-    
-  record Arrow Pi: * :=
-         (name: string)
-         (arg: Om)
-         (body: Om)
-    
-  record App: * :=
-         (fun: Om)
-         (arg: Om)
+  (record Star: Type :=
+          (index: nat))
 
+  (record Var: Type :=
+          (name: string))
+
+  (record Pi: Type :=
+          (name: string)
+          (arg: Om)
+          (body: Om))
+
+  (record App: Type :=
+          (fun: Om)
+          (arg: Om))
