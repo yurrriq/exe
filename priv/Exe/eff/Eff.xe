@@ -27,6 +27,6 @@
   (record handler (e: effect) (m: Type → Type): Type :=
          (action: ∀ (r: res) (eff: e t res resk) (k: ∀ (x: t) → resk x → m a) → m a))
 
-    (data RND: Type         := (intro: effect.mk nat (random nat)))
-    (data IO (t:Type): Type := (intro: effect.mk t (file t)))
-    (data EX (t:Type): Type := (intro: effect.mk () (exception t)))
+    (data RA: Type         := (intro: effect nat (random nat)))
+    (data IO (t:Type): Type := (intro: effect t   (file t)))
+    (data EX (t:Type): Type := (intro: effect ()  (exception t)))
