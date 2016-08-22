@@ -12,5 +12,4 @@ notifications:
     on_start: always    # options: [always|never|change] default: always
 install: "./mad dep com pla bun exe"
 #script: ./exe parse file "priv/Macro/smart-simpleton/smart.macro"
-script: ./exe display file "priv/Exe/logic/Cat.xe"
-script: ./exe parse file "priv/Exe/logic/Cat.xe"
+script: ( ./exe parse file "priv/Exe/logic/Cat.xe"; ./exe display file "priv/Exe/logic/Cat.xe")
