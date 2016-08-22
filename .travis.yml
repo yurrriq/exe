@@ -10,6 +10,6 @@ notifications:
     on_success: always  # options: [always|never|change] default: always
     on_failure: always  # options: [always|never|change] default: always
     on_start: always    # options: [always|never|change] default: always
-install: "./mad dep com pla bun om"
-#script: "./om scan Data/Bool , mode posets"
-script: "./om test all"
+install: "./mad dep com pla bun exe"
+#script: ./exe parse file "priv/Macro/smart-simpleton/smart.macro"
+script: ./exe parse file "priv/Exe/Logic/Cat.xe"
