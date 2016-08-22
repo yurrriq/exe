@@ -153,6 +153,7 @@ projection p by using equality on elements of `B`. In type theory besides depend
 used the dependent product `Pi`. In encoding of dependent types with fibrations there is a correspondence
 between elements of dependent and morphism-fibrations for projection `p`: such `(s: B → E)` that `s * p = I`.
 The example of this implementation could be seen in
+
 * EXE as [Macro](https://github.com/groupoid/exe/blob/master/priv/Macro/macro.new/Mini.macro#L71)
 * OM as expanded term [Sectioning](https://github.com/groupoid/om/blob/master/priv/posets/sec2all)
 
@@ -165,6 +166,7 @@ structure of F-algebra of the inductive type. Now we could apply recursor to E
 getting the map `(I → E)` from the initial object which in fact the section (fiber bundle) of fibration
 and thus defines the dependent function which is a proved value of induction principle.
 The example for `Bool` could be found in
+
 * EXE [Bool](https://github.com/groupoid/exe/blob/master/priv/Macro/macro.new/Data.Bool.macro#L128)
 * OM [Induction](https://github.com/groupoid/om/blob/master/priv/posets/Data/Bool/induc)
 
