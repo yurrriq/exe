@@ -1,16 +1,6 @@
 -module(exe_repl).
 -include("exe_repl.hrl").
 -compile(export_all).
--define(ANSI_CTRL_CHARS,"\e[").
--define(ANSI_CLEAR,"\e[0m").
--define(LINEMAX, 30).
--define(CHAR_MAX, 60).
--define(DEF_HISTORY, 20).
--define(DEF_RESULTS, 20).
--define(DEF_CATCH_EXCEPTION, false).
--define(DEF_PROMPT_FUNC, default).
--define(RECORDS, shell_records).
--define(MAXSIZE_HEAPBINARY, 64).
 
 color_profile() -> [{string, {dim,yellow,none}},
                     {digits, {dim,green,none}},
@@ -24,7 +14,7 @@ t(Lines) -> t_a(Lines). % only ANSI, for now.
 
 ctrl_sequence(ansi,Attrs) -> ctrl_sequence(ansi,Attrs,[]).
 ctrl_sequence(ansi,[{F,Attr}|T],Acc) -> ctrl_sequence(ansi,T,[apply(exe_pretty,F,[ansi|[Attr]])| Acc]);
-ctrl_sequence(ansi,[],Acc) -> lists:concat([ ?ANSI_CTRL_CHARS , string:join(lists:reverse(Acc),";") , "m"]).
+ctrl_sequence(ansi,[],Acc) -> lists:concat([ "\e[" , string:join(lists:reverse(Acc),";") , "m"]).
 
 t_a(Lines) -> t_a(Lines,[]).
 t_a([Line|T], Acc) -> {Attrs,Str} = Line, t_a(T,[string:concat(ctrl_sequence(ansi,Attrs),Str)|Acc]);
@@ -52,14 +42,12 @@ server(NoCtrlG, StartSync) -> put(no_control_g, NoCtrlG), server(StartSync).
 server(StartSync) ->
     %init:wait_until_started(),
     Bs = erl_eval:new_bindings(),
-    RT = ets:new(?RECORDS, [public,ordered_set]),
     process_flag(trap_exit, true),
     case get(no_control_g) of
          true -> io:fwrite(<<"~s\n">>,[banner(no_control_g)]);
          _undefined_or_false -> io:fwrite(<<"~s\n">>,[banner()]) end,
     erase(no_control_g),
-    {History,Results} = {20,30},
-    ?MODULE:server_loop(0, [], Bs, RT, [], History, Results).
+    ?MODULE:server_loop(0, [], Bs, [], [], 20, 30).
 
 banner() -> "\e[38;2;187;187;187mGroupoid Infinity "
               "\e[38;2;13;13;136mEXE"
