@@ -1,5 +1,8 @@
 -module(exe_pretty).
+-export([start/0]).
 -compile(export_all).
+
+start() -> user_drv:start(['tty_sl -e -c',{exe_repl,start,[init]}]), ok.
 
 q(Class,Str) -> exe_repl:q(Class,Str).
 
@@ -9,7 +12,7 @@ p(X) -> io:format("~ts~n",[color(unicode:characters_to_binary(lists:flatten(pp(X
 
 
 ansi(S,gray)   -> ["\e[38;2;187;187;187m",S,"\e[0m"];
-ansi(S,key)    -> q(keyword,S); %["\e[36;20;52;52;200m",  S,"\e[0m"];
+ansi(S,key)    -> q(keyword,S);
 ansi(S,_  )    -> S.
 
 color(<<>>,Acc) -> lists:reverse(Acc);

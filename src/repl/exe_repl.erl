@@ -75,15 +75,18 @@ server_loop(N0, Eval_0, Bs00, RT, Ds00, History0, Results0) ->
     % io:format("SERVER LOOP: ~tp~n",[Eval_1]),
     {Res,Eval0} = get_command(Prompt, Eval_1, Bs0, RT, Ds0),
     case Res of
+                      {ok,Term,Line} -> io:format("Erlang Loop: ~tp~n",[Term]),
+                                        ?MODULE:server_loop(N0, Eval0, Bs0, RT, Ds0, History0, Results0);
 	{error,{Line,Mod,What},_EndLine} -> ?MODULE:server_loop(N0, Eval0, Bs0, RT, Ds0, History0, Results0);
 	              {error,terminated} -> exit(Eval0, kill), terminated;
                  {error,interrupted} -> exit(Eval0, kill),
                                         ?MODULE:server_loop(N0, Eval0, Bs0, RT, Ds0, History0, Results0);
-	                  {error,tokens} -> ?MODULE:server_loop(N0, Eval0, Bs0, RT, Ds0, History0, Results0);
+	           {error,until_newline} -> io:format("Key Point Recognizer Error.~n",[]),
+                                        ?MODULE:server_loop(N0, Eval0, Bs0, RT, Ds0, History0, Results0);
 	                  {eof,_EndLine} -> halt();
 	                             eof -> halt();
-                                ANY  -> %io:format("Server Loop Any: ~tp~n",[ANY]),
-                                        R=try macro:parse(lists:reverse(tl(lists:reverse(ANY)))) catch _E:_R -> {_E,_R} end,
+                                ANY  -> % io:format("EXE Loop: ~tp~n",[ANY]),
+                                        R=try macro:parse(strip(ANY)) catch _E:_R -> {_E,_R} end,
                                         case R of
                                             {error,_} -> io:format("Res: ~tp~n",[R]);
                                                     _ -> exe:p(R) end,
@@ -96,7 +99,7 @@ get_command(Prompt, Eval, Bs, RT, Ds) ->
     Pid = spawn_link(Parse),
     ?MODULE:get_command1(Pid, Eval, Bs, RT, Ds).
 
-wait_command(Prompt) -> io:request(group_leader(), {get_until,unicode,Prompt,?MODULE,until_newline,[$.]}).
+wait_command(Prompt) -> io:request(group_leader(), {get_until,unicode,Prompt,?MODULE,until_newline,[$^]}).
 
 until_newline(_ThisFar,eof,_MyStopCharacter) -> {done,eof,[]};
 until_newline(ThisFar,CharList,MyStopCharacter) -> case
@@ -107,6 +110,8 @@ until_newline(ThisFar,CharList,MyStopCharacter) -> case
   {L2,[MyStopCharacter|Rest]} ->
       {done,ThisFar++L2++[MyStopCharacter],Rest}
     end.
+
+strip(CharList) -> string:strip(string:strip(CharList,both,$\n),both,$^).
 
 get_command1(Pid, Eval, Bs, RT, Ds) ->
     receive {'EXIT', Pid, Res}                  -> %io:format("NORM RES: ~tp~n",[{Pid,Res}]),
