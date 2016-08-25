@@ -78,7 +78,7 @@ color(<<":=",Rest/binary>>,Acc)     -> color(Rest,[ansi(":=",gray)|Acc]);
 color(<<"λ"/utf8,Rest/binary>>,Acc) -> color(Rest,[ansi("λ",gray)|Acc]);
 color(<<"∀"/utf8,Rest/binary>>,Acc) -> color(Rest,[ansi("∀",gray)|Acc]);
 color(<<"record",Rest/binary>>,Acc) -> color(Rest,[ansi("record",key)|Acc]);
-color(<<"key",Rest/binary>>,Acc)    -> color(Rest,[ansi("data",key)|Acc]);
+color(<<"data",Rest/binary>>,Acc)   -> color(Rest,[ansi("data",key)|Acc]);
 color(<<"new",Rest/binary>>,Acc)    -> color(Rest,[ansi("new",key)|Acc]);
 color(<<"define",Rest/binary>>,Acc) -> color(Rest,[ansi("define",key)|Acc]);
 color(<<C/utf8,Rest/binary>>,Acc)   -> color(Rest,[C|Acc]).
@@ -95,7 +95,7 @@ data()     -> ansi("\ndata   ", def).
 new()      -> ansi("new ",      def).
 record()   -> ansi("\nrecord ", def).
 
--define(WIDTH, 80).
+-define(WIDTH, 90).
 
 pc(X,P) when is_list(X) andalso length(X) > 1    -> [string:join([pp(XI,P)||XI<-X],".")];
 pc(X,P) -> pp(X,P).
@@ -124,7 +124,6 @@ format_line(S,I,P) ->
     SSS=string:tokens(lists:flatten(S),"\n"),
     XXX=string:join(lists:foldr(fun (SS,Acc) ->
         FL= string:tokens(SS,"→"),
-        %io:format("format_lineA: ~tp~n",[FL]),
         {St,_}=lists:foldr(fun(A,{L,Acc}) ->
                AccA = length(A),
                {String,NewAcc} = case Acc+AccA>=P of true -> {A++"\n"++pad(I),AccA};
