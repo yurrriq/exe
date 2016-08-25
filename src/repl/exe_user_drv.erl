@@ -362,6 +362,7 @@ get_line({undefined,_Char,Cs,Cont,Rs}, Iport, Oport) ->
     get_line(?EDLIN:edit_line(Cs, Cont), Iport, Oport);
 get_line({What,Cont0,Rs}, Iport, Oport) ->
     io_requests(Rs, Iport, Oport),
+    io:format("GET_LINE: ~tp~n",[{What,Cont0,Rs}]),
     receive
 	{Iport,{data,Cs}} ->
 	    get_line(?EDLIN:edit_line(Cs, Cont0), Iport, Oport);

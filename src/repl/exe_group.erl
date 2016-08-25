@@ -1,6 +1,6 @@
 -module(exe_group).
 -include("exe_repl.hrl").
--export([start/0,start/2, start/3, server/3,interfaces/1]).
+-export([start/0,start/2, start/3, server/3,interfaces/1, server_loop/3]).
 
 start()                    -> exe_user_drv:start(['tty_sl -e -c',{exe_repl,start,[init]}]), ok.
 start(Drv, Shell)          -> start(Drv, Shell, []).
@@ -20,7 +20,7 @@ server(Drv, Shell, Options) ->
     put(expand_fun, proplists:get_value(expand_fun, Options, fun(B) -> edlin_expand:expand(B) end)),
     put(echo, proplists:get_value(echo, Options, true)),
     start_shell(Shell),
-    server_loop(Drv, get(shell), []).
+    ?MODULE:server_loop(Drv, get(shell), []).
 
 interfaces(Group) -> case process_info(Group, dictionary) of
 	                      {dictionary,Dict} -> get_pids(Dict, [], false);
@@ -56,15 +56,15 @@ start_shell1(Fun) ->
 server_loop(Drv, Shell, Buf0) ->
     receive {io_request,From,ReplyAs,Req}
                         when is_pid(From) -> Buf = io_request(Req, From, ReplyAs, Drv, Buf0),
-                                             server_loop(Drv, Shell, Buf);
-                      {driver_id,ReplyTo} -> ReplyTo ! {self(),driver_id,Drv}, server_loop(Drv, Shell, Buf0);
-                        {Drv, echo, Bool} -> put(echo, Bool), server_loop(Drv, Shell, Buf0);
-                   {'EXIT',Drv,interrupt} -> exit_shell(interrupt), server_loop(Drv, Shell, Buf0);
+                                             ?MODULE:server_loop(Drv, Shell, Buf);
+                      {driver_id,ReplyTo} -> ReplyTo ! {self(),driver_id,Drv}, ?MODULE:server_loop(Drv, Shell, Buf0);
+                        {Drv, echo, Bool} -> put(echo, Bool), ?MODULE:server_loop(Drv, Shell, Buf0);
+                   {'EXIT',Drv,interrupt} -> exit_shell(interrupt), ?MODULE:server_loop(Drv, Shell, Buf0);
                            {'EXIT',Drv,R} -> exit(R);
                          {'EXIT',Shell,R} -> exit(R);
         NotDrvTuple when (not is_tuple(NotDrvTuple)) orelse
                      (tuple_size(NotDrvTuple) =/= 2) orelse
-                          (element(1, NotDrvTuple) =/= Drv) -> server_loop(Drv, Shell, Buf0) end.
+                          (element(1, NotDrvTuple) =/= Drv) -> ?MODULE:server_loop(Drv, Shell, Buf0) end.
 
 exit_shell(Reason) ->
     case get(shell) of undefined -> true;
