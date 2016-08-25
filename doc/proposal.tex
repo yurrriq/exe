@@ -1,6 +1,7 @@
-\documentclass{proposal}
+\documentclass[11pt,oneside]{article}
 \usepackage{amssymb}
 \usepackage{amsmath}
+\usepackage[english,russian]{babel}
 \usepackage[lBrack,rBrack,llparenthesis,rrparenthesis]{stmaryrd} % for comparison with 4 similar parenthesis symbols
 \usepackage{caption}
 \usepackage{pgf}
@@ -10,16 +11,28 @@
 \usepackage{listingsutf8}
 
 \begin{document}
-\begin{theses}{english}
 
-\title{}
-\author[1]{Maxim Sokhatsky}{maxim@groupoid.co}
-\author[2]{Pavlo Lyutko}{liutko@groupoid.co}
-\author[3]{Pavlo Maslyanko}{mpp@ntu-kpi.kiev.ua}
-\organization[1]{Faculty of Applied Mathematics at NTUU ``KPI'', Kyiv, Ukraine}
-\organization[2]{Synrc Research Center, s.r.o, Praha, Czech Republic}
-\organization[3]{Groupoid Infinity, Inc.}
-\maketitle
+\thispagestyle{empty}
+\begin{center}
+
+\vspace{1cm} {Дослідницька пропозиція вступника\par до аспірантури НТУУ-КПІ за спеціальністю ``Прикладна математика''}
+
+\vspace{3cm}   
+{\Large \bf Математичне забезпечення }\par
+\vspace{0.5cm}\par
+{\Large \bfсистеми доведення теорем}\par
+\vspace{1cm} {\Large Вступник: магістр Максим Сохацький\par}
+\vspace{3cm}
+\begingroup
+\parbox[t][][r]{\textwidth}{ \flushright \textsc{{\Large {\bf {Науковий керівник:}}}}\\
+                                             \textsc{к.т.н., доцент Маслянко Павло Павлович}\\  }\endgroup
+\vspace{5cm}
+{\Large НТУУ-КПІ\par}
+\vspace{0.3cm} {\Large Київ, 2016}
+
+\end{center}
+
+\newpage
 
 \begin{abstract}
 We adress the problem of missing a programming language with dependent types for Erlang virtual machines.
@@ -73,7 +86,6 @@ and can be tooled with its Morte\cite{morte} implementation:
     E := *$_i$ | ( E ) | E E | $\lambda$ ( L : E ) $\rightarrow$ E | $\forall$ ( L : E ) $\rightarrow$ E
 \end{lstlisting}
 
-\newpage
 \paragraph{Exe Language}
 
 We extend the core PTS language with inductive {\bf data} and coinductive {\bf record} definitions.
@@ -259,6 +271,5 @@ Result language after type erasure.
 
 \end{thebibliography}
 
-\end{theses}
 \end{document}
 
