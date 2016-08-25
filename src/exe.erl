@@ -60,3 +60,43 @@ mad(F)  -> case mad_repl:load_file(F) of
                 {ok,Bin} -> Bin;
                 {error,_} -> erlang:error({"File not found",F}) % <<>>
             end.
+
+pad(D) -> lists:duplicate(D*7," ").
+
+p(X) -> io:format("~ts~n",[unicode:characters_to_list(lists:flatten(pp(X,1)))]).
+
+color(S,gray)   -> ["\e[38;2;187;187;187m",S,"\e[0m"];
+color(S,key)    -> ["\e[36;20;52;52;200m",  S,"\e[0m"].
+
+left()     -> color("(",  gray).
+right()    -> color(")",  gray).
+arrow()    -> color(" → ",gray).
+assign()   -> color(":=", gray).
+colon()    -> color(":",  gray).
+lambda()   -> color(" λ ",  gray).
+pi()       -> color(" ∀ ",  gray).
+type()     -> color("define ",key).
+data()     -> color("data   ",key).
+record()   -> color("record ",key).
+
+pp(X,P) when is_list(X) andalso length(X) > 1    -> [left(),string:join([pp(XI,P)||XI<-X]," "),right()];
+pp(X,P) when is_list(X)                          -> [string:join([pp(XI,P)||XI<-X]," ")];
+pp({assign,L,   {mk,A,B}},P) when is_list(B)     -> [pp(A,P),assign(),string:join([[left(),pp(BI,P),right()]||BI<-B],"")];
+pp({assign,L,   {mk,A,B}},P)                     -> [pp(A,P),assign(),pp(B,P)];
+pp({preassign,L,{mk_match,[[A]],B}},P)           -> [pp(A,P)];
+pp({preassign,L,{mk_type,A}},P)                  -> [type(),[pp(A,P)]];
+pp({pretype,L,  {mk,[X],List}},P)                -> [[pp(XI,P)||XI<-X],
+                                                     string:join([[left(),pp(I,P),right(),""]||I<-List],"\n"++pad(P))
+                                                     ];
+pp({id,_,{var,X}},P)                             -> [X];
+pp({expr,L,     {mk_new,X}},P)                   -> [pp(XI,P)||XI<-X];
+pp({expr,L,     {mk_define,X}},P)                -> [pp(X,P)];
+pp({expr,L,     {mk_id,X}},P)                    -> [pp(X,P)];
+pp({expr,L,     {mk_forall,Xs,Y}},P)             -> [pi(),string:join([[pad(P-1),left(),pp(X,P),right()]||X<-Xs]," ")," ",pp(Y,P)];
+pp({expr,L,     {mk_lambda,X,Y}},P)              -> [lambda(),left(),pp(X,P),right(),arrow(),pp(Y,P)];
+pp({expr,L,     {mk_data,Xs}},P)                 -> [data(),string:join([[pad(P-1),left(),pp(X,P),right()]||X<-Xs],"\n"++pad(P))];
+pp({expr,L,     {mk_record,Xs}},P)               -> [record(),string:join([[pad(P-1),left(),pp(X,P),right()]||X<-Xs],"\n"++pad(P))];
+pp({expr,L,     {mk_arrow,Is,Os}},P)             -> [[pp(I,P+1)||I<-Is],arrow(),pp(Os,P)];
+pp({type,L,     {mk,I,List}},P)                  -> [pp(I,P),colon(),pp(List,P)];
+pp(Term,P) -> [].
+
