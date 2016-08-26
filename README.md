@@ -43,6 +43,8 @@ Native Erlang Language with own shell
 -------------------------------------
 
 You can switch with no stress between Erlang and EXE shell in the same `user_drv` process.
+EXE shell is implememted as `exe_repl` in 120 LOC using `io:request` API and `{get_until,unicode,_,_,_,_}` message of Erlang IO protocol.
+No custom `user_drv` or `group` process is used. Color aware pretty printing `exe_pretty` took same size.
 
 <img src="http://groupoid.space/exe_repl.png" width="728">
 
