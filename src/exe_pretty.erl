@@ -5,11 +5,8 @@
 start() -> user_drv:start(['tty_sl -e -c',{exe_repl,start,[init]}]), ok.
 
 q(Class,Str) -> exe_repl:q(Class,Str).
-
 pad(D) -> lists:duplicate(D*7," ").
-
 p(X) -> io:format("~ts~n",[color(unicode:characters_to_binary(lists:flatten(pp(X,1))),[])]).
-
 
 ansi(S,gray)   -> ["\e[38;2;187;187;187m",S,"\e[0m"];
 ansi(S,key)    -> q(keyword,S);

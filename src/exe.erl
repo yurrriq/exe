@@ -6,7 +6,7 @@
 -compile(export_all).
 
 opt()        -> [ set, named_table, { keypos, 1 }, public ].
-tables()     -> [ programs ].
+tables()     -> [ programs, types, terms, shell ].
 boot()       -> [ ets:new(T,opt()) || T <- tables() ],
                 [ code:del_path(S) || S <- code:get_path(), string:str(S,"stdlib") /= 0 ].
 unicode()    -> io:setopts(standard_io, [{encoding, unicode}]).

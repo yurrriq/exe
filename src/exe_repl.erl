@@ -36,17 +36,14 @@ q(Class,Str) ->
 start()                   -> start(false, false).
 start(init)               -> start(false, true);
 start(NoCtrlG)            -> start(NoCtrlG, false).
-start(NoCtrlG, StartSync) -> code:ensure_loaded(user_default), spawn(fun() -> server(NoCtrlG, StartSync) end).
+start(NoCtrlG, StartSync) -> spawn(fun() -> server(NoCtrlG) end).
 
-server(NoCtrlG, StartSync) -> put(no_control_g, NoCtrlG), server(StartSync).
-server(StartSync) ->
-    %init:wait_until_started(),
+server(NoCtrlG) -> 
     Bs = erl_eval:new_bindings(),
     process_flag(trap_exit, true),
-    case get(no_control_g) of
+    case NoCtrlG of
          true -> io:fwrite(<<"~s\n">>,[banner(no_control_g)]);
-         _undefined_or_false -> io:fwrite(<<"~s\n">>,[banner()]) end,
-    erase(no_control_g),
+            _ -> io:fwrite(<<"~s\n">>,[banner()]) end,
     ?MODULE:server_loop(0, [], Bs, [], [], 20, 30).
 
 banner() -> "\e[38;2;187;187;187mGroupoid Infinity "
@@ -60,11 +57,21 @@ banner(no_control_g) -> banner() ++ " (abort with ^G)".
 server_loop(N0, Eval_0, Bs00, RT, Ds00, History0, Results0) ->
     N = N0 + 1,
     {Eval_1,Bs0,Ds0,Prompt} = prompt(N, Eval_0, Bs00, RT, Ds00),
-    % io:format("SERVER LOOP: ~tp~n",[Eval_1]),
     {Res,Eval0} = get_command(Prompt, Eval_1, Bs0, RT, Ds0),
     case Res of
-                      {ok,Term,Line} -> io:format("Erlang Loop: ~tp~n",[Term]),
-                                        ?MODULE:server_loop(N0, Eval0, Bs0, RT, Ds0, History0, Results0);
+                  {ok,{ok,[{atom,_,exe}],_},Line} -> io:format("Switching to "++q(term,"EXE")++" mode.~n",[]),
+                                        application:set_env(exe,shell,exe),
+                                        ?MODULE:server_loop(N, Eval0, Bs0, RT, Ds0, History0, Results0);
+                    {ok,S,Line} when S=="\nerl^" orelse S=="erl^" -> io:format("Switching to "++q(term,"Erlang")++" mode.~n",[]),
+                                        application:set_env(exe,shell,erl),
+                                        ?MODULE:server_loop(N, Eval0, Bs0, RT, Ds0, History0, Results0);
+                      {ok,Term,Line} -> case application:get_env(exe,shell,exe) of
+                                             erl -> io:format("Erlang Loop: ~tp~n",[Term]);
+                                             exe -> R=try macro:parse(strip(Term)) catch _E:_R -> {_E,_R} end,
+                                                    case R of
+                                                         {error,_} -> io:format("Res: ~tp~n",[Term]);
+                                                                 _ -> exe:p(R) end end,
+                                        ?MODULE:server_loop(N, Eval0, Bs0, RT, Ds0, History0, Results0);
 	{error,{Line,Mod,What},_EndLine} -> ?MODULE:server_loop(N0, Eval0, Bs0, RT, Ds0, History0, Results0);
 	              {error,terminated} -> exit(Eval0, kill), terminated;
                  {error,interrupted} -> exit(Eval0, kill),
@@ -73,17 +80,14 @@ server_loop(N0, Eval_0, Bs00, RT, Ds00, History0, Results0) ->
                                         ?MODULE:server_loop(N0, Eval0, Bs0, RT, Ds0, History0, Results0);
 	                  {eof,_EndLine} -> halt();
 	                             eof -> halt();
-                                ANY  -> % io:format("EXE Loop: ~tp~n",[ANY]),
-                                        R=try macro:parse(strip(ANY)) catch _E:_R -> {_E,_R} end,
-                                        case R of
-                                            {error,_} -> io:format("Res: ~tp~n",[R]);
-                                                    _ -> exe:p(R) end,
+                                ANY  -> io:format("Unknown Protocol: ~tp~n",[ANY]),
                                         ?MODULE:server_loop(N, Eval0, Bs0, RT, Ds0, History0, Results0) end.
 
 
 get_command(Prompt, Eval, Bs, RT, Ds) ->
-%    Parse = fun() -> exit(io:parse_erl_exprs(Prompt)) end, % Erlang Input
-    Parse = fun() -> exit(?MODULE:wait_command(Prompt)) end, % EXE Input
+    Parse = case application:get_env(exe,shell,exe) of
+                 erl -> fun() -> exit(io:parse_erl_exprs(Prompt)) end;       % Erlang Input
+                 exe -> fun() -> exit(?MODULE:wait_command(Prompt)) end end, % EXE Input
     Pid = spawn_link(Parse),
     ?MODULE:get_command1(Pid, Eval, Bs, RT, Ds).
 
@@ -103,7 +107,7 @@ strip(CharList) -> string:strip(string:strip(CharList,both,$\n),both,$^).
 
 get_command1(Pid, Eval, Bs, RT, Ds) ->
     receive {'EXIT', Pid, Res}                  -> %io:format("NORM RES: ~tp~n",[{Pid,Res}]),
-                                                   {Res, Eval};
+                                                   {{ok,Res,1}, Eval};
             {'EXIT', Eval, {Reason,Stacktrace}} -> io:format("STACKTRACE: ~tp~n",[{Pid,Reason,Stacktrace}]),
                                                    ?MODULE:get_command1(Pid, Eval, Bs, RT, Ds);
             {'EXIT', Eval, Reason}              -> io:format("EXCEPTION: ~tp~n",[{Pid,Reason}]),
@@ -112,9 +116,5 @@ get_command1(Pid, Eval, Bs, RT, Ds) ->
                                                    {Any,Eval} end.
 
 prompt(N, Eval0, Bs0, RT, Ds0) ->
-            {Eval0,Bs0,Ds0,default_prompt(N)}.
-
-default_prompt(N) ->
-	P=io_lib:format(<<"\e[1K\e[~pD~w> ">>, [length(integer_to_list(N))-1, N]),
-	q(prompt,P).
-
+    P=io_lib:format(<<"\e[1K\e[~pD~w> ">>, [length(integer_to_list(N))-1, N]),
+    {Eval0,Bs0,Ds0,q(prompt,P)}.
