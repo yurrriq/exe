@@ -39,8 +39,12 @@ that leads us to the equality of (co)initial object and (co)limit in the categor
 of (co)algebras. Such encoding works with dependent types and its consistency is proved
 in Lean model.
 
-<img src="http://groupoid.space/exe_repl.png" width="728">
+Native Erlang Language with own shell
+-------------------------------------
 
+You can switch with no stress between Erlang and EXE shell in the same `user_drv` process.
+
+<img src="http://groupoid.space/exe_repl.png" width="728">
 
 OM — Compact Core of CoC
 ------------------------
